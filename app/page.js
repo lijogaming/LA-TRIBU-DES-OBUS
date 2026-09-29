@@ -134,10 +134,11 @@ export default function Home() {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo:
+        `${window.location.origin}/auth/callback`,
 
-      // Permet de récupérer la chaîne YouTube du compte connecté
-      scopes: "https://www.googleapis.com/auth/youtube.readonly",
+      scopes:
+        "https://www.googleapis.com/auth/youtube.readonly",
 
       queryParams: {
         access_type: "offline",
@@ -148,7 +149,9 @@ export default function Home() {
 
   if (error) {
     console.error(error);
-    alert("Erreur Google : " + error.message);
+    alert(
+      "Erreur Google : " + error.message
+    );
   }
 }
   async function deconnexion() {
