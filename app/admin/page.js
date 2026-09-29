@@ -34,6 +34,7 @@ export default function AdminPage() {
   const [recherche, setRecherche] = useState("");
   const [message, setMessage] = useState("");
   const [montants, setMontants] = useState({});
+  const [nombresLives, setNombresLives] = useState({});
 
   useEffect(() => {
     verifierAdmin();
@@ -74,7 +75,7 @@ export default function AdminPage() {
       .order("pseudo");
 
     if (error) {
-      setMessage(error.message);
+      setMessage("Erreur : " + error.message);
       return;
     }
 
@@ -82,7 +83,7 @@ export default function AdminPage() {
   }
 
   async function changerGrade(joueurId, nouveauGrade) {
-    setMessage("Modification en cours...");
+    setMessage("Modification du grade...");
 
     const { error } = await supabase.rpc("admin_definir_grade", {
       p_joueur_id: joueurId,
@@ -94,7 +95,7 @@ export default function AdminPage() {
       return;
     }
 
-    setMessage("Grade modifié.");
+    setMessage(`Grade modifié : ${nouveauGrade}`);
     await chargerJoueurs();
   }
 
@@ -102,7 +103,7 @@ export default function AdminPage() {
     const valeur = Number(montant);
 
     if (!Number.isInteger(valeur) || valeur === 0) {
-      setMessage("Entre un montant valide.");
+      setMessage("Entre un montant d'Obus valide.");
       return;
     }
 
@@ -127,9 +128,38 @@ export default function AdminPage() {
     setMessage(
       valeur > 0
         ? `+${valeur} Obus ajoutés.`
-        : `${valeur} Obus retirés.`
+        : `${Math.abs(valeur)} Obus retirés.`
     );
 
+    await chargerJoueurs();
+  }
+
+  async function modifierLives(joueurId, nombre) {
+    const valeur = Number(nombre);
+
+    if (!Number.isInteger(valeur) || valeur < 0) {
+      setMessage("Entre un nombre de lives valide.");
+      return;
+    }
+
+    setMessage("Modification du nombre de lives...");
+
+    const { error } = await supabase.rpc("admin_definir_lives", {
+      p_joueur_id: joueurId,
+      p_nombre_lives: valeur,
+    });
+
+    if (error) {
+      setMessage("Erreur : " + error.message);
+      return;
+    }
+
+    setNombresLives((ancien) => ({
+      ...ancien,
+      [joueurId]: "",
+    }));
+
+    setMessage(`Nombre de lives défini à ${valeur}.`);
     await chargerJoueurs();
   }
 
@@ -157,7 +187,10 @@ export default function AdminPage() {
   if (chargement) {
     return (
       <main className="container">
+        <div className="logo">🛡️</div>
+
         <h1>ADMINISTRATION</h1>
+
         <div className="card">
           <p>Chargement...</p>
         </div>
@@ -168,6 +201,8 @@ export default function AdminPage() {
   if (!admin) {
     return (
       <main className="container">
+        <div className="logo">⛔</div>
+
         <h1>ACCÈS REFUSÉ</h1>
 
         <div className="card">
@@ -212,10 +247,20 @@ export default function AdminPage() {
           }}
         />
 
-        {message && <p>{message}</p>}
+        {message && (
+          <p style={{ marginTop: "16px" }}>
+            {message}
+          </p>
+        )}
       </div>
 
       <div style={{ marginTop: "30px" }}>
+        {joueursFiltres.length === 0 && (
+          <div className="card">
+            <p>Aucun joueur trouvé.</p>
+          </div>
+        )}
+
         {joueursFiltres.map((joueur) => (
           <div
             className="card"
@@ -233,7 +278,12 @@ export default function AdminPage() {
 
             {joueur.punition && (
               <p>
-                Grade réel : <strong>{joueur.grade}</strong>
+                ⚠️ Grade réel :{" "}
+                <strong>
+                  {joueur.officier_general
+                    ? "Officier général"
+                    : joueur.grade}
+                </strong>
               </p>
             )}
 
@@ -253,8 +303,10 @@ export default function AdminPage() {
             <select
               defaultValue=""
               onChange={(e) => {
-                if (e.target.value) {
-                  changerGrade(joueur.id, e.target.value);
+                const nouveauGrade = e.target.value;
+
+                if (nouveauGrade) {
+                  changerGrade(joueur.id, nouveauGrade);
                   e.target.value = "";
                 }
               }}
@@ -311,11 +363,57 @@ export default function AdminPage() {
                 )
               }
             >
-              Valider la modification
+              Valider les Obus
+            </button>
+
+            <hr />
+
+            <p className="label">
+              MODIFIER LE NOMBRE DE LIVES
+            </p>
+
+            <input
+              type="number"
+              min="0"
+              value={nombresLives[joueur.id] || ""}
+              onChange={(e) =>
+                setNombresLives((ancien) => ({
+                  ...ancien,
+                  [joueur.id]: e.target.value,
+                }))
+              }
+              placeholder={`Actuellement : ${joueur.lives_depuis_soldat}`}
+              style={{
+                width: "100%",
+                padding: "14px",
+                borderRadius: "10px",
+                border: "1px solid #444",
+                background: "#111",
+                color: "white",
+                marginBottom: "10px",
+              }}
+            />
+
+            <button
+              onClick={() =>
+                modifierLives(
+                  joueur.id,
+                  nombresLives[joueur.id]
+                )
+              }
+            >
+              Modifier les lives
             </button>
           </div>
         ))}
       </div>
+
+      <button
+        onClick={() => (window.location.href = "/")}
+        style={{ marginBottom: "12px" }}
+      >
+        Retour au site
+      </button>
 
       <button onClick={deconnexion}>
         Se déconnecter
