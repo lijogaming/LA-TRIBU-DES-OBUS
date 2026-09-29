@@ -135,6 +135,14 @@ export default function Home() {
     provider: "google",
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
+
+      // Permet de récupérer la chaîne YouTube du compte connecté
+      scopes: "https://www.googleapis.com/auth/youtube.readonly",
+
+      queryParams: {
+        access_type: "offline",
+        prompt: "consent",
+      },
     },
   });
 
@@ -143,7 +151,6 @@ export default function Home() {
     alert("Erreur Google : " + error.message);
   }
 }
-
   async function deconnexion() {
     await supabase.auth.signOut();
 
