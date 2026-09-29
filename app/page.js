@@ -5,7 +5,15 @@ import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth: {
+      flowType: "pkce",
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: false,
+    },
+  }
 );
 
 const grades = [
@@ -123,18 +131,18 @@ export default function Home() {
   // =====================================================
 
   async function connexionGoogle() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: window.location.origin,
-      },
-    });
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    },
+  });
 
-    if (error) {
-      console.error("Erreur connexion Google :", error);
-      alert("Erreur de connexion Google : " + error.message);
-    }
+  if (error) {
+    console.error(error);
+    alert("Erreur Google : " + error.message);
   }
+}
 
   async function deconnexion() {
     await supabase.auth.signOut();
