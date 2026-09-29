@@ -23,65 +23,132 @@ const grades = [
 export default function Home() {
   const [user, setUser] = useState(null);
   const [joueur, setJoueur] = useState(null);
+  const [admin, setAdmin] = useState(false);
   const [chargement, setChargement] = useState(true);
 
+  // =====================================================
+  // SESSION GOOGLE
+  // =====================================================
+
   useEffect(() => {
-    chargerUtilisateur();
+    let actif = true;
+
+    async function initialiser() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!actif) return;
+
+      setUser(session?.user ?? null);
+
+      if (!session?.user) {
+        setChargement(false);
+      }
+    }
+
+    initialiser();
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      chargerUtilisateur();
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+
+      if (!session?.user) {
+        setJoueur(null);
+        setAdmin(false);
+        setChargement(false);
+      }
     });
 
     return () => {
+      actif = false;
       subscription.unsubscribe();
     };
   }, []);
 
-  async function chargerUtilisateur() {
-    setChargement(true);
+  // =====================================================
+  // CHARGEMENT DU PROFIL APRÈS CONNEXION
+  // =====================================================
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  useEffect(() => {
+    if (!user) return;
 
-    setUser(user);
+    let actif = true;
 
-    if (!user) {
-      setJoueur(null);
+    async function chargerProfil() {
+      setChargement(true);
+
+      // Vérifie si le compte est administrateur
+      const { data: estAdmin, error: erreurAdmin } =
+        await supabase.rpc("est_admin");
+
+      if (!actif) return;
+
+      if (erreurAdmin) {
+        console.error("Erreur admin :", erreurAdmin);
+        setAdmin(false);
+      } else {
+        setAdmin(Boolean(estAdmin));
+      }
+
+      // Cherche une éventuelle fiche joueur
+      const { data, error } = await supabase
+        .from("joueurs")
+        .select("*")
+        .eq("auth_user_id", user.id)
+        .maybeSingle();
+
+      if (!actif) return;
+
+      if (error) {
+        console.error("Erreur joueur :", error);
+        setJoueur(null);
+      } else {
+        setJoueur(data);
+      }
+
       setChargement(false);
-      return;
     }
 
-    const { data, error } = await supabase
-      .from("joueurs")
-      .select("*")
-      .eq("auth_user_id", user.id)
-      .maybeSingle();
+    chargerProfil();
 
-    if (error) {
-      console.error(error);
-    }
+    return () => {
+      actif = false;
+    };
+  }, [user]);
 
-    setJoueur(data);
-    setChargement(false);
-  }
+  // =====================================================
+  // CONNEXION / DÉCONNEXION
+  // =====================================================
 
   async function connexionGoogle() {
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: window.location.origin,
       },
     });
+
+    if (error) {
+      console.error("Erreur connexion Google :", error);
+      alert("Erreur de connexion Google : " + error.message);
+    }
   }
 
   async function deconnexion() {
     await supabase.auth.signOut();
+
     setUser(null);
     setJoueur(null);
+    setAdmin(false);
+
+    window.location.href = "/";
   }
+
+  // =====================================================
+  // PROCHAIN GRADE
+  // =====================================================
 
   function prochainGrade() {
     if (!joueur) return null;
@@ -96,7 +163,7 @@ export default function Home() {
     if (joueur.officier_general) {
       return {
         nom: "Officier général",
-        texte: "Grade spécial",
+        texte: "Grade spécial attribué manuellement",
       };
     }
 
@@ -117,17 +184,26 @@ export default function Home() {
     };
   }
 
+  // =====================================================
+  // CHARGEMENT
+  // =====================================================
+
   if (chargement) {
     return (
       <main className="container">
+        <div className="logo">💣</div>
         <h1>LA TRIBU DES OBUS</h1>
 
         <div className="card">
-          <p>Chargement du profil...</p>
+          <p>Chargement du compte...</p>
         </div>
       </main>
     );
   }
+
+  // =====================================================
+  // NON CONNECTÉ
+  // =====================================================
 
   if (!user) {
     return (
@@ -158,6 +234,49 @@ export default function Home() {
     );
   }
 
+  // =====================================================
+  // ADMIN SANS FICHE JOUEUR
+  // =====================================================
+
+  if (admin && !joueur) {
+    return (
+      <main className="container">
+        <div className="logo">🛡️</div>
+
+        <h1>LA TRIBU DES OBUS</h1>
+
+        <div className="card">
+          <p className="label">COMPTE ADMINISTRATEUR</p>
+
+          <h2>Administration</h2>
+
+          <p>
+            Ton compte administrateur est correctement connecté.
+          </p>
+
+          <button
+            onClick={() => {
+              window.location.href = "/admin";
+            }}
+          >
+            Ouvrir le panneau administrateur
+          </button>
+
+          <button
+            onClick={deconnexion}
+            style={{ marginTop: "12px" }}
+          >
+            Se déconnecter
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  // =====================================================
+  // CONNECTÉ MAIS NON ASSOCIÉ
+  // =====================================================
+
   if (!joueur) {
     return (
       <main className="container">
@@ -171,8 +290,8 @@ export default function Home() {
           <h2>Profil joueur non associé</h2>
 
           <p>
-            Ton compte Google fonctionne, mais il n&apos;est pas encore associé
-            à un joueur de La Tribu des Obus.
+            Ton compte Google fonctionne, mais il n&apos;est pas encore
+            associé à un joueur de La Tribu des Obus.
           </p>
 
           <button onClick={deconnexion}>
@@ -182,6 +301,10 @@ export default function Home() {
       </main>
     );
   }
+
+  // =====================================================
+  // PROFIL JOUEUR
+  // =====================================================
 
   const prochain = prochainGrade();
 
@@ -201,6 +324,20 @@ export default function Home() {
         Bienvenue {joueur.pseudo}
       </p>
 
+      {admin && (
+        <div className="card" style={{ marginBottom: "20px" }}>
+          <p className="label">ADMINISTRATEUR</p>
+
+          <button
+            onClick={() => {
+              window.location.href = "/admin";
+            }}
+          >
+            Ouvrir le panneau administrateur
+          </button>
+        </div>
+      )}
+
       <div className="card">
         <p className="label">PROFIL DU JOUEUR</p>
 
@@ -211,7 +348,8 @@ export default function Home() {
         </p>
 
         <p>
-          💰 Sac d&apos;Obus : <strong>{joueur.obus} Obus</strong>
+          💰 Sac d&apos;Obus :{" "}
+          <strong>{joueur.obus} Obus</strong>
         </p>
 
         <p>
@@ -221,7 +359,8 @@ export default function Home() {
 
         {joueur.punition && (
           <p>
-            ⚠️ Grade réel conservé : <strong>{joueur.grade}</strong>
+            ⚠️ Grade réel conservé :{" "}
+            <strong>{joueur.grade}</strong>
           </p>
         )}
 
@@ -250,7 +389,9 @@ export default function Home() {
         </div>
 
         <div>
-          <strong>📺 {joueur.lives_depuis_soldat} LIVES</strong>
+          <strong>
+            📺 {joueur.lives_depuis_soldat} LIVES
+          </strong>
           <span>Depuis ton passage Soldat</span>
         </div>
       </div>
