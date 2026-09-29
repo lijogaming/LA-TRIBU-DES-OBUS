@@ -180,8 +180,8 @@ export default function Home() {
 
     if (joueur.officier_general) {
       return {
-        nom: "Officier général",
-        texte: "Grade spécial attribué manuellement",
+        nom: "🏆 Grade ultime atteint",
+        texte: "Bravo ! Tu as obtenu le meilleur grade de La Tribu des Obus : Officier général.",
       };
     }
 
