@@ -30,7 +30,7 @@ export default function Home() {
       <div className="card">
         <p className="label">TON AVENTURE COMMENCE ICI</p>
 
-        <h2>Bienvenue, soldat.</h2>
+        <h2>Bienvenue dans La Tribu des Obus.</h2>
 
         <p>
           Connecte-toi avec ton compte Google pour accéder à ton profil,
