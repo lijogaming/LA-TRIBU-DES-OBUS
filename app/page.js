@@ -384,7 +384,9 @@ export default function Home() {
 
         <hr />
 
-        <p className="label">PROCHAINE ÉTAPE</p>
+        <p className="label">
+  {joueur.officier_general ? "FÉLICITATIONS" : "PROCHAINE ÉTAPE"}
+</p>
 
         <h2>{prochain?.nom}</h2>
 
