@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 
 const supabase = createClient(
@@ -17,96 +17,118 @@ const supabase = createClient(
 );
 
 export default function AuthCallback() {
-  const [message, setMessage] = useState(
-    "Connexion en cours..."
-  );
-
   useEffect(() => {
     async function terminerConnexion() {
       try {
-        const params = new URLSearchParams(
-          window.location.search
-        );
+        // ==========================================
+        // 1. RÉCUPÉRER LE CODE GOOGLE
+        // ==========================================
 
-        const code = params.get("code");
+        const params =
+          new URLSearchParams(
+            window.location.search
+          );
+
+        const code =
+          params.get("code");
 
         if (!code) {
           throw new Error(
-            "Aucun code de connexion reçu."
+            "Code de connexion Google introuvable."
           );
         }
 
-        // Transforme le code Google en session Supabase
-        const { data, error } =
-          await supabase.auth.exchangeCodeForSession(code);
+        // ==========================================
+        // 2. CRÉER LA SESSION SUPABASE
+        // ==========================================
+
+        const {
+          data,
+          error,
+        } =
+          await supabase.auth
+            .exchangeCodeForSession(code);
 
         if (error) {
           throw error;
         }
 
-        // ======================================
-        // ADMIN : pas de création de joueur
-        // ======================================
+        const session =
+          data.session;
+
+        if (!session) {
+          throw new Error(
+            "Session Supabase introuvable."
+          );
+        }
+
+        // ==========================================
+        // 3. VÉRIFIER SI C'EST UN ADMIN
+        // ==========================================
 
         const {
           data: estAdmin,
-          error: erreurAdmin,
-        } = await supabase.rpc("est_admin");
-
-        if (erreurAdmin) {
-          console.error(erreurAdmin);
-        }
-
-        if (estAdmin) {
-          setMessage(
-            "Compte administrateur reconnu..."
+          error: adminError,
+        } =
+          await supabase.rpc(
+            "est_admin"
           );
 
-          window.location.replace("/");
+        if (
+          !adminError &&
+          estAdmin === true
+        ) {
+          window.location.href = "/";
           return;
         }
 
-        // ======================================
-        // RÉCUPÉRATION DU TOKEN GOOGLE
-        // ======================================
+        // ==========================================
+        // 4. RÉCUPÉRER LE TOKEN YOUTUBE
+        // ==========================================
 
         const providerToken =
-          data.session?.provider_token;
+          session.provider_token;
 
         if (!providerToken) {
           throw new Error(
-            "Google n'a pas fourni l'autorisation YouTube. " +
-            "Déconnecte-toi puis reconnecte-toi."
+            "Autorisation YouTube introuvable. Reconnecte-toi avec Google."
           );
         }
 
-        setMessage(
-          "Identification de ta chaîne YouTube..."
+        // On garde temporairement le token
+        // uniquement dans cet onglet.
+        sessionStorage.setItem(
+          "youtube_provider_token",
+          providerToken
         );
 
-        // ======================================
-        // RÉCUPÉRATION DE LA CHAÎNE YOUTUBE
-        // ======================================
+        // ==========================================
+        // 5. IDENTIFIER LA CHAÎNE YOUTUBE DU JOUEUR
+        // ==========================================
 
-        const response = await fetch(
-          "https://www.googleapis.com/youtube/v3/channels?part=snippet&mine=true",
-          {
-            headers: {
-              Authorization: `Bearer ${providerToken}`,
-            },
-          }
-        );
+        const response =
+          await fetch(
+            "https://www.googleapis.com/youtube/v3/channels?part=id,snippet&mine=true",
+            {
+              headers: {
+                Authorization:
+                  `Bearer ${providerToken}`,
+              },
+            }
+          );
 
-        const youtube = await response.json();
+        const youtubeData =
+          await response.json();
 
         if (!response.ok) {
           throw new Error(
-            youtube?.error?.message ||
-            "Impossible de récupérer la chaîne YouTube."
+            youtubeData?.error?.message ||
+            "Erreur pendant la lecture du compte YouTube."
           );
         }
 
-        const chaines = youtube.items || [];
+        const chaines =
+          youtubeData.items || [];
 
         if (chaines.length === 0) {
           throw new Error(
@@ -114,57 +136,57 @@ export default function AuthCallback() {
           );
         }
 
-        // Sécurité :
-        // on ne choisit pas arbitrairement si plusieurs chaînes apparaissent
-        if (chaines.length > 1) {
-          throw new Error(
-            "Plusieurs chaînes YouTube ont été détectées. " +
-            "La sélection de chaîne sera ajoutée prochainement."
-          );
-        }
+        // Pour l'instant on utilise
+        // la chaîne retournée par YouTube.
+        const chaine =
+          chaines[0];
 
-        const chaine = chaines[0];
+        const channelId =
+          chaine.id;
 
-        const channelId = chaine.id;
         const pseudo =
-          chaine.snippet?.title || "Joueur";
+          chaine.snippet?.title ||
+          "Joueur YouTube";
 
-        setMessage(
-          `Chaîne détectée : ${pseudo}`
-        );
+        // ==========================================
+        // 6. LIER AU PROFIL DE LA TRIBU
+        // ==========================================
 
-        // ======================================
-        // LIAISON AVEC LA FICHE JOUEUR
-        // ======================================
-
-        const { error: erreurLiaison } =
+        const {
+          error: liaisonError,
+        } =
           await supabase.rpc(
             "lier_compte_youtube",
             {
-              p_channel_id: channelId,
-              p_pseudo: pseudo,
+              p_channel_id:
+                channelId,
+              p_pseudo:
+                pseudo,
             }
           );
 
-        if (erreurLiaison) {
-          throw erreurLiaison;
+        if (liaisonError) {
+          throw liaisonError;
         }
 
-        setMessage(
-          "Profil YouTube associé avec succès."
-        );
+        // ==========================================
+        // 7. RETOUR AU SITE
+        // ==========================================
 
-        setTimeout(() => {
-          window.location.replace("/");
-        }, 700);
+        window.location.href = "/";
 
       } catch (erreur) {
-        console.error(erreur);
-
-        setMessage(
-          "Erreur : " +
-          (erreur?.message || "Erreur inconnue")
+        console.error(
+          "Erreur callback :",
+          erreur
         );
+
+        alert(
+          erreur?.message ||
+          "Erreur pendant la connexion."
+        );
+
+        window.location.href = "/";
       }
     }
 
@@ -172,13 +194,23 @@ export default function AuthCallback() {
   }, []);
 
   return (
-    <main className="container">
-      <div className="logo">💣</div>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        textAlign: "center",
+        padding: "30px",
+      }}
+    >
+      <div>
+        <h1>💣 LA TRIBU DES OBUS</h1>
 
-      <h1>LA TRIBU DES OBUS</h1>
-
-      <div className="card">
-        <p>{message}</p>
+        <p>
+          Connexion Google / YouTube
+          en cours...
+        </p>
       </div>
     </main>
   );
