@@ -898,21 +898,23 @@ export default function Home() {
         )}
       </div>
 
-      {/* ================================================= */}
+            {/* ================================================= */}
       {/* MENU DU JEU */}
+      {/* ADMIN + JOUEURS */}
       {/* ================================================= */}
 
       <div
         style={{
+          width: "100%",
           display: "grid",
           gridTemplateColumns:
-            "repeat(2, minmax(0, 1fr))",
+            "repeat(3, minmax(0, 1fr))",
           gap: "15px",
           marginTop: "25px",
           marginBottom: "25px",
+          boxSizing: "border-box",
         }}
       >
-
         {/* INVENTAIRE */}
 
         <div
@@ -924,11 +926,19 @@ export default function Home() {
           style={{
             cursor: "pointer",
             textAlign: "center",
+            width: "100%",
+            minHeight: "220px",
+            margin: "0",
+            boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <div
             style={{
-              fontSize: "40px",
+              fontSize: "48px",
             }}
           >
             🎒
@@ -954,11 +964,19 @@ export default function Home() {
           style={{
             cursor: "pointer",
             textAlign: "center",
+            width: "100%",
+            minHeight: "220px",
+            margin: "0",
+            boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <div
             style={{
-              fontSize: "40px",
+              fontSize: "48px",
             }}
           >
             🛒
@@ -984,11 +1002,19 @@ export default function Home() {
           style={{
             cursor: "pointer",
             textAlign: "center",
+            width: "100%",
+            minHeight: "220px",
+            margin: "0",
+            boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <div
             style={{
-              fontSize: "40px",
+              fontSize: "48px",
             }}
           >
             💸
@@ -1014,11 +1040,19 @@ export default function Home() {
           style={{
             cursor: "pointer",
             textAlign: "center",
+            width: "100%",
+            minHeight: "220px",
+            margin: "0",
+            boxSizing: "border-box",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
           <div
             style={{
-              fontSize: "40px",
+              fontSize: "48px",
             }}
           >
             🏆
