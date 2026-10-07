@@ -473,170 +473,272 @@ export default function ClassementPage() {
         </div>
       )}
 
-      {/* ================================================= */}
-      {/* CLASSEMENT */}
-      {/* ================================================= */}
+     {/* ================================================= */}
+{/* CLASSEMENT */}
+{/* ================================================= */}
 
-      <div
-        style={{
-          marginTop:
-            "20px",
-        }}
-      >
-        {joueursClasses.length ===
-          0 && (
-          <div className="card">
-            <p>
-              Aucun joueur trouvé.
-            </p>
+<div
+  style={{
+    marginTop: "20px",
+  }}
+>
+  {joueursClasses.length === 0 && (
+    <div className="card">
+      <p>
+        Aucun joueur trouvé.
+      </p>
+    </div>
+  )}
+
+  {joueursClasses.map(
+    (
+      joueur,
+      index
+    ) => {
+      const position =
+        positionJoueur(
+          joueur,
+          index
+        );
+
+      return (
+        <div
+          className="card"
+          key={joueur.id}
+          style={{
+            marginBottom: "12px",
+
+            display: "flex",
+
+            alignItems: "center",
+
+            gap: "15px",
+
+            color:
+              position <= 3
+                ? "#ffffff"
+                : undefined,
+
+            border:
+              position === 1
+                ? "2px solid #FFD700"
+                : position === 2
+                ? "2px solid #C0C0C0"
+                : position === 3
+                ? "2px solid #CD7F32"
+                : undefined,
+
+            background:
+              position === 1
+                ? "linear-gradient(135deg, #6b5500 0%, #2e2500 100%)"
+                : position === 2
+                ? "linear-gradient(135deg, #5d6268 0%, #282b2f 100%)"
+                : position === 3
+                ? "linear-gradient(135deg, #683d22 0%, #2f1b10 100%)"
+                : undefined,
+
+            boxShadow:
+              position === 1
+                ? "0 0 20px rgba(255, 215, 0, 0.30)"
+                : position === 2
+                ? "0 0 20px rgba(192, 192, 192, 0.25)"
+                : position === 3
+                ? "0 0 20px rgba(205, 127, 50, 0.28)"
+                : undefined,
+
+            textShadow:
+              position <= 3
+                ? "0 2px 4px rgba(0, 0, 0, 0.95)"
+                : undefined,
+          }}
+        >
+          {/* ================================================= */}
+          {/* POSITION */}
+          {/* ================================================= */}
+
+          <div
+            style={{
+              minWidth: "50px",
+
+              textAlign: "center",
+
+              fontSize:
+                position <= 3
+                  ? "34px"
+                  : "18px",
+
+              fontWeight: "bold",
+            }}
+          >
+            {medaille(
+              position
+            )}
           </div>
-        )}
 
-        {joueursClasses.map(
-          (
-            joueur,
-            index
-          ) => {
-            const position =
-  positionJoueur(
-    joueur,
-    index
-  );
 
-            return (
-              <div
-  className="card"
-                key={
-                  joueur.id
-                }
+          {/* ================================================= */}
+          {/* JOUEUR */}
+          {/* ================================================= */}
+
+          <div
+            style={{
+              flex: 1,
+            }}
+          >
+            <h2
+              style={{
+                margin:
+                  "0 0 8px 0",
+
+                fontSize:
+                  "21px",
+
+                color:
+                  position <= 3
+                    ? "#ffffff"
+                    : undefined,
+
+                fontWeight:
+                  position <= 3
+                    ? "900"
+                    : undefined,
+
+                textShadow:
+                  position <= 3
+                    ? "0 2px 4px rgba(0, 0, 0, 1)"
+                    : undefined,
+              }}
+            >
+              {
+                joueur.pseudo
+              }
+            </h2>
+
+
+            {/* ================================================= */}
+            {/* GRADE ET PUNITION */}
+            {/* ================================================= */}
+
+            {joueur.punition ? (
+              <>
+                <p
+                  style={{
+                    margin:
+                      "4px 0",
+
+                    color:
+                      position <= 3
+                        ? "#ffffff"
+                        : undefined,
+                  }}
+                >
+                  ⚠️ Punition :{" "}
+                  <strong>
+                    {
+                      joueur.punition
+                    }
+                  </strong>
+                </p>
+
+                <p
+                  style={{
+                    margin:
+                      "4px 0",
+
+                    color:
+                      position <= 3
+                        ? "#ffffff"
+                        : undefined,
+                  }}
+                >
+                  🎖️ Grade actuel :{" "}
+                  <strong>
+                    {
+                      joueur.officier_general
+                        ? "Officier général"
+                        : joueur.grade
+                    }
+                  </strong>
+                </p>
+              </>
+            ) : (
+              <p
                 style={{
-                  marginBottom:
-                    "12px",
-                  display:
-                    "flex",
-                  alignItems:
-                    "center",
-                  gap:
-                    "15px",
+                  margin:
+                    "4px 0",
+
+                  color:
+                    position <= 3
+                      ? "#ffffff"
+                      : undefined,
                 }}
               >
-                {/* POSITION */}
+                🎖️ Grade :{" "}
+                <strong>
+                  {
+                    joueur.officier_general
+                      ? "Officier général"
+                      : joueur.grade
+                  }
+                </strong>
+              </p>
+            )}
 
-                <div
-                  style={{
-                    minWidth:
-                      "50px",
-                    textAlign:
-                      "center",
-                    fontSize:
-                      position <=
-                      3
-                        ? "30px"
-                        : "18px",
-                    fontWeight:
-                      "bold",
-                  }}
-                >
-                  {medaille(
-                    position
-                  )}
-                </div>
 
-                {/* JOUEUR */}
+            {/* ================================================= */}
+            {/* OBUS */}
+            {/* ================================================= */}
 
-                <div
-                  style={{
-                    flex: 1,
-                  }}
-                >
-                  <h2
-                    style={{
-                      margin:
-                        "0 0 8px 0",
-                      fontSize:
-                        "21px",
-                    }}
-                  >
-                    {
-                      joueur.pseudo
-                    }
-                  </h2>{joueur.punition ? (
-  <>
-    <p
-      style={{
-        margin: "4px 0",
-      }}
-    >
-      ⚠️ Punition :{" "}
-      <strong>
-        {joueur.punition}
-      </strong>
-    </p>
+            <p
+              style={{
+                margin:
+                  "4px 0",
 
-    <p
-      style={{
-        margin: "4px 0",
-      }}
-    >
-      🎖️ Grade actuel :{" "}
-      <strong>
-        {joueur.officier_general
-          ? "Officier général"
-          : joueur.grade}
-      </strong>
-    </p>
-  </>
-) : (
-  <p
-    style={{
-      margin: "4px 0",
-    }}
-  >
-    🎖️ Grade :{" "}
-    <strong>
-      {joueur.officier_general
-        ? "Officier général"
-        : joueur.grade}
-    </strong>
-  </p>
-)}
+                color:
+                  position <= 3
+                    ? "#ffffff"
+                    : undefined,
+              }}
+            >
+              💰{" "}
+              <strong>
+                {
+                  joueur.obus
+                }{" "}
+                Obus
+              </strong>
+            </p>
 
-                  <p
-                    style={{
-                      margin:
-                        "4px 0",
-                    }}
-                  >
-                    💰{" "}
-                    <strong>
-                      {
-                        joueur.obus
-                      }{" "}
-                      Obus
-                    </strong>
-                  </p>
 
-                  <p
-                    style={{
-                      margin:
-                        "4px 0",
-                    }}
-                  >
-                    📺{" "}
-                    <strong>
-                      {
-                        joueur.lives_depuis_soldat
-                      }{" "}
-                      lives
-                    </strong>
-                  </p>
-                </div>
-              </div>
-            );
-          }
-        )}
-      </div>
+            {/* ================================================= */}
+            {/* LIVES */}
+            {/* ================================================= */}
 
+            <p
+              style={{
+                margin:
+                  "4px 0",
+
+                color:
+                  position <= 3
+                    ? "#ffffff"
+                    : undefined,
+              }}
+            >
+              📺{" "}
+              <strong>
+                {
+                  joueur.lives_depuis_soldat
+                }{" "}
+                lives
+              </strong>
+            </p>
+          </div>
+        </div>
+      );
+    }
+  )}
+</div>
       {/* ================================================= */}
       {/* RETOUR */}
       {/* ================================================= */}
