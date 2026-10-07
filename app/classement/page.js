@@ -289,32 +289,7 @@ export default function ClassementPage() {
           CLASSEMENT
         </h1>
 
-        <div
-  className="card"
-  style={{
-    position: "relative",
-  }}
->
-  <button
-    onClick={() => {
-      window.location.href = "/";
-    }}
-    title="Retour"
-    style={{
-      position: "absolute",
-      top: "15px",
-      left: "15px",
-      width: "42px",
-      height: "42px",
-      padding: "0",
-      fontSize: "24px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }}
-  >
-    ←
-  </button>
+        <div className="card">
           <p>
             Chargement du classement...
           </p>
@@ -481,7 +456,31 @@ export default function ClassementPage() {
 
             return (
               <div
-                className="card"
+  className="card"
+  style={{
+    position: "relative",
+  }}
+>
+  <button
+    onClick={() => {
+      window.location.href = "/";
+    }}
+    title="Retour"
+    style={{
+      position: "absolute",
+      top: "15px",
+      left: "15px",
+      width: "42px",
+      height: "42px",
+      padding: "0",
+      fontSize: "24px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    ←
+  </button>
                 key={
                   joueur.id
                 }
