@@ -1,4 +1,4 @@
-"use client";
+4"use client";
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
@@ -530,7 +530,7 @@ export default function ClassementPage() {
 
             background:
               position === 1
-                ? "linear-gradient(135deg, #6b5500 0%, #2e2500 100%)"
+                ? "linear-gradient(135deg, #d4a900 0%, #8a6d00 45%, #4a3a00 100%)"
                 : position === 2
                 ? "linear-gradient(135deg, #5d6268 0%, #282b2f 100%)"
                 : position === 3
