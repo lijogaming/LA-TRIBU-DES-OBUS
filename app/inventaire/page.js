@@ -3,24 +3,6 @@
 export default function InventairePage() {
   return (
     <main className="container">
-    <button
-  onClick={() => {
-    window.location.href = "/";
-  }}
-  title="Retour"
-  style={{
-    width: "45px",
-    height: "45px",
-    padding: "0",
-    fontSize: "24px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "15px",
-  }}
->
-  ←
-</button>
       <div className="logo">
         🎒
       </div>
@@ -34,6 +16,53 @@ export default function InventairePage() {
       </p>
 
       <div className="card">
+    <div
+  className="card"
+  style={{
+    position: "relative",
+    paddingTop: "70px",
+  }}
+>
+  <button
+    onClick={() => {
+      window.location.href = "/";
+    }}
+    title="Retour"
+    style={{
+      position: "absolute",
+      top: "15px",
+      left: "15px",
+      width: "42px",
+      height: "42px",
+      padding: "0",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <svg
+      width="26"
+      height="26"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M19 12H5"
+        stroke="currentColor"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+      />
+
+      <path
+        d="M11 6L5 12L11 18"
+        stroke="currentColor"
+        strokeWidth="3.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </button>
         <p className="label">
           TON INVENTAIRE
         </p>
