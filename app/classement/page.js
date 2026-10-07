@@ -316,10 +316,37 @@ export default function ClassementPage() {
       {/* FILTRES */}
       {/* ================================================= */}
 
-      <div className="card">
-        <p className="label">
-          FILTRER LE CLASSEMENT
-        </p>
+     <div
+  className="card"
+  style={{
+    position: "relative",
+    paddingTop: "70px",
+  }}
+>
+  <button
+    onClick={() => {
+      window.location.href = "/";
+    }}
+    title="Retour"
+    style={{
+      position: "absolute",
+      top: "15px",
+      left: "15px",
+      width: "42px",
+      height: "42px",
+      padding: "0",
+      fontSize: "24px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    ←
+  </button>
+
+  <p className="label">
+    FILTRER LE CLASSEMENT
+  </p>
 
         <input
           type="text"
@@ -457,30 +484,6 @@ export default function ClassementPage() {
             return (
               <div
   className="card"
-  style={{
-    position: "relative",
-  }}
->
-  <button
-    onClick={() => {
-      window.location.href = "/";
-    }}
-    title="Retour"
-    style={{
-      position: "absolute",
-      top: "15px",
-      left: "15px",
-      width: "42px",
-      height: "42px",
-      padding: "0",
-      fontSize: "24px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }}
-  >
-    ←
-  </button>
                 key={
                   joueur.id
                 }
