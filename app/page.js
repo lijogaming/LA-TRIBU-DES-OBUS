@@ -835,6 +835,12 @@ export default function Home() {
             {joueur.lives_depuis_soldat}
           </strong>
         </p>
+        <p>
+          📊 Lives total :{" "}
+          <strong>
+            {joueur.total_lives}
+          </strong>
+        </p>
 
         {joueur.punition && (
           <p>
