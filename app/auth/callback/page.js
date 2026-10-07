@@ -16,200 +16,186 @@ const supabase = createClient(
   }
 );
 
-export default function AuthCallback() {
+export default function AuthCallbackPage() {
   useEffect(() => {
-    async function terminerConnexion() {
-      try {
-        // ==========================================
-        // 1. RÉCUPÉRER LE CODE GOOGLE
-        // ==========================================
-
-        const params =
-          new URLSearchParams(
-            window.location.search
-          );
-
-        const code =
-          params.get("code");
-
-        if (!code) {
-          throw new Error(
-            "Code de connexion Google introuvable."
-          );
-        }
-
-        // ==========================================
-        // 2. CRÉER LA SESSION SUPABASE
-        // ==========================================
-
-        const {
-          data,
-          error,
-        } =
-          await supabase.auth
-            .exchangeCodeForSession(code);
-
-        if (error) {
-          throw error;
-        }
-
-        const session =
-          data.session;
-
-        if (!session) {
-          throw new Error(
-            "Session Supabase introuvable."
-          );
-        }
-
-        // ==========================================
-        // 3. VÉRIFIER SI C'EST UN ADMIN
-        // ==========================================
-
-        const {
-          data: estAdmin,
-          error: adminError,
-        } =
-          await supabase.rpc(
-            "est_admin"
-          );
-
-        if (
-          !adminError &&
-          estAdmin === true
-        ) {
-          window.location.href = "/";
-          return;
-        }
-
-        // ==========================================
-        // 4. RÉCUPÉRER LE TOKEN YOUTUBE
-        // ==========================================
-
-        const providerToken =
-          session.provider_token;
-
-        if (!providerToken) {
-          throw new Error(
-            "Autorisation YouTube introuvable. Reconnecte-toi avec Google."
-          );
-        }
-
-        // On garde temporairement le token
-        // uniquement dans cet onglet.
-        sessionStorage.setItem(
-          "youtube_provider_token",
-          providerToken
-        );
-
-        // ==========================================
-        // 5. IDENTIFIER LA CHAÎNE YOUTUBE DU JOUEUR
-        // ==========================================
-
-        const response =
-          await fetch(
-            "https://www.googleapis.com/youtube/v3/channels?part=id,snippet&mine=true",
-            {
-              headers: {
-                Authorization:
-                  `Bearer ${providerToken}`,
-              },
-            }
-          );
-
-        const youtubeData =
-          await response.json();
-
-        if (!response.ok) {
-          throw new Error(
-            youtubeData?.error?.message ||
-            "Erreur pendant la lecture du compte YouTube."
-          );
-        }
-
-        const chaines =
-          youtubeData.items || [];
-
-        if (chaines.length === 0) {
-          throw new Error(
-            "Aucune chaîne YouTube trouvée sur ce compte Google."
-          );
-        }
-
-        // Pour l'instant on utilise
-        // la chaîne retournée par YouTube.
-        const chaine =
-          chaines[0];
-
-        const channelId =
-          chaine.id;
-
-        const pseudo =
-          chaine.snippet?.title ||
-          "Joueur YouTube";
-
-        // ==========================================
-        // 6. LIER AU PROFIL DE LA TRIBU
-        // ==========================================
-
-        const {
-          error: liaisonError,
-        } =
-          await supabase.rpc(
-            "lier_compte_youtube",
-            {
-              p_channel_id:
-                channelId,
-              p_pseudo:
-                pseudo,
-            }
-          );
-
-        if (liaisonError) {
-          throw liaisonError;
-        }
-
-        // ==========================================
-        // 7. RETOUR AU SITE
-        // ==========================================
-
-        window.location.href = "/";
-
-      } catch (erreur) {
-        console.error(
-          "Erreur callback :",
-          erreur
-        );
-
-        alert(
-          erreur?.message ||
-          "Erreur pendant la connexion."
-        );
-
-        window.location.href = "/";
-      }
-    }
-
     terminerConnexion();
   }, []);
 
-  return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-        padding: "30px",
-      }}
-    >
-      <div>
-        <h1>💣 LA TRIBU DES OBUS</h1>
+  async function terminerConnexion() {
+    try {
+      const url =
+        new URL(
+          window.location.href
+        );
 
+      const code =
+        url.searchParams.get(
+          "code"
+        );
+
+      if (!code) {
+        window.location.href = "/";
+        return;
+      }
+
+      // =================================================
+      // ÉCHANGE DU CODE GOOGLE
+      // =================================================
+
+      const {
+        data,
+        error,
+      } =
+        await supabase.auth
+          .exchangeCodeForSession(
+            code
+          );
+
+      if (error) {
+        console.error(
+          "Erreur session :",
+          error
+        );
+
+        window.location.href = "/";
+        return;
+      }
+
+      const session =
+        data.session;
+
+      if (!session) {
+        window.location.href = "/";
+        return;
+      }
+
+      // =================================================
+      // TOKEN YOUTUBE
+      // =================================================
+
+      const youtubeToken =
+        session.provider_token;
+
+      if (youtubeToken) {
+        sessionStorage.setItem(
+          "youtube_provider_token",
+          youtubeToken
+        );
+      }
+
+      if (!youtubeToken) {
+        console.log(
+          "Token YouTube absent."
+        );
+
+        window.location.href = "/";
+        return;
+      }
+
+      // =================================================
+      // RÉCUPÉRER LA CHAÎNE YOUTUBE
+      // =================================================
+
+      const response =
+        await fetch(
+          "https://www.googleapis.com/youtube/v3/channels?part=id,snippet&mine=true",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${youtubeToken}`,
+            },
+          }
+        );
+
+      const youtubeData =
+        await response.json();
+
+      if (!response.ok) {
+        console.error(
+          "Erreur YouTube :",
+          youtubeData
+        );
+
+        window.location.href = "/";
+        return;
+      }
+
+      const chaine =
+        youtubeData.items?.[0];
+
+      if (!chaine?.id) {
+        console.log(
+          "Chaîne YouTube introuvable."
+        );
+
+        window.location.href = "/";
+        return;
+      }
+
+      const pseudo =
+        chaine.snippet?.title ||
+        "Joueur";
+
+      // =================================================
+      // LIER LE PROFIL JOUEUR
+      //
+      // IMPORTANT :
+      // on le fait aussi pour les administrateurs.
+      // =================================================
+
+      const {
+        error:
+          erreurLiaison,
+      } =
+        await supabase.rpc(
+          "lier_compte_youtube",
+          {
+            p_channel_id:
+              chaine.id,
+
+            p_pseudo:
+              pseudo,
+          }
+        );
+
+      if (
+        erreurLiaison
+      ) {
+        console.error(
+          "Erreur liaison joueur :",
+          erreurLiaison
+        );
+      }
+
+      // =================================================
+      // RETOUR AU SITE
+      // =================================================
+
+      window.location.href = "/";
+
+    } catch (erreur) {
+      console.error(
+        "Erreur callback :",
+        erreur
+      );
+
+      window.location.href = "/";
+    }
+  }
+
+  return (
+    <main className="container">
+      <div className="logo">
+        💣
+      </div>
+
+      <h1>
+        LA TRIBU DES OBUS
+      </h1>
+
+      <div className="card">
         <p>
-          Connexion Google / YouTube
-          en cours...
+          Connexion en cours...
         </p>
       </div>
     </main>
