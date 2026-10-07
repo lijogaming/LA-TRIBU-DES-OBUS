@@ -65,11 +65,14 @@ export default function VirementPage() {
     setMessage("");
 
     if (!destinataire) {
-      setMessage("❌ Choisis un joueur.");
+      setMessage(
+        "❌ Choisis un joueur."
+      );
       return;
     }
 
-    const valeur = Number(montant);
+    const valeur =
+      Number(montant);
 
     if (
       !Number.isInteger(valeur) ||
@@ -81,7 +84,10 @@ export default function VirementPage() {
       return;
     }
 
-    if (valeur > Number(joueur.obus)) {
+    if (
+      valeur >
+      Number(joueur.obus)
+    ) {
       setMessage(
         "❌ Tu n'as pas assez d'Obus."
       );
@@ -90,7 +96,8 @@ export default function VirementPage() {
 
     const joueurChoisi =
       joueursDon.find(
-        (j) => j.id === destinataire
+        (j) =>
+          j.id === destinataire
       );
 
     const confirmation =
@@ -110,24 +117,31 @@ export default function VirementPage() {
     } = await supabase.rpc(
       "donner_obus",
       {
-        p_destinataire_id: destinataire,
-        p_montant: valeur,
+        p_destinataire_id:
+          destinataire,
+
+        p_montant:
+          valeur,
       }
     );
 
     if (error) {
       setMessage(
-        "❌ " + error.message
+        "❌ " +
+          error.message
       );
 
       setEnvoi(false);
       return;
     }
 
-    setJoueur((ancien) => ({
-      ...ancien,
-      obus: data.nouveau_solde,
-    }));
+    setJoueur(
+      (ancien) => ({
+        ...ancien,
+        obus:
+          data.nouveau_solde,
+      })
+    );
 
     setDestinataire("");
     setMontant("");
@@ -139,47 +153,57 @@ export default function VirementPage() {
     setEnvoi(false);
   }
 
+  // =====================================================
+  // CHARGEMENT
+  // =====================================================
+
   if (chargement) {
     return (
       <main className="container">
-      <button
-  onClick={() => {
-    window.location.href = "/";
-  }}
-  title="Retour"
-  style={{
-    width: "45px",
-    height: "45px",
-    padding: "0",
-    fontSize: "24px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "15px",
-  }}
->
-  ←
-</button>
-        <h1>💸 VIREMENT</h1>
+        <div className="logo">
+          💸
+        </div>
+
+        <h1>
+          VIREMENT
+        </h1>
 
         <div className="card">
-          Chargement...
+          <p>
+            Chargement...
+          </p>
         </div>
       </main>
     );
   }
+
+  // =====================================================
+  // PROFIL INTROUVABLE
+  // =====================================================
 
   if (!joueur) {
     return (
       <main className="container">
-        <h1>💸 VIREMENT</h1>
+        <div className="logo">
+          💸
+        </div>
+
+        <h1>
+          VIREMENT
+        </h1>
 
         <div className="card">
-          Profil joueur introuvable.
+          <p>
+            Profil joueur introuvable.
+          </p>
         </div>
       </main>
     );
   }
+
+  // =====================================================
+  // VRAIE PAGE VIREMENT
+  // =====================================================
 
   return (
     <main className="container">
@@ -187,13 +211,62 @@ export default function VirementPage() {
         💸
       </div>
 
-      <h1>VIREMENT</h1>
+      <h1>
+        VIREMENT
+      </h1>
 
       <p className="subtitle">
         Virement vers un membre de la Tribu
       </p>
 
-      <div className="card">
+      <div
+        className="card"
+        style={{
+          position: "relative",
+          paddingTop: "70px",
+        }}
+      >
+        <button
+          onClick={() => {
+            window.location.href = "/";
+          }}
+          title="Retour"
+          style={{
+            position: "absolute",
+            top: "15px",
+            left: "15px",
+            width: "42px",
+            height: "42px",
+            padding: "0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 12H5"
+              stroke="currentColor"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+            />
+
+            <path
+              d="M11 6L5 12L11 18"
+              stroke="currentColor"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+
         <p className="label">
           TON SOLDE
         </p>
@@ -267,6 +340,7 @@ export default function VirementPage() {
             color: "white",
             border: "1px solid #444",
             marginBottom: "12px",
+            boxSizing: "border-box",
           }}
         />
 
