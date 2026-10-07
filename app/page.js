@@ -889,7 +889,7 @@ export default function Home() {
           </p>
 
           <h2>
-            Faire un virement à un membre de la Tribu
+            Virement à un membre de la Tribu
           </h2>
 
           <p>
