@@ -281,6 +281,24 @@ export default function ClassementPage() {
   if (chargement) {
     return (
       <main className="container">
+      <button
+  onClick={() => {
+    window.location.href = "/";
+  }}
+  title="Retour"
+  style={{
+    width: "45px",
+    height: "45px",
+    padding: "0",
+    fontSize: "24px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "15px",
+  }}
+>
+  ←
+</button>
         <div className="logo">
           🏆
         </div>
@@ -592,20 +610,6 @@ export default function ClassementPage() {
       {/* RETOUR */}
       {/* ================================================= */}
 
-      <button
-        onClick={() => {
-          window.location.href =
-            "/";
-        }}
-        style={{
-          marginTop:
-            "10px",
-          marginBottom:
-            "30px",
-        }}
-      >
-        ← Retour au profil
-      </button>
     </main>
   );
 }
