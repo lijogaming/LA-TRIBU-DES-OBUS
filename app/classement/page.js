@@ -520,8 +520,8 @@ export default function ClassementPage() {
                 : undefined,
 
             border:
-              position === 1
-                ? "2px solid #FFD700"
+                  position === 1
+                ? "2px solid #FFE44D"
                 : position === 2
                 ? "2px solid #C0C0C0"
                 : position === 3
@@ -529,7 +529,7 @@ export default function ClassementPage() {
                 : undefined,
 
             background:
-              position === 1
+                position === 1
                 ? "linear-gradient(135deg, #d4a900 0%, #8a6d00 45%, #4a3a00 100%)"
                 : position === 2
                 ? "linear-gradient(135deg, #5d6268 0%, #282b2f 100%)"
@@ -538,8 +538,8 @@ export default function ClassementPage() {
                 : undefined,
 
             boxShadow:
-              position === 1
-                ? "0 0 20px rgba(255, 215, 0, 0.30)"
+                  position === 1
+                ? "0 0 28px rgba(255, 215, 0, 0.55)"
                 : position === 2
                 ? "0 0 20px rgba(192, 192, 192, 0.25)"
                 : position === 3
