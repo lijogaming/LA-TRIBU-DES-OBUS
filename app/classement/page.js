@@ -219,7 +219,61 @@ export default function ClassementPage() {
 
     return `#${position}`;
   }
+  // =====================================================
+  // VALEUR UTILISÉE POUR LE CLASSEMENT
+  // =====================================================
 
+  function valeurClassement(joueur) {
+    if (classement === "obus") {
+      return Number(joueur.obus);
+    }
+
+    if (classement === "lives") {
+      return Number(
+        joueur.lives_depuis_soldat
+      );
+    }
+
+    if (classement === "grade") {
+      return scoreGrade(joueur);
+    }
+
+    return 0;
+  }
+
+  // =====================================================
+  // POSITION AVEC ÉGALITÉS
+  // =====================================================
+
+  function positionJoueur(
+    joueur,
+    index
+  ) {
+    if (index === 0) {
+      return 1;
+    }
+
+    const valeurActuelle =
+      valeurClassement(joueur);
+
+    const valeurPrecedente =
+      valeurClassement(
+        joueursClasses[index - 1]
+      );
+
+    if (
+      valeurActuelle ===
+      valeurPrecedente
+    ) {
+      // Même valeur = même place
+      return positionJoueur(
+        joueursClasses[index - 1],
+        index - 1
+      );
+    }
+
+    return index + 1;
+  }
   // =====================================================
   // CHARGEMENT
   // =====================================================
@@ -395,7 +449,10 @@ export default function ClassementPage() {
             index
           ) => {
             const position =
-              index + 1;
+  positionJoueur(
+    joueur,
+    index
+  );
 
             return (
               <div
