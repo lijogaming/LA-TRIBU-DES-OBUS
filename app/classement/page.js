@@ -537,15 +537,6 @@ export default function ClassementPage() {
                 ? "linear-gradient(135deg, #683d22 0%, #2f1b10 100%)"
                 : undefined,
 
-            boxShadow:
-                  position === 1
-                ? "0 0 0px rgba(255, 215, 0, 0.55)"
-                : position === 2
-                ? "0 0 0px rgba(192, 192, 192, 0.25)"
-                : position === 3
-                ? "0 0 0px rgba(205, 127, 50, 0.28)"
-                : undefined,
-
             textShadow:
               position <= 3
                 ? "0 2px 4px rgba(0, 0, 0, 0.95)"
