@@ -35,6 +35,7 @@ export default function AdminPage() {
   const [message, setMessage] = useState("");
   const [montants, setMontants] = useState({});
   const [nombresLives, setNombresLives] = useState({});
+  const [nombresTotalLives, setNombresTotalLives] = useState({});
 
   useEffect(() => {
     verifierAdmin();
@@ -82,7 +83,7 @@ export default function AdminPage() {
     const { data, error } = await supabase
       .from("joueurs")
       .select(
-        "id,pseudo,grade,lives_depuis_soldat,obus,punition,officier_general"
+        "id,pseudo,grade,lives_depuis_soldat,total_lives,obus,punition,officier_general"
       )
       .order("pseudo");
 
@@ -230,56 +231,111 @@ export default function AdminPage() {
   }
 
   // =====================================================
-  // MODIFIER LE NOMBRE DE LIVES
-  // =====================================================
+// MODIFIER LES LIVES DEPUIS SOLDAT
+// =====================================================
 
-  async function modifierLives(
-    joueurId,
-    nombre
+async function modifierLives(
+  joueurId,
+  nombre
+) {
+  const valeur = Number(nombre);
+
+  if (
+    !Number.isInteger(valeur) ||
+    valeur < 0
   ) {
-    const valeur = Number(nombre);
-
-    if (
-      !Number.isInteger(valeur) ||
-      valeur < 0
-    ) {
-      setMessage(
-        "Entre un nombre de lives valide."
-      );
-      return;
-    }
-
     setMessage(
-      "Modification du nombre de lives..."
+      "Entre un nombre de lives valide."
     );
+    return;
+  }
 
-    const { error } =
-      await supabase.rpc(
-        "admin_definir_lives",
-        {
-          p_joueur_id: joueurId,
-          p_nombre_lives: valeur,
-        }
-      );
+  setMessage(
+    "Modification des lives depuis Soldat..."
+  );
 
-    if (error) {
-      setMessage(
-        "Erreur : " + error.message
-      );
-      return;
+  const { error } = await supabase.rpc(
+    "admin_definir_lives",
+    {
+      p_joueur_id: joueurId,
+      p_nombre_lives: valeur,
     }
+  );
 
-    setNombresLives((ancien) => ({
+  if (error) {
+    setMessage(
+      "Erreur : " + error.message
+    );
+    return;
+  }
+
+  setNombresLives(
+    (ancien) => ({
       ...ancien,
       [joueurId]: "",
-    }));
+    })
+  );
 
+  setMessage(
+    `Lives depuis Soldat définis à ${valeur}.`
+  );
+
+  await chargerJoueurs();
+}
+
+
+// =====================================================
+// MODIFIER LES LIVES TOTAL
+// =====================================================
+
+async function modifierTotalLives(
+  joueurId,
+  nombre
+) {
+  const valeur = Number(nombre);
+
+  if (
+    !Number.isInteger(valeur) ||
+    valeur < 0
+  ) {
     setMessage(
-      `Nombre de lives défini à ${valeur}.`
+      "Entre un total de lives valide."
     );
-
-    await chargerJoueurs();
+    return;
   }
+
+  setMessage(
+    "Modification des lives total..."
+  );
+
+  const { error } = await supabase.rpc(
+    "admin_definir_total_lives",
+    {
+      p_joueur_id: joueurId,
+      p_total_lives: valeur,
+    }
+  );
+
+  if (error) {
+    setMessage(
+      "Erreur : " + error.message
+    );
+    return;
+  }
+
+  setNombresTotalLives(
+    (ancien) => ({
+      ...ancien,
+      [joueurId]: "",
+    })
+  );
+
+  setMessage(
+    `Lives total définis à ${valeur}.`
+  );
+
+  await chargerJoueurs();
+}
 
   // =====================================================
   // DÉCONNEXION
@@ -580,7 +636,12 @@ export default function AdminPage() {
                   }
                 </strong>
               </p>
-
+              <p>
+                📊 Lives total :{" "}
+                <strong>
+                  {joueur.total_lives}
+                </strong>
+              </p>
               <p>
                 💰 Sac :{" "}
                 <strong>
@@ -706,60 +767,109 @@ export default function AdminPage() {
               <hr />
 
               {/* ============================= */}
-              {/* MODIFIER LES LIVES */}
-              {/* ============================= */}
+{/* MODIFIER LES LIVES DEPUIS SOLDAT */}
+{/* ============================= */}
 
-              <p className="label">
-                MODIFIER LE NOMBRE
-                DE LIVES
-              </p>
+<p className="label">
+  MODIFIER LES LIVES DEPUIS SOLDAT
+</p>
 
-              <input
-                type="number"
-                min="0"
-                value={
-                  nombresLives[
-                    joueur.id
-                  ] || ""
-                }
-                onChange={(e) =>
-                  setNombresLives(
-                    (ancien) => ({
-                      ...ancien,
-                      [joueur.id]:
-                        e.target
-                          .value,
-                    })
-                  )
-                }
-                placeholder={`Actuellement : ${joueur.lives_depuis_soldat}`}
-                style={{
-                  width: "100%",
-                  padding: "14px",
-                  borderRadius:
-                    "10px",
-                  border:
-                    "1px solid #444",
-                  background:
-                    "#111",
-                  color: "white",
-                  marginBottom:
-                    "10px",
-                }}
-              />
+<input
+  type="number"
+  min="0"
+  value={
+    nombresLives[
+      joueur.id
+    ] || ""
+  }
+  onChange={(e) =>
+    setNombresLives(
+      (ancien) => ({
+        ...ancien,
+        [joueur.id]:
+          e.target.value,
+      })
+    )
+  }
+  placeholder={`Actuellement : ${joueur.lives_depuis_soldat}`}
+  style={{
+    width: "100%",
+    padding: "14px",
+    borderRadius: "10px",
+    border: "1px solid #444",
+    background: "#111",
+    color: "white",
+    marginBottom: "10px",
+  }}
+/>
 
-              <button
-                onClick={() =>
-                  modifierLives(
-                    joueur.id,
-                    nombresLives[
-                      joueur.id
-                    ]
-                  )
-                }
-              >
-                Modifier les lives
-              </button>
+<button
+  onClick={() =>
+    modifierLives(
+      joueur.id,
+      nombresLives[
+        joueur.id
+      ]
+    )
+  }
+>
+  Modifier les lives depuis Soldat
+</button>
+
+
+<hr />
+
+
+{/* ============================= */}
+{/* MODIFIER LES LIVES TOTAL */}
+{/* ============================= */}
+
+<p className="label">
+  MODIFIER LES LIVES TOTAL
+</p>
+
+<input
+  type="number"
+  min="0"
+  value={
+    nombresTotalLives[
+      joueur.id
+    ] || ""
+  }
+  onChange={(e) =>
+    setNombresTotalLives(
+      (ancien) => ({
+        ...ancien,
+        [joueur.id]:
+          e.target.value,
+      })
+    )
+  }
+  placeholder={`Actuellement : ${joueur.total_lives}`}
+  style={{
+    width: "100%",
+    padding: "14px",
+    borderRadius: "10px",
+    border: "1px solid #444",
+    background: "#111",
+    color: "white",
+    marginBottom: "10px",
+  }}
+/>
+
+<button
+  onClick={() =>
+    modifierTotalLives(
+      joueur.id,
+      nombresTotalLives[
+        joueur.id
+      ]
+    )
+  }
+>
+  Modifier les lives total
+</button>
+
             </div>
           )
         )}
