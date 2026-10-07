@@ -342,7 +342,28 @@ export default function ClassementPage() {
       justifyContent: "center",
     }}
   >
-    ←
+    <svg
+  width="26"
+  height="26"
+  viewBox="0 0 24 24"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M19 12H5"
+    stroke="currentColor"
+    strokeWidth="3.5"
+    strokeLinecap="round"
+  />
+
+  <path
+    d="M11 6L5 12L11 18"
+    stroke="currentColor"
+    strokeWidth="3.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  />
+</svg>
   </button>
 
   <p className="label">
