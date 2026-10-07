@@ -709,14 +709,6 @@ export default function Home() {
             associé à un joueur de
             La Tribu des Obus.
           </p>
-
-          <button
-            onClick={
-              deconnexion
-            }
-          >
-            Se déconnecter
-          </button>
         </div>
       </main>
     );
