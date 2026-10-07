@@ -720,6 +720,9 @@ export default function Home() {
   // =====================================================
   // PROFIL JOUEUR
   // =====================================================
+  // =====================================================
+  // PROFIL JOUEUR
+  // =====================================================
 
   const prochain =
     prochainGrade();
@@ -745,12 +748,15 @@ export default function Home() {
         Bienvenue {joueur.pseudo}
       </p>
 
+      {/* ================================================= */}
+      {/* ADMINISTRATEUR */}
+      {/* ================================================= */}
+
       {admin && (
         <div
           className="card"
           style={{
-            marginBottom:
-              "20px",
+            marginBottom: "20px",
           }}
         >
           <p className="label">
@@ -763,112 +769,17 @@ export default function Home() {
                 "/admin";
             }}
           >
-            Ouvrir le panneau
-            administrateur
+            Ouvrir le panneau administrateur
           </button>
         </div>
       )}
 
+      {/* ================================================= */}
+      {/* PROFIL DU JOUEUR */}
+      {/* ================================================= */}
+
       <div className="card">
         <p className="label">
-              <div
-        style={{
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(2, minmax(0, 1fr))",
-          gap: "15px",
-          marginTop: "25px",
-          marginBottom: "25px",
-        }}
-      >
-        <div
-          className="card"
-          onClick={() => {
-            window.location.href =
-              "/inventaire";
-          }}
-          style={{
-            cursor: "pointer",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ fontSize: "40px" }}>
-            🎒
-          </div>
-
-          <h2>Inventaire</h2>
-
-          <p>
-            Tes objets et récompenses
-          </p>
-        </div>
-
-        <div
-          className="card"
-          onClick={() => {
-            window.location.href =
-              "/magasin";
-          }}
-          style={{
-            cursor: "pointer",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ fontSize: "40px" }}>
-            🛒
-          </div>
-
-          <h2>Magasin</h2>
-
-          <p>
-            Dépenser tes Obus
-          </p>
-        </div>
-
-        <div
-          className="card"
-          onClick={() => {
-            window.location.href =
-              "/virement";
-          }}
-          style={{
-            cursor: "pointer",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ fontSize: "40px" }}>
-            💸
-          </div>
-
-          <h2>Virement</h2>
-
-          <p>
-            Envoyer des Obus
-          </p>
-        </div>
-
-        <div
-          className="card"
-          onClick={() => {
-            window.location.href =
-              "/classement";
-          }}
-          style={{
-            cursor: "pointer",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ fontSize: "40px" }}>
-            🏆
-          </div>
-
-          <h2>Classement</h2>
-
-          <p>
-            Voir les meilleurs joueurs
-          </p>
-        </div>
-      </div>
           PROFIL DU JOUEUR
         </p>
 
@@ -893,9 +804,7 @@ export default function Home() {
         <p>
           📺 Lives depuis Soldat :{" "}
           <strong>
-            {
-              joueur.lives_depuis_soldat
-            }
+            {joueur.lives_depuis_soldat}
           </strong>
         </p>
 
@@ -924,14 +833,15 @@ export default function Home() {
           {prochain?.texte}
         </p>
 
-        {joueur.grade ===
-          "Civil" && (
+        {/* ============================================= */}
+        {/* DEVENIR SOLDAT */}
+        {/* ============================================= */}
+
+        {joueur.grade === "Civil" && (
           <div
             style={{
-              marginTop:
-                "20px",
-              marginBottom:
-                "20px",
+              marginTop: "20px",
+              marginBottom: "20px",
             }}
           >
             <button
@@ -950,8 +860,7 @@ export default function Home() {
             {messageSoldat && (
               <p
                 style={{
-                  marginTop:
-                    "12px",
+                  marginTop: "12px",
                 }}
               >
                 {messageSoldat}
@@ -968,3 +877,142 @@ export default function Home() {
           Se déconnecter
         </button>
       </div>
+
+      {/* ================================================= */}
+      {/* MENU DU JEU */}
+      {/* ================================================= */}
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(2, minmax(0, 1fr))",
+          gap: "15px",
+          marginTop: "25px",
+          marginBottom: "25px",
+        }}
+      >
+
+        {/* INVENTAIRE */}
+
+        <div
+          className="card"
+          onClick={() => {
+            window.location.href =
+              "/inventaire";
+          }}
+          style={{
+            cursor: "pointer",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "40px",
+            }}
+          >
+            🎒
+          </div>
+
+          <h2>
+            Inventaire
+          </h2>
+
+          <p>
+            Tes objets et récompenses
+          </p>
+        </div>
+
+        {/* MAGASIN */}
+
+        <div
+          className="card"
+          onClick={() => {
+            window.location.href =
+              "/magasin";
+          }}
+          style={{
+            cursor: "pointer",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "40px",
+            }}
+          >
+            🛒
+          </div>
+
+          <h2>
+            Magasin
+          </h2>
+
+          <p>
+            Dépenser tes Obus
+          </p>
+        </div>
+
+        {/* VIREMENT */}
+
+        <div
+          className="card"
+          onClick={() => {
+            window.location.href =
+              "/virement";
+          }}
+          style={{
+            cursor: "pointer",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "40px",
+            }}
+          >
+            💸
+          </div>
+
+          <h2>
+            Virement
+          </h2>
+
+          <p>
+            Envoyer des Obus
+          </p>
+        </div>
+
+        {/* CLASSEMENT */}
+
+        <div
+          className="card"
+          onClick={() => {
+            window.location.href =
+              "/classement";
+          }}
+          style={{
+            cursor: "pointer",
+            textAlign: "center",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "40px",
+            }}
+          >
+            🏆
+          </div>
+
+          <h2>
+            Classement
+          </h2>
+
+          <p>
+            Voir les meilleurs joueurs
+          </p>
+        </div>
+      </div>
+    </main>
+  );
+}
