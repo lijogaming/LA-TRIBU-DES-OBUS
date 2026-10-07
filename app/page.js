@@ -41,6 +41,25 @@ export default function Home() {
     useState("");
 
   // =====================================================
+  // DONS D'OBUS
+  // =====================================================
+
+  const [joueursDon, setJoueursDon] =
+    useState([]);
+
+  const [destinataireDon, setDestinataireDon] =
+    useState("");
+
+  const [montantDon, setMontantDon] =
+    useState("");
+
+  const [messageDon, setMessageDon] =
+    useState("");
+
+  const [envoiDon, setEnvoiDon] =
+    useState(false);
+
+  // =====================================================
   // SESSION GOOGLE
   // =====================================================
 
@@ -86,7 +105,7 @@ export default function Home() {
   }, []);
 
   // =====================================================
-  // CHARGEMENT DU PROFIL APRÈS CONNEXION
+  // CHARGEMENT DU PROFIL
   // =====================================================
 
   useEffect(() => {
@@ -97,7 +116,6 @@ export default function Home() {
     async function chargerProfil() {
       setChargement(true);
 
-      // Vérifie si le compte est administrateur
       const {
         data: estAdmin,
         error: erreurAdmin,
@@ -120,7 +138,6 @@ export default function Home() {
         );
       }
 
-      // Cherche une éventuelle fiche joueur
       const {
         data,
         error,
@@ -155,6 +172,45 @@ export default function Home() {
       actif = false;
     };
   }, [user]);
+
+  // =====================================================
+  // CHARGER LES JOUEURS POUR LES DONS
+  // =====================================================
+
+  useEffect(() => {
+    if (
+      !joueur ||
+      joueur.grade === "Civil"
+    ) {
+      setJoueursDon([]);
+      return;
+    }
+
+    chargerJoueursDon();
+  }, [joueur?.id, joueur?.grade]);
+
+  async function chargerJoueursDon() {
+    const {
+      data,
+      error,
+    } = await supabase.rpc(
+      "lister_joueurs_don"
+    );
+
+    if (error) {
+      console.error(
+        "Erreur liste joueurs :",
+        error
+      );
+
+      setJoueursDon([]);
+      return;
+    }
+
+    setJoueursDon(
+      data || []
+    );
+  }
 
   // =====================================================
   // CONNEXION GOOGLE
@@ -223,10 +279,6 @@ export default function Home() {
         "🔎 Vérification de l'abonnement et du like..."
       );
 
-      // -----------------------------------------------
-      // SESSION SUPABASE
-      // -----------------------------------------------
-
       const {
         data: { session },
       } =
@@ -241,10 +293,6 @@ export default function Home() {
         return;
       }
 
-      // -----------------------------------------------
-      // TOKEN YOUTUBE
-      // -----------------------------------------------
-
       const youtubeToken =
         sessionStorage.getItem(
           "youtube_provider_token"
@@ -257,10 +305,6 @@ export default function Home() {
 
         return;
       }
-
-      // -----------------------------------------------
-      // APPEL DE NOTRE API SERVEUR
-      // -----------------------------------------------
 
       const response =
         await fetch(
@@ -292,10 +336,6 @@ export default function Home() {
           "Vérification terminée."
       );
 
-      // -----------------------------------------------
-      // PROMOTION RÉUSSIE
-      // -----------------------------------------------
-
       if (resultat.ok) {
         setTimeout(() => {
           window.location.reload();
@@ -316,6 +356,125 @@ export default function Home() {
       setVerificationSoldat(
         false
       );
+    }
+  }
+
+  // =====================================================
+  // DONNER DES OBUS
+  // =====================================================
+
+  async function donnerObus() {
+    setMessageDon("");
+
+    if (!destinataireDon) {
+      setMessageDon(
+        "❌ Choisis un joueur."
+      );
+      return;
+    }
+
+    const montant =
+      Number(montantDon);
+
+    if (
+      !Number.isInteger(montant) ||
+      montant <= 0
+    ) {
+      setMessageDon(
+        "❌ Entre un nombre entier supérieur à 0."
+      );
+      return;
+    }
+
+    if (
+      montant >
+      Number(joueur.obus)
+    ) {
+      setMessageDon(
+        "❌ Tu n'as pas assez d'Obus."
+      );
+      return;
+    }
+
+    const joueurChoisi =
+      joueursDon.find(
+        (j) =>
+          j.id ===
+          destinataireDon
+      );
+
+    const confirmation =
+      window.confirm(
+        `Envoyer ${montant} Obus à ${joueurChoisi?.pseudo || "ce joueur"} ?`
+      );
+
+    if (!confirmation) {
+      return;
+    }
+
+    try {
+      setEnvoiDon(true);
+
+      setMessageDon(
+        "💰 Envoi des Obus..."
+      );
+
+      const {
+        data,
+        error,
+      } = await supabase.rpc(
+        "donner_obus",
+        {
+          p_destinataire_id:
+            destinataireDon,
+
+          p_montant:
+            montant,
+        }
+      );
+
+      if (error) {
+        setMessageDon(
+          "❌ " +
+            error.message
+        );
+
+        return;
+      }
+
+      const nouveauSolde =
+        Number(
+          data?.nouveau_solde ??
+          joueur.obus - montant
+        );
+
+      setJoueur(
+        (ancien) => ({
+          ...ancien,
+          obus:
+            nouveauSolde,
+        })
+      );
+
+      setMontantDon("");
+      setDestinataireDon("");
+
+      setMessageDon(
+        `✅ ${montant} Obus envoyés à ${data?.destinataire || joueurChoisi?.pseudo}.`
+      );
+
+    } catch (erreur) {
+      console.error(
+        "Erreur don :",
+        erreur
+      );
+
+      setMessageDon(
+        "❌ Impossible d'envoyer les Obus."
+      );
+
+    } finally {
+      setEnvoiDon(false);
     }
   }
 
@@ -586,10 +745,6 @@ export default function Home() {
         Bienvenue {joueur.pseudo}
       </p>
 
-      {/* ============================================ */}
-      {/* ADMIN */}
-      {/* ============================================ */}
-
       {admin && (
         <div
           className="card"
@@ -613,10 +768,6 @@ export default function Home() {
           </button>
         </div>
       )}
-
-      {/* ============================================ */}
-      {/* PROFIL */}
-      {/* ============================================ */}
 
       <div className="card">
         <p className="label">
@@ -661,10 +812,6 @@ export default function Home() {
 
         <hr />
 
-        {/* ========================================== */}
-        {/* PROCHAINE ÉTAPE */}
-        {/* ========================================== */}
-
         <p className="label">
           {joueur.officier_general
             ? "FÉLICITATIONS"
@@ -678,10 +825,6 @@ export default function Home() {
         <p>
           {prochain?.texte}
         </p>
-
-        {/* ========================================== */}
-        {/* BOUTON DEVENIR SOLDAT */}
-        {/* ========================================== */}
 
         {joueur.grade ===
           "Civil" && (
@@ -728,9 +871,165 @@ export default function Home() {
         </button>
       </div>
 
-      {/* ============================================ */}
-      {/* RÉSUMÉ */}
-      {/* ============================================ */}
+      {/* ================================================= */}
+      {/* DONNER DES OBUS */}
+      {/* ================================================= */}
+
+      {joueur.grade !==
+        "Civil" && (
+        <div
+          className="card"
+          style={{
+            marginTop:
+              "20px",
+          }}
+        >
+          <p className="label">
+            💰 DONNER DES OBUS
+          </p>
+
+          <h2>
+            Soutenir un membre de la Tribu
+          </h2>
+
+          <p>
+            Choisis un joueur et le
+            nombre d&apos;Obus à lui
+            envoyer.
+          </p>
+
+          {joueursDon.length >
+          0 ? (
+            <>
+              <select
+                value={
+                  destinataireDon
+                }
+                onChange={(e) =>
+                  setDestinataireDon(
+                    e.target.value
+                  )
+                }
+                style={{
+                  width:
+                    "100%",
+                  padding:
+                    "14px",
+                  borderRadius:
+                    "10px",
+                  background:
+                    "#111",
+                  color:
+                    "white",
+                  border:
+                    "1px solid #444",
+                  marginTop:
+                    "10px",
+                  marginBottom:
+                    "10px",
+                }}
+              >
+                <option value="">
+                  Choisir un joueur...
+                </option>
+
+                {joueursDon.map(
+                  (autreJoueur) => (
+                    <option
+                      key={
+                        autreJoueur.id
+                      }
+                      value={
+                        autreJoueur.id
+                      }
+                    >
+                      {
+                        autreJoueur.pseudo
+                      }{" "}
+                      —{" "}
+                      {
+                        autreJoueur.grade
+                      }
+                    </option>
+                  )
+                )}
+              </select>
+
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={
+                  montantDon
+                }
+                onChange={(e) =>
+                  setMontantDon(
+                    e.target.value
+                  )
+                }
+                placeholder="Nombre d'Obus..."
+                style={{
+                  width:
+                    "100%",
+                  padding:
+                    "14px",
+                  borderRadius:
+                    "10px",
+                  border:
+                    "1px solid #444",
+                  background:
+                    "#111",
+                  color:
+                    "white",
+                  marginBottom:
+                    "10px",
+                }}
+              />
+
+              <button
+                onClick={
+                  donnerObus
+                }
+                disabled={
+                  envoiDon
+                }
+              >
+                {envoiDon
+                  ? "💰 ENVOI..."
+                  : "💣 ENVOYER LES OBUS"}
+              </button>
+            </>
+          ) : (
+            <p>
+              Aucun autre joueur
+              disponible pour un don.
+            </p>
+          )}
+
+          {messageDon && (
+            <p
+              style={{
+                marginTop:
+                  "12px",
+              }}
+            >
+              {messageDon}
+            </p>
+          )}
+
+          <p
+            style={{
+              marginTop:
+                "15px",
+            }}
+          >
+            Ton solde actuel :{" "}
+            <strong>
+              {joueur.obus} Obus
+            </strong>
+          </p>
+        </div>
+      )}
 
       <div className="features">
         <div>
