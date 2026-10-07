@@ -281,24 +281,6 @@ export default function ClassementPage() {
   if (chargement) {
     return (
       <main className="container">
-      <button
-  onClick={() => {
-    window.location.href = "/";
-  }}
-  title="Retour"
-  style={{
-    width: "45px",
-    height: "45px",
-    padding: "0",
-    fontSize: "24px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: "15px",
-  }}
->
-  ←
-</button>
         <div className="logo">
           🏆
         </div>
@@ -307,7 +289,32 @@ export default function ClassementPage() {
           CLASSEMENT
         </h1>
 
-        <div className="card">
+        <div
+  className="card"
+  style={{
+    position: "relative",
+  }}
+>
+  <button
+    onClick={() => {
+      window.location.href = "/";
+    }}
+    title="Retour"
+    style={{
+      position: "absolute",
+      top: "15px",
+      left: "15px",
+      width: "42px",
+      height: "42px",
+      padding: "0",
+      fontSize: "24px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    ←
+  </button>
           <p>
             Chargement du classement...
           </p>
