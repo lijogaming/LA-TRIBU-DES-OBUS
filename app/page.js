@@ -783,10 +783,41 @@ export default function Home() {
       {/* PROFIL DU JOUEUR */}
       {/* ================================================= */}
 
-      <div className="card">
-        <p className="label">
-          PROFIL DU JOUEUR
-        </p>
+      <div
+  className="card"
+  style={{
+    position: "relative",
+    paddingTop: "70px",
+  }}
+>
+  <button
+    onClick={deconnexion}
+    title="Se déconnecter"
+    style={{
+      position: "absolute",
+      top: "15px",
+      right: "15px",
+      width: "42px",
+      height: "42px",
+      padding: "0",
+      background: "#c62828",
+      border: "2px solid #ff5252",
+      color: "white",
+      borderRadius: "10px",
+      fontSize: "24px",
+      fontWeight: "900",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      cursor: "pointer",
+    }}
+  >
+    ⏻
+  </button>
+
+  <p className="label">
+    PROFIL DU JOUEUR
+  </p>
 
         <h2>
           {joueur.pseudo}
