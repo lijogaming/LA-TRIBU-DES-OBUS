@@ -454,21 +454,46 @@ export default function ClassementPage() {
                     {
                       joueur.pseudo
                     }
-                  </h2>
+                  </h2>{joueur.punition ? (
+  <>
+    <p
+      style={{
+        margin: "4px 0",
+      }}
+    >
+      ⚠️ Punition :{" "}
+      <strong>
+        {joueur.punition}
+      </strong>
+    </p>
 
-                  <p
-                    style={{
-                      margin:
-                        "4px 0",
-                    }}
-                  >
-                    🎖️{" "}
-                    <strong>
-                      {gradeAffiche(
-                        joueur
-                      )}
-                    </strong>
-                  </p>
+    <p
+      style={{
+        margin: "4px 0",
+      }}
+    >
+      🎖️ Grade actuel :{" "}
+      <strong>
+        {joueur.officier_general
+          ? "Officier général"
+          : joueur.grade}
+      </strong>
+    </p>
+  </>
+) : (
+  <p
+    style={{
+      margin: "4px 0",
+    }}
+  >
+    🎖️ Grade :{" "}
+    <strong>
+      {joueur.officier_general
+        ? "Officier général"
+        : joueur.grade}
+    </strong>
+  </p>
+)}
 
                   <p
                     style={{
