@@ -656,17 +656,6 @@ export default function Home() {
             Ouvrir le panneau
             administrateur
           </button>
-
-          <button
-            onClick={
-              deconnexion
-            }
-            style={{
-              marginTop: "12px",
-            }}
-          >
-            Se déconnecter
-          </button>
         </div>
       </main>
     );
@@ -679,6 +668,22 @@ export default function Home() {
   if (!joueur) {
     return (
       <main className="container">
+      <button
+  onClick={deconnexion}
+  title="Se déconnecter"
+  style={{
+    width: "45px",
+    height: "45px",
+    padding: "0",
+    fontSize: "22px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "15px",
+  }}
+>
+  ⏻
+</button>
         <div className="logo">
           💣
         </div>
