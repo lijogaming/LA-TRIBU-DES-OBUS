@@ -16,8 +16,6 @@ export default function InventairePage() {
       </p>
 
       <div className="card">
-    <div
-  className="card"
   style={{
     position: "relative",
     paddingTop: "70px",
