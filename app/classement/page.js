@@ -529,12 +529,21 @@ export default function ClassementPage() {
                 : undefined,
 
             background:
-                position === 1
-                ? "linear-gradient(135deg, #d4a900 0%, #8a6d00 45%, #4a3a00 100%)"
+                  position === 1
+                ? "#9C7800"
                 : position === 2
-                ? "linear-gradient(135deg, #5d6268 0%, #282b2f 100%)"
+                ? "#555B63"
                 : position === 3
-                ? "linear-gradient(135deg, #683d22 0%, #2f1b10 100%)"
+                ? "#6B3F24"
+                : undefined,
+
+            boxShadow:
+                  position === 1
+                ? "0 0 28px rgba(255, 215, 0, 0.55)"
+                : position === 2
+                ? "0 0 20px rgba(192, 192, 192, 0.25)"
+                : position === 3
+                ? "0 0 20px rgba(205, 127, 50, 0.28)"
                 : undefined,
 
             textShadow:
