@@ -888,7 +888,7 @@ export default function Home() {
             💰 DONNER DES OBUS
           </p>
 
-          <h2>
+          <h1>
             Faire un virement à un membre de la Tribu
           </h2>
 
