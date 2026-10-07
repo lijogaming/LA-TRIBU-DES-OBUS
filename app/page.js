@@ -896,14 +896,6 @@ export default function Home() {
             )}
           </div>
         )}
-
-        <button
-          onClick={
-            deconnexion
-          }
-        >
-          Se déconnecter
-        </button>
       </div>
 
       {/* ================================================= */}
