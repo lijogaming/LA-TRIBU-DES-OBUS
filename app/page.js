@@ -771,6 +771,104 @@ export default function Home() {
 
       <div className="card">
         <p className="label">
+              <div
+        style={{
+          display: "grid",
+          gridTemplateColumns:
+            "repeat(2, minmax(0, 1fr))",
+          gap: "15px",
+          marginTop: "25px",
+          marginBottom: "25px",
+        }}
+      >
+        <div
+          className="card"
+          onClick={() => {
+            window.location.href =
+              "/inventaire";
+          }}
+          style={{
+            cursor: "pointer",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: "40px" }}>
+            🎒
+          </div>
+
+          <h2>Inventaire</h2>
+
+          <p>
+            Tes objets et récompenses
+          </p>
+        </div>
+
+        <div
+          className="card"
+          onClick={() => {
+            window.location.href =
+              "/magasin";
+          }}
+          style={{
+            cursor: "pointer",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: "40px" }}>
+            🛒
+          </div>
+
+          <h2>Magasin</h2>
+
+          <p>
+            Dépenser tes Obus
+          </p>
+        </div>
+
+        <div
+          className="card"
+          onClick={() => {
+            window.location.href =
+              "/virement";
+          }}
+          style={{
+            cursor: "pointer",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: "40px" }}>
+            💸
+          </div>
+
+          <h2>Virement</h2>
+
+          <p>
+            Envoyer des Obus
+          </p>
+        </div>
+
+        <div
+          className="card"
+          onClick={() => {
+            window.location.href =
+              "/classement";
+          }}
+          style={{
+            cursor: "pointer",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ fontSize: "40px" }}>
+            🏆
+          </div>
+
+          <h2>Classement</h2>
+
+          <p>
+            Voir les meilleurs joueurs
+          </p>
+        </div>
+      </div>
           PROFIL DU JOUEUR
         </p>
 
@@ -870,203 +968,3 @@ export default function Home() {
           Se déconnecter
         </button>
       </div>
-
-      {/* ================================================= */}
-      {/* DONNER DES OBUS */}
-      {/* ================================================= */}
-
-      {joueur.grade !==
-        "Civil" && (
-        <div
-          className="card"
-          style={{
-            marginTop:
-              "20px",
-          }}
-        >
-          <p className="label">
-            💰 DONNER DES OBUS
-          </p>
-
-          <h2>
-            Virement à un membre de la Tribu
-          </h2>
-
-          <p>
-            Choisis un joueur et le
-            nombre d&apos;Obus à lui
-            envoyer.
-          </p>
-
-          {joueursDon.length >
-          0 ? (
-            <>
-              <select
-                value={
-                  destinataireDon
-                }
-                onChange={(e) =>
-                  setDestinataireDon(
-                    e.target.value
-                  )
-                }
-                style={{
-                  width:
-                    "100%",
-                  padding:
-                    "14px",
-                  borderRadius:
-                    "10px",
-                  background:
-                    "#111",
-                  color:
-                    "white",
-                  border:
-                    "1px solid #444",
-                  marginTop:
-                    "10px",
-                  marginBottom:
-                    "10px",
-                }}
-              >
-                <option value="">
-                  Choisir un joueur...
-                </option>
-
-                {joueursDon.map(
-                  (autreJoueur) => (
-                    <option
-                      key={
-                        autreJoueur.id
-                      }
-                      value={
-                        autreJoueur.id
-                      }
-                    >
-                      {
-                        autreJoueur.pseudo
-                      }{" "}
-                      —{" "}
-                      {
-                        autreJoueur.grade
-                      }
-                    </option>
-                  )
-                )}
-              </select>
-
-              <input
-                type="number"
-                min="1"
-                step="1"
-                value={
-                  montantDon
-                }
-                onChange={(e) =>
-                  setMontantDon(
-                    e.target.value
-                  )
-                }
-                placeholder="Nombre d'Obus..."
-                style={{
-                  width:
-                    "100%",
-                  padding:
-                    "14px",
-                  borderRadius:
-                    "10px",
-                  border:
-                    "1px solid #444",
-                  background:
-                    "#111",
-                  color:
-                    "white",
-                  marginBottom:
-                    "10px",
-                }}
-              />
-
-              <button
-                onClick={
-                  donnerObus
-                }
-                disabled={
-                  envoiDon
-                }
-              >
-                {envoiDon
-                  ? "💰 ENVOI..."
-                  : "💣 ENVOYER LES OBUS"}
-              </button>
-            </>
-          ) : (
-            <p>
-              Aucun autre joueur
-              disponible pour un don.
-            </p>
-          )}
-
-          {messageDon && (
-            <p
-              style={{
-                marginTop:
-                  "12px",
-              }}
-            >
-              {messageDon}
-            </p>
-          )}
-
-          <p
-            style={{
-              marginTop:
-                "15px",
-            }}
-          >
-            Ton solde actuel :{" "}
-            <strong>
-              {joueur.obus} Obus
-            </strong>
-          </p>
-        </div>
-      )}
-
-      <div className="features">
-        <div>
-          <strong>
-            🎖️ {gradeAffiche}
-          </strong>
-
-          <span>
-            Ton grade actuel
-          </span>
-        </div>
-
-        <div>
-          <strong>
-            💰 {joueur.obus} OBUS
-          </strong>
-
-          <span>
-            Ton sac personnel
-          </span>
-        </div>
-
-        <div>
-          <strong>
-            📺{" "}
-            {
-              joueur.lives_depuis_soldat
-            }{" "}
-            LIVES
-          </strong>
-
-          <span>
-            Depuis ton passage
-            Soldat
-          </span>
-        </div>
-      </div>
-    </main>
-  );
-}
