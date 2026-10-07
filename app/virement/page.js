@@ -142,6 +142,24 @@ export default function VirementPage() {
   if (chargement) {
     return (
       <main className="container">
+      <button
+  onClick={() => {
+    window.location.href = "/";
+  }}
+  title="Retour"
+  style={{
+    width: "45px",
+    height: "45px",
+    padding: "0",
+    fontSize: "24px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "15px",
+  }}
+>
+  ←
+</button>
         <h1>💸 VIREMENT</h1>
 
         <div className="card">
@@ -271,17 +289,6 @@ export default function VirementPage() {
           </p>
         )}
       </div>
-
-      <button
-        onClick={() => {
-          window.location.href = "/";
-        }}
-        style={{
-          marginTop: "20px",
-        }}
-      >
-        ← Retour
-      </button>
     </main>
   );
 }
