@@ -685,7 +685,6 @@ export default function ClassementPage() {
         </strong>
       </p>
 
-
       <p>
   📺 Lives depuis Soldat :{" "}
   <strong>
