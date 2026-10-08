@@ -33,7 +33,9 @@ export default function Home() {
   const [joueur, setJoueur] = useState(null);
   const [admin, setAdmin] = useState(false);
   const [chargement, setChargement] = useState(true);
-
+  const [conditionsAcceptees, setConditionsAcceptees] =
+  useState(false);
+  
   const [verificationSoldat, setVerificationSoldat] =
     useState(false);
 
@@ -601,14 +603,68 @@ export default function Home() {
             d&apos;Obus.
           </p>
 
-          <button
-            onClick={
-              connexionGoogle
-            }
-          >
-            Se connecter avec
-            Google
-          </button>
+          <div className="legal-consent">
+
+  <label>
+    <input
+      type="checkbox"
+      checked={conditionsAcceptees}
+      onChange={(e) =>
+        setConditionsAcceptees(
+          e.target.checked
+        )
+      }
+    />
+
+    <span>
+      J’ai lu et j’accepte les{" "}
+      <a
+        href="/cgu"
+        target="_blank"
+      >
+        CGU
+      </a>
+      {" "}et la{" "}
+      <a
+        href="/confidentialite"
+        target="_blank"
+      >
+        Politique de confidentialité
+      </a>.
+      {" "}J’accepte également les{" "}
+      <a
+        href="https://www.youtube.com/t/terms"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Conditions d’utilisation de YouTube
+      </a>.
+    </span>
+  </label>
+
+</div>
+
+<button
+  onClick={
+    connexionGoogle
+  }
+  disabled={
+    !conditionsAcceptees
+  }
+  style={{
+    opacity:
+      conditionsAcceptees
+        ? 1
+        : 0.45,
+
+    cursor:
+      conditionsAcceptees
+        ? "pointer"
+        : "not-allowed",
+  }}
+>
+  Se connecter avec Google
+</button>
         </div>
       </main>
     );
