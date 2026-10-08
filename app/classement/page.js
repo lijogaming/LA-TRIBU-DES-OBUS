@@ -382,7 +382,7 @@ export default function ClassementPage() {
               e.target.value
             )
           }
-          placeholder="🔎 Rechercher un joueur..."
+          placeholder="🔎 Rechercher un membre..."
           style={{
             width: "100%",
             padding: "14px",
