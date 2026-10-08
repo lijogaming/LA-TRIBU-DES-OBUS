@@ -1150,59 +1150,7 @@ export default function Home() {
           </p>
         </div>
       </div>
-                  {/* ================================================= */}
-      {/* RÉSEAUX SOCIAUX */}
-      {/* ================================================= */}
-
-      <div className="card reseaux-card">
-
-        <p className="label">
-          NOUS SUIVRE
-        </p>
-
-        <div className="reseaux-liens">
-
-          <a
-            href="https://www.youtube.com/@lijogaming28"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ▶️ YouTube principal
-          </a>
-
-          <a
-            href="https://discord.gg/cDuTD2CyXc"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            💬 Discord
-          </a>
-
-          <a
-            href="https://youtube.com/@gorcraft28"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ▶️ YouTube secondaire
-          </a>
-
-          <a
-            href="https://www.instagram.com/lijo_all/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            📸 Instagram
-          </a>
-
-          <a
-            href="https://www.tiktok.com/@lijogaming"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            🎵 TikTok
-          </a>
-
-        </div>
+                 
       {/* ================================================= */}
       {/* RÉSEAUX SOCIAUX */}
       {/* ================================================= */}
