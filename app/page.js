@@ -1158,20 +1158,26 @@ const [reseauxOuverts, setReseauxOuverts] =
         </div>
       </div>
 
-      {/* ================================================= */}
+            {/* ================================================= */}
       {/* RÉSEAUX SOCIAUX */}
       {/* ================================================= */}
 
-      <div className="reseaux-bouton-wrap">
+      <div className="reseaux-zone">
 
         <button
           type="button"
-          className="reseaux-bouton"
+          className="reseaux-open-button"
           onClick={() =>
             setReseauxOuverts(true)
           }
         >
-          🌐 Nous suivre
+          <span className="reseaux-open-icon">
+            🌐
+          </span>
+
+          <span>
+            Nous suivre
+          </span>
         </button>
 
       </div>
@@ -1184,76 +1190,215 @@ const [reseauxOuverts, setReseauxOuverts] =
       {reseauxOuverts && (
 
         <div
-          className="reseaux-modal-overlay"
+          className="reseaux-overlay"
           onClick={() =>
             setReseauxOuverts(false)
           }
         >
 
           <div
-            className="reseaux-modal"
+            className="reseaux-popup"
             onClick={(e) =>
               e.stopPropagation()
             }
           >
 
+            {/* ================================================= */}
+            {/* FERMER */}
+            {/* ================================================= */}
+
             <button
               type="button"
-              className="reseaux-modal-fermer"
+              className="reseaux-close"
               onClick={() =>
                 setReseauxOuverts(false)
               }
+              title="Fermer"
             >
               ✕
             </button>
 
+
+            {/* ================================================= */}
+            {/* TITRE */}
+            {/* ================================================= */}
+
             <p className="label">
-              NOUS SUIVRE
+              LA TRIBU DES OBUS
             </p>
 
-            <div className="reseaux-modal-liens">
+            <h2 className="reseaux-title">
+              Nous suivre
+            </h2>
 
-              <a
-                href="https://www.youtube.com/@lijogaming28"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ▶️ YouTube principal
-              </a>
+            <p className="reseaux-subtitle">
+              Retrouve-nous sur nos réseaux
+            </p>
 
-              <a
-                href="https://discord.gg/cDuTD2CyXc"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                💬 Discord
-              </a>
 
-              <a
-                href="https://youtube.com/@gorcraft28"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ▶️ YouTube secondaire
-              </a>
+            {/* ================================================= */}
+            {/* YOUTUBE PRINCIPAL */}
+            {/* ================================================= */}
 
-              <a
-                href="https://www.instagram.com/lijo_all/"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                📸 Instagram
-              </a>
+            <a
+              className="reseau-item"
+              href="https://www.youtube.com/@lijogaming28"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="reseau-logo youtube-logo">
+                <img
+                  src="https://cdn.simpleicons.org/youtube/FF0000"
+                  alt=""
+                />
+              </div>
 
-              <a
-                href="https://www.tiktok.com/@lijogaming"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                🎵 TikTok
-              </a>
+              <div className="reseau-text">
+                <strong>
+                  YouTube principal
+                </strong>
 
-            </div>
+                <span>
+                  Lijo Gaming
+                </span>
+              </div>
+
+              <span className="reseau-arrow">
+                ›
+              </span>
+            </a>
+
+
+            {/* ================================================= */}
+            {/* DISCORD */}
+            {/* ================================================= */}
+
+            <a
+              className="reseau-item"
+              href="https://discord.gg/cDuTD2CyXc"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="reseau-logo discord-logo">
+                <img
+                  src="https://cdn.simpleicons.org/discord/5865F2"
+                  alt=""
+                />
+              </div>
+
+              <div className="reseau-text">
+                <strong>
+                  Discord
+                </strong>
+
+                <span>
+                  Rejoindre la communauté
+                </span>
+              </div>
+
+              <span className="reseau-arrow">
+                ›
+              </span>
+            </a>
+
+
+            {/* ================================================= */}
+            {/* YOUTUBE SECONDAIRE */}
+            {/* ================================================= */}
+
+            <a
+              className="reseau-item"
+              href="https://youtube.com/@gorcraft28"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="reseau-logo youtube-logo">
+                <img
+                  src="https://cdn.simpleicons.org/youtube/FF0000"
+                  alt=""
+                />
+              </div>
+
+              <div className="reseau-text">
+                <strong>
+                  YouTube secondaire
+                </strong>
+
+                <span>
+                  Gorcraft
+                </span>
+              </div>
+
+              <span className="reseau-arrow">
+                ›
+              </span>
+            </a>
+
+
+            {/* ================================================= */}
+            {/* INSTAGRAM */}
+            {/* ================================================= */}
+
+            <a
+              className="reseau-item"
+              href="https://www.instagram.com/lijo_all/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="reseau-logo instagram-logo">
+                <img
+                  src="https://cdn.simpleicons.org/instagram/E4405F"
+                  alt=""
+                />
+              </div>
+
+              <div className="reseau-text">
+                <strong>
+                  Instagram
+                </strong>
+
+                <span>
+                  @lijo_all
+                </span>
+              </div>
+
+              <span className="reseau-arrow">
+                ›
+              </span>
+            </a>
+
+
+            {/* ================================================= */}
+            {/* TIKTOK */}
+            {/* ================================================= */}
+
+            <a
+              className="reseau-item"
+              href="https://www.tiktok.com/@lijogaming"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className="reseau-logo tiktok-logo">
+                <img
+                  src="https://cdn.simpleicons.org/tiktok/FFFFFF"
+                  alt=""
+                />
+              </div>
+
+              <div className="reseau-text">
+                <strong>
+                  TikTok
+                </strong>
+
+                <span>
+                  @lijogaming
+                </span>
+              </div>
+
+              <span className="reseau-arrow">
+                ›
+              </span>
+            </a>
 
           </div>
 
