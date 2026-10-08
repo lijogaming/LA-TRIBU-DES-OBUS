@@ -743,9 +743,6 @@ export default function Home() {
   // =====================================================
   // PROFIL JOUEUR
   // =====================================================
-  // =====================================================
-  // PROFIL JOUEUR
-  // =====================================================
 
   const prochain =
     prochainGrade();
@@ -809,29 +806,49 @@ export default function Home() {
   }}
 >
   <button
-    onClick={deconnexion}
-    title="Se déconnecter"
-    style={{
-      position: "absolute",
-      top: "15px",
-      right: "15px",
-      width: "42px",
-      height: "42px",
-      padding: "0",
-      background: "#c62828",
-      border: "2px solid #ff5252",
-      color: "white",
-      borderRadius: "10px",
-      fontSize: "24px",
-      fontWeight: "900",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      cursor: "pointer",
-    }}
+  onClick={deconnexion}
+  title="Se déconnecter"
+  style={{
+    position: "absolute",
+    top: "15px",
+    right: "15px",
+    width: "42px",
+    height: "42px",
+    margin: "0",
+    padding: "0",
+    background: "#c62828",
+    border: "2px solid #ff5252",
+    color: "white",
+    borderRadius: "10px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    zIndex: 2,
+  }}
+>
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
   >
-    ⏻
-  </button>
+    <path
+      d="M12 3V12"
+      stroke="currentColor"
+      strokeWidth="2.8"
+      strokeLinecap="round"
+    />
+
+    <path
+      d="M7.1 5.8C4.6 7.4 3 10.1 3 13C3 18 7 22 12 22C17 22 21 18 21 13C21 10.1 19.4 7.4 16.9 5.8"
+      stroke="currentColor"
+      strokeWidth="2.8"
+      strokeLinecap="round"
+    />
+  </svg>
+</button>
 
   <p className="label">
     PROFIL DU JOUEUR
@@ -930,170 +947,107 @@ export default function Home() {
         )}
       </div>
 
-            {/* ================================================= */}
+      {/* ================================================= */}
       {/* MENU DU JEU */}
       {/* ADMIN + JOUEURS */}
       {/* ================================================= */}
-
-      <div
-        style={{
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns:
-            "repeat(3, minmax(0, 1fr))",
-          gap: "15px",
-          marginTop: "25px",
-          marginBottom: "25px",
-          boxSizing: "border-box",
-        }}
-      >
+      
+      <div className="menu-grid">
+      
+        {/* ================================================= */}
         {/* INVENTAIRE */}
-
+        {/* ================================================= */}
+      
         <div
-          className="card"
+          className="card menu-card"
           onClick={() => {
             window.location.href =
               "/inventaire";
           }}
-          style={{
-            cursor: "pointer",
-            textAlign: "center",
-            width: "100%",
-            minHeight: "220px",
-            margin: "0",
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
         >
-          <div
-            style={{
-              fontSize: "48px",
-            }}
-          >
+          <div className="menu-icon">
             🎒
           </div>
-
+      
           <h2>
             Inventaire
           </h2>
-
+      
           <p>
             Tes objets et récompenses
           </p>
         </div>
-
+      
+      
+        {/* ================================================= */}
         {/* MAGASIN */}
-
+        {/* ================================================= */}
+      
         <div
-          className="card"
+          className="card menu-card"
           onClick={() => {
             window.location.href =
               "/magasin";
           }}
-          style={{
-            cursor: "pointer",
-            textAlign: "center",
-            width: "100%",
-            minHeight: "220px",
-            margin: "0",
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
         >
-          <div
-            style={{
-              fontSize: "48px",
-            }}
-          >
+          <div className="menu-icon">
             🛒
           </div>
-
+      
           <h2>
             Magasin
           </h2>
-
+      
           <p>
             Dépenser tes Obus
           </p>
         </div>
-
+      
+      
+        {/* ================================================= */}
         {/* VIREMENT */}
-
+        {/* ================================================= */}
+      
         <div
-          className="card"
+          className="card menu-card"
           onClick={() => {
             window.location.href =
               "/virement";
           }}
-          style={{
-            cursor: "pointer",
-            textAlign: "center",
-            width: "100%",
-            minHeight: "220px",
-            margin: "0",
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
         >
-          <div
-            style={{
-              fontSize: "48px",
-            }}
-          >
+          <div className="menu-icon">
             💸
           </div>
-
+      
           <h2>
             Virement
           </h2>
-
+      
           <p>
             Envoyer des Obus
           </p>
         </div>
-
+      
+      
+        {/* ================================================= */}
         {/* CLASSEMENT */}
-
+        {/* ================================================= */}
+      
         <div
-          className="card"
+          className="card menu-card"
           onClick={() => {
             window.location.href =
               "/classement";
           }}
-          style={{
-            cursor: "pointer",
-            textAlign: "center",
-            width: "100%",
-            minHeight: "220px",
-            margin: "0",
-            boxSizing: "border-box",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
         >
-          <div
-            style={{
-              fontSize: "48px",
-            }}
-          >
+          <div className="menu-icon">
             🏆
           </div>
-
+      
           <h2>
             Classement
           </h2>
-
+      
           <p>
             Voir les meilleurs joueurs
           </p>
