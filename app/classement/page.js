@@ -687,6 +687,15 @@ export default function ClassementPage() {
 
 
       <p>
+  📺 Lives depuis Soldat :{" "}
+  <strong>
+    {
+      joueurSelectionne.lives_depuis_soldat ?? 0
+    }
+  </strong>
+</p>
+
+<p>
   📊 Lives total :{" "}
   <strong>
     {
@@ -694,17 +703,6 @@ export default function ClassementPage() {
     }
   </strong>
 </p>
-
-
-      {joueurSelectionne.total_lives != null && (
-        <p>
-          📊 Lives total :{" "}
-          <strong>
-            {
-              joueurSelectionne.total_lives
-            }
-          </strong>
-        </p>
       )}
 
     </div>
