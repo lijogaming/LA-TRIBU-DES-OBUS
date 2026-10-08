@@ -702,8 +702,6 @@ export default function ClassementPage() {
     }
   </strong>
 </p>
-      )}
-
     </div>
 
   </div>
