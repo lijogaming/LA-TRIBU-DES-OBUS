@@ -156,15 +156,15 @@ export default function ClassementPage() {
         classement ===
         "lives"
       ) {
-        liste.sort(
-          (a, b) =>
-            Number(
-              b.lives_depuis_soldat
-            ) -
-            Number(
-              a.lives_depuis_soldat
-            )
-        );
+       liste.sort(
+  (a, b) =>
+    Number(
+      b.total_lives ?? 0
+    ) -
+    Number(
+      a.total_lives ?? 0
+    )
+);
       }
 
       if (
@@ -233,10 +233,10 @@ export default function ClassementPage() {
     }
 
     if (classement === "lives") {
-      return Number(
-        joueur.lives_depuis_soldat
-      );
-    }
+  return Number(
+    joueur.total_lives ?? 0
+  );
+}
 
     if (classement === "grade") {
       return scoreGrade(joueur);
@@ -437,7 +437,7 @@ export default function ClassementPage() {
                   : 0.55,
             }}
           >
-            📺 Lives
+            📊 Lives total
           </button>
 
           <button
@@ -516,12 +516,11 @@ export default function ClassementPage() {
       }
 
       if (
-        classement === "lives"
-      ) {
-        valeurAffichee =
-          `${joueur.lives_depuis_soldat} lives`;
-      }
-
+  classement === "lives"
+) {
+  valeurAffichee =
+    `${joueur.total_lives ?? 0} lives`;
+}
       if (
         classement === "grade"
       ) {
@@ -688,13 +687,13 @@ export default function ClassementPage() {
 
 
       <p>
-        📺 Lives depuis Soldat :{" "}
-        <strong>
-          {
-            joueurSelectionne.lives_depuis_soldat
-          }
-        </strong>
-      </p>
+  📊 Lives total :{" "}
+  <strong>
+    {
+      joueurSelectionne.total_lives ?? 0
+    }
+  </strong>
+</p>
 
 
       {joueurSelectionne.total_lives != null && (
