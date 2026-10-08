@@ -118,16 +118,96 @@ h1 {
   font-size: 14px;
 }
 
+/* ===================================================== */
+/* VERSION TÉLÉPHONE */
+/* ===================================================== */
+
 @media (max-width: 700px) {
+
   .container {
-    padding: 40px 18px;
+    padding: 35px 14px;
   }
 
   .card {
-    padding: 28px 20px;
+    padding: 28px 18px;
   }
+
+  h1 {
+    font-size: 42px;
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    font-size: 17px;
+    margin-bottom: 30px;
+  }
+
+  /* ================================================ */
+  /* ANCIEN BLOC FEATURES */
+  /* ================================================ */
 
   .features {
     grid-template-columns: 1fr;
+  }
+
+  /* ================================================ */
+  /* MENU PRINCIPAL */
+  /* ================================================ */
+
+  .menu-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .menu-card {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 175px !important;
+
+    padding: 18px 10px !important;
+
+    margin: 0 !important;
+
+    overflow: hidden;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    text-align: center !important;
+  }
+
+  .menu-card h2 {
+    width: 100%;
+
+    margin: 10px 0 8px 0;
+
+    font-size: 21px !important;
+
+    line-height: 1.15;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+  }
+
+  .menu-card p {
+    width: 100%;
+
+    margin: 5px 0;
+
+    font-size: 15px !important;
+
+    line-height: 1.35;
+
+    white-space: normal;
+
+    overflow-wrap: anywhere;
+  }
+
+  .menu-card .menu-icon {
+    font-size: 46px !important;
+    line-height: 1;
   }
 }
