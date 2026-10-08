@@ -583,56 +583,354 @@ h1 {
 }
 
 /* ===================================================== */
-/* RÉSEAUX SOCIAUX */
+/* BOUTON NOUS SUIVRE */
 /* ===================================================== */
 
-.reseaux-card {
+.reseaux-zone {
   width: 100%;
-  max-width: 440px;
 
-  margin: 0 auto 30px;
+  display: flex;
+  justify-content: center;
 
-  padding: 24px 22px;
+  margin: 5px 0 35px;
+}
+
+.reseaux-open-button {
+  width: auto;
+  min-width: 190px;
+
+  margin: 0;
+
+  padding: 13px 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  border: 1px solid #c99b36;
+  border-radius: 12px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #e9bd58 0%,
+      #bd8d2b 100%
+    );
+
+  color: #111;
+
+  font-size: 15px;
+  font-weight: 900;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 7px 22px rgba(0, 0, 0, 0.35);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.reseaux-open-button:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 9px 26px rgba(233, 189, 88, 0.22);
+}
+
+.reseaux-open-icon {
+  font-size: 18px;
+}
+
+
+/* ===================================================== */
+/* FOND DE LA FENÊTRE */
+/* ===================================================== */
+
+.reseaux-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    rgba(0, 0, 0, 0.82);
+
+  backdrop-filter: blur(5px);
+}
+
+
+/* ===================================================== */
+/* FENÊTRE NOUS SUIVRE */
+/* ===================================================== */
+
+.reseaux-popup {
+  position: relative;
+
+  width: 100%;
+  max-width: 480px;
+
+  padding: 35px 28px 28px;
+
+  border:
+    1px solid rgba(
+      233,
+      189,
+      88,
+      0.35
+    );
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #191919 0%,
+      #101010 100%
+    );
+
+  box-shadow:
+    0 25px 80px
+    rgba(0, 0, 0, 0.65);
 
   text-align: center;
 }
 
-.reseaux-liens {
-  margin-top: 18px;
 
-  display: grid;
-  grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+/* ===================================================== */
+/* FERMETURE */
+/* ===================================================== */
 
-  gap: 10px;
+.reseaux-close {
+  position: absolute;
+
+  top: 13px;
+  right: 13px;
+
+  width: 38px;
+  height: 38px;
+
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid #444;
+
+  border-radius: 10px;
+
+  background: #222;
+
+  color: white;
+
+  font-size: 17px;
+  font-weight: 900;
+
+  cursor: pointer;
 }
 
-.reseaux-liens a {
-  padding: 11px 10px;
-
-  border: 1px solid #333;
-  border-radius: 9px;
-
-  background: #111;
-
-  color: #f5f5f5;
-
-  font-size: 14px;
-  font-weight: 700;
-
-  text-decoration: none;
-
-  transition:
-    transform 0.15s ease,
-    border-color 0.15s ease;
-}
-
-.reseaux-liens a:hover {
-  transform: translateY(-2px);
-
+.reseaux-close:hover {
   border-color: #e9bd58;
 
   color: #e9bd58;
+}
+
+
+/* ===================================================== */
+/* TITRE */
+/* ===================================================== */
+
+.reseaux-title {
+  margin:
+    8px
+    0
+    5px;
+
+  font-size: 27px;
+
+  color: white;
+}
+
+.reseaux-subtitle {
+  margin:
+    0
+    0
+    24px;
+
+  color: #999;
+
+  font-size: 14px;
+}
+
+
+/* ===================================================== */
+/* LIGNE D'UN RÉSEAU */
+/* ===================================================== */
+
+.reseau-item {
+  width: 100%;
+
+  min-height: 68px;
+
+  margin-bottom: 10px;
+
+  padding: 11px 14px;
+
+  display: grid;
+
+  grid-template-columns:
+    46px
+    minmax(0, 1fr)
+    25px;
+
+  align-items: center;
+
+  gap: 12px;
+
+  border:
+    1px solid #323232;
+
+  border-radius: 12px;
+
+  background: #151515;
+
+  color: white;
+
+  text-decoration: none;
+
+  text-align: left;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.reseau-item:hover {
+  transform:
+    translateY(-1px);
+
+  border-color: #e9bd58;
+
+  background: #1d1d1d;
+}
+
+
+/* ===================================================== */
+/* LOGOS OFFICIELS */
+/* ===================================================== */
+
+.reseau-logo {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: #0d0d0d;
+}
+
+.reseau-logo img {
+  width: 25px;
+  height: 25px;
+
+  display: block;
+}
+
+
+/* ===================================================== */
+/* TEXTE RÉSEAU */
+/* ===================================================== */
+
+.reseau-text {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+.reseau-text strong {
+  color: white;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.reseau-text span {
+  color: #999;
+
+  font-size: 12px;
+}
+
+.reseau-arrow {
+  color: #e9bd58;
+
+  font-size: 29px;
+  font-weight: 700;
+
+  text-align: right;
+}
+
+
+/* ===================================================== */
+/* TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+
+  .reseaux-popup {
+    max-width: 360px;
+
+    padding:
+      34px
+      16px
+      20px;
+  }
+
+  .reseaux-title {
+    font-size: 23px;
+  }
+
+  .reseau-item {
+    min-height: 64px;
+
+    grid-template-columns:
+      42px
+      minmax(0, 1fr)
+      20px;
+
+    padding:
+      10px
+      11px;
+  }
+
+  .reseau-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .reseau-logo img {
+    width: 23px;
+    height: 23px;
+  }
 }
 
 /* ===================================================== */
