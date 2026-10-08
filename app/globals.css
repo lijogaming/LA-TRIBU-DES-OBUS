@@ -332,3 +332,37 @@ h1 {
     overflow-wrap: anywhere;
   }
 }
+
+/* ===================================================== */
+/* ACCEPTATION CGU / CONFIDENTIALITÉ */
+/* ===================================================== */
+
+.legal-consent {
+  margin-top: 25px;
+  text-align: left;
+}
+
+.legal-consent label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.legal-consent input {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  margin-top: 3px;
+}
+
+.legal-consent span {
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.legal-consent a {
+  color: #e9bd58;
+  font-weight: bold;
+}
