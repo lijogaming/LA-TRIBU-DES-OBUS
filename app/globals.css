@@ -366,3 +366,77 @@ h1 {
   color: #e9bd58;
   font-weight: bold;
 }
+
+/* ===================================================== */
+/* PIED DE PAGE LÉGAL */
+/* ===================================================== */
+
+.site-footer {
+  width: 100%;
+  padding: 30px 20px 35px;
+
+  text-align: center;
+
+  border-top: 1px solid #222;
+
+  background: rgba(8, 8, 8, 0.95);
+}
+
+.site-footer p {
+  margin: 0 0 12px;
+
+  color: #777;
+
+  font-size: 13px;
+}
+
+.site-footer-links {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.site-footer-links a {
+  color: #aaa;
+
+  font-size: 13px;
+
+  text-decoration: none;
+}
+
+.site-footer-links a:hover {
+  color: #e9bd58;
+
+  text-decoration: underline;
+}
+
+.site-footer-links span {
+  color: #555;
+}
+
+/* ===================================================== */
+/* PIED DE PAGE SUR TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+
+  .site-footer {
+    padding:
+      25px
+      15px
+      30px;
+  }
+
+  .site-footer-links {
+    gap: 7px;
+  }
+
+  .site-footer-links a {
+    font-size: 12px;
+  }
+}
