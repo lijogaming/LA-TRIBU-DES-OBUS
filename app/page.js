@@ -682,15 +682,33 @@ export default function Home() {
     border: "2px solid #ff5252",
     color: "white",
     borderRadius: "10px",
-    fontSize: "24px",
-    fontWeight: "900",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     cursor: "pointer",
   }}
 >
-  ⏻
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M12 3V12"
+      stroke="currentColor"
+      strokeWidth="2.8"
+      strokeLinecap="round"
+    />
+
+    <path
+      d="M7.1 5.8C4.6 7.4 3 10.1 3 13C3 18 7 22 12 22C17 22 21 18 21 13C21 10.1 19.4 7.4 16.9 5.8"
+      stroke="currentColor"
+      strokeWidth="2.8"
+      strokeLinecap="round"
+    />
+  </svg>
 </button>
         <div className="logo">
           💣
