@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import Image from "next/image";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -571,8 +572,18 @@ export default function Home() {
     return (
       <main className="container">
         <div className="logo">
-          💣
-        </div>
+  <Image
+    src="/logo-obus.png"
+    alt="Logo La Tribu des Obus"
+    width={150}
+    height={150}
+    priority
+    style={{
+      width: "150px",
+      height: "auto",
+    }}
+  />
+</div>
 
         <h1>
           LA TRIBU DES OBUS
@@ -767,8 +778,18 @@ export default function Home() {
   </svg>
 </button>
         <div className="logo">
-          💣
-        </div>
+  <Image
+    src="/logo-obus.png"
+    alt="Logo La Tribu des Obus"
+    width={150}
+    height={150}
+    priority
+    style={{
+      width: "150px",
+      height: "auto",
+    }}
+  />
+</div>
 
         <h1>
           LA TRIBU DES OBUS
