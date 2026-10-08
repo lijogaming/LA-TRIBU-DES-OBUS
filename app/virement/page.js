@@ -304,7 +304,7 @@ export default function VirementPage() {
           }}
         >
           <option value="">
-            Choisir un joueur...
+            Choisir un membre...
           </option>
 
           {joueursDon.map(
