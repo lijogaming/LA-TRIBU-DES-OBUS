@@ -672,14 +672,22 @@ export default function Home() {
   onClick={deconnexion}
   title="Se déconnecter"
   style={{
-    width: "45px",
-    height: "45px",
+    position: "absolute",
+    top: "15px",
+    right: "15px",
+    width: "42px",
+    height: "42px",
     padding: "0",
-    fontSize: "22px",
+    background: "#c62828",
+    border: "2px solid #ff5252",
+    color: "white",
+    borderRadius: "10px",
+    fontSize: "24px",
+    fontWeight: "900",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: "15px",
+    cursor: "pointer",
   }}
 >
   ⏻
