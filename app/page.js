@@ -903,8 +903,7 @@ const [reseauxOuverts, setReseauxOuverts] =
       {/* ================================================= */}
 
       <div
-  className="card"
-  style={{
+className="card profil-principal-card"  style={{
     position: "relative",
     paddingTop: "70px",
   }}
