@@ -42,7 +42,14 @@ export default function Home() {
 
   const [messageSoldat, setMessageSoldat] =
     useState("");
+  
+// =====================================================
+// FENÊTRE RÉSEAUX
+// =====================================================
 
+const [reseauxOuverts, setReseauxOuverts] =
+  useState(false);
+  
   // =====================================================
   // DONS D'OBUS
   // =====================================================
@@ -948,7 +955,7 @@ export default function Home() {
 </button>
 
   <p className="label">
-    PROFIL DU JOUEUR
+    PROFIL DU MEMBRE
   </p>
 
         <h2>
@@ -1146,67 +1153,113 @@ export default function Home() {
           </h2>
       
           <p>
-            Voir les meilleurs joueurs
+            Voir les meilleurs membres
           </p>
         </div>
       </div>
-                 
+
       {/* ================================================= */}
       {/* RÉSEAUX SOCIAUX */}
       {/* ================================================= */}
 
-      <div className="card reseaux-card">
+      <div className="reseaux-bouton-wrap">
 
-        <p className="label">
-          NOUS SUIVRE
-        </p>
+        <button
+          type="button"
+          className="reseaux-bouton"
+          onClick={() =>
+            setReseauxOuverts(true)
+          }
+        >
+          🌐 Nous suivre
+        </button>
 
-        <div className="reseaux-liens">
+      </div>
 
-          <a
-            href="https://www.youtube.com/@lijogaming28"
-            target="_blank"
-            rel="noopener noreferrer"
+
+      {/* ================================================= */}
+      {/* FENÊTRE RÉSEAUX */}
+      {/* ================================================= */}
+
+      {reseauxOuverts && (
+
+        <div
+          className="reseaux-modal-overlay"
+          onClick={() =>
+            setReseauxOuverts(false)
+          }
+        >
+
+          <div
+            className="reseaux-modal"
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
-            ▶️ YouTube principal
-          </a>
 
-          <a
-            href="https://discord.gg/cDuTD2CyXc"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            💬 Discord
-          </a>
+            <button
+              type="button"
+              className="reseaux-modal-fermer"
+              onClick={() =>
+                setReseauxOuverts(false)
+              }
+            >
+              ✕
+            </button>
 
-          <a
-            href="https://youtube.com/@gorcraft28"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ▶️ YouTube secondaire
-          </a>
+            <p className="label">
+              NOUS SUIVRE
+            </p>
 
-          <a
-            href="https://www.instagram.com/lijo_all/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            📸 Instagram
-          </a>
+            <div className="reseaux-modal-liens">
 
-          <a
-            href="https://www.tiktok.com/@lijogaming"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            🎵 TikTok
-          </a>
+              <a
+                href="https://www.youtube.com/@lijogaming28"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ▶️ YouTube principal
+              </a>
+
+              <a
+                href="https://discord.gg/cDuTD2CyXc"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                💬 Discord
+              </a>
+
+              <a
+                href="https://youtube.com/@gorcraft28"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ▶️ YouTube secondaire
+              </a>
+
+              <a
+                href="https://www.instagram.com/lijo_all/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                📸 Instagram
+              </a>
+
+              <a
+                href="https://www.tiktok.com/@lijogaming"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                🎵 TikTok
+              </a>
+
+            </div>
+
+          </div>
 
         </div>
 
-      </div>
-      </div>
+      )}
     </main>
   );
 }
