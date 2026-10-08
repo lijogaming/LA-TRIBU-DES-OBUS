@@ -874,28 +874,6 @@ async function modifierTotalLives(
           )
         )}
       </div>
-
-      {/* ============================= */}
-      {/* NAVIGATION */}
-      {/* ============================= */}
-
-      <button
-        onClick={() =>
-          (window.location.href =
-            "/")
-        }
-        style={{
-          marginBottom: "12px",
-        }}
-      >
-        Retour au site
-      </button>
-
-      <button
-        onClick={deconnexion}
-      >
-        Se déconnecter
-      </button>
     </main>
   );
 }
