@@ -168,6 +168,94 @@ h1 {
 }
 
 /* ===================================================== */
+/* PAGES LÉGALES */
+/* ===================================================== */
+
+.legal-page {
+  max-width: 1000px;
+}
+
+.legal-card {
+  max-width: 850px;
+  text-align: left;
+  position: relative;
+  padding-top: 75px;
+}
+
+.legal-back {
+  position: absolute;
+  top: 22px;
+  left: 28px;
+
+  color: #e9bd58;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.legal-back:hover {
+  text-decoration: underline;
+}
+
+.legal-update {
+  margin-bottom: 35px;
+  font-size: 14px;
+}
+
+.legal-section {
+  padding: 10px 0 22px;
+  border-bottom: 1px solid #333;
+}
+
+.legal-section:last-child {
+  border-bottom: 0;
+}
+
+.legal-section h2 {
+  margin: 15px 0;
+  color: #e9bd58;
+  font-size: 24px;
+}
+
+.legal-section p {
+  margin: 10px 0;
+}
+
+.legal-section ul {
+  color: #aaa;
+  line-height: 1.7;
+  padding-left: 25px;
+}
+
+.legal-section a {
+  color: #e9bd58;
+  font-weight: bold;
+}
+
+@media (max-width: 700px) {
+
+  .legal-card {
+    padding:
+      70px
+      18px
+      28px;
+  }
+
+  .legal-back {
+    top: 20px;
+    left: 20px;
+  }
+
+  .legal-section h2 {
+    font-size: 21px;
+  }
+
+  .legal-section p,
+  .legal-section li {
+    font-size: 15px;
+  }
+}
+
+/* ===================================================== */
 /* VERSION TÉLÉPHONE */
 /* ===================================================== */
 
