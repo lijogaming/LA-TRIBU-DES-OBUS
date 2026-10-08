@@ -33,7 +33,10 @@ export default function ClassementPage() {
   const [erreur, setErreur] = useState("");
 
   const [recherche, setRecherche] = useState("");
-
+  const [
+  joueurSelectionne,
+  setJoueurSelectionne,
+] = useState(null);
   const [classement, setClassement] =
     useState("obus");
 
@@ -473,7 +476,7 @@ export default function ClassementPage() {
         </div>
       )}
 
-     {/* ================================================= */}
+{/* ================================================= */}
 {/* CLASSEMENT */}
 {/* ================================================= */}
 
@@ -495,32 +498,50 @@ export default function ClassementPage() {
       joueur,
       index
     ) => {
+
       const position =
         positionJoueur(
           joueur,
           index
         );
 
+      let valeurAffichee = "";
+
+      if (
+        classement === "obus"
+      ) {
+        valeurAffichee =
+          `${joueur.obus} Obus`;
+      }
+
+      if (
+        classement === "lives"
+      ) {
+        valeurAffichee =
+          `${joueur.lives_depuis_soldat} lives`;
+      }
+
+      if (
+        classement === "grade"
+      ) {
+        valeurAffichee =
+          joueur.officier_general
+            ? "Officier général"
+            : joueur.grade;
+      }
+
       return (
         <div
-          className="card"
+          className="card classement-compact"
           key={joueur.id}
+          onClick={() =>
+            setJoueurSelectionne(
+              joueur
+            )
+          }
           style={{
-            marginBottom: "12px",
-
-            display: "flex",
-
-            alignItems: "center",
-
-            gap: "15px",
-
-            color:
-              position <= 3
-                ? "#ffffff"
-                : undefined,
-
             border:
-                  position === 1
+              position === 1
                 ? "2px solid #FFE44D"
                 : position === 2
                 ? "2px solid #C0C0C0"
@@ -529,47 +550,31 @@ export default function ClassementPage() {
                 : undefined,
 
             background:
-                  position === 1
-                ? "#9C7800"
+              position === 1
+                ? "#9c7800"
                 : position === 2
-                ? "#555B63"
+                ? "#555b63"
                 : position === 3
-                ? "#6B3F24"
+                ? "#6b3f24"
                 : undefined,
 
-            boxShadow:
-                  position === 1
-                ? "0 0 28px rgba(255, 215, 0, 0.55)"
-                : position === 2
-                ? "0 0 20px rgba(192, 192, 192, 0.25)"
-                : position === 3
-                ? "0 0 20px rgba(205, 127, 50, 0.28)"
+            color:
+              position <= 3
+                ? "#ffffff"
                 : undefined,
 
             textShadow:
               position <= 3
-                ? "0 2px 4px rgba(0, 0, 0, 0.95)"
+                ? "0 2px 3px rgba(0,0,0,0.9)"
                 : undefined,
           }}
         >
+
           {/* ================================================= */}
           {/* POSITION */}
           {/* ================================================= */}
 
-          <div
-            style={{
-              minWidth: "50px",
-
-              textAlign: "center",
-
-              fontSize:
-                position <= 3
-                  ? "34px"
-                  : "18px",
-
-              fontWeight: "bold",
-            }}
-          >
+          <div className="classement-compact-position">
             {medaille(
               position
             )}
@@ -577,172 +582,296 @@ export default function ClassementPage() {
 
 
           {/* ================================================= */}
-          {/* JOUEUR */}
+          {/* PSEUDO */}
           {/* ================================================= */}
 
-          <div
-            style={{
-              flex: 1,
-            }}
-          >
-            <h2
-              style={{
-                margin:
-                  "0 0 8px 0",
-
-                fontSize:
-                  "21px",
-
-                color:
-                  position <= 3
-                    ? "#ffffff"
-                    : undefined,
-
-                fontWeight:
-                  position <= 3
-                    ? "900"
-                    : undefined,
-
-                textShadow:
-                  position <= 3
-                    ? "0 2px 4px rgba(0, 0, 0, 1)"
-                    : undefined,
-              }}
-            >
-              {
-                joueur.pseudo
-              }
-            </h2>
+          <strong className="classement-compact-pseudo">
+            {joueur.pseudo}
+          </strong>
 
 
-            {/* ================================================= */}
-            {/* GRADE ET PUNITION */}
-            {/* ================================================= */}
+          {/* ================================================= */}
+          {/* VALEUR DU CLASSEMENT */}
+          {/* ================================================= */}
 
-            {joueur.punition ? (
-              <>
-                <p
-                  style={{
-                    margin:
-                      "4px 0",
+          <strong className="classement-compact-valeur">
+            {valeurAffichee}
+          </strong>
 
-                    color:
-                      position <= 3
-                        ? "#ffffff"
-                        : undefined,
-                  }}
-                >
-                  ⚠️ Punition :{" "}
-                  <strong>
-                    {
-                      joueur.punition
-                    }
-                  </strong>
-                </p>
-
-                <p
-                  style={{
-                    margin:
-                      "4px 0",
-
-                    color:
-                      position <= 3
-                        ? "#ffffff"
-                        : undefined,
-                  }}
-                >
-                  🎖️ Grade actuel :{" "}
-                  <strong>
-                    {
-                      joueur.officier_general
-                        ? "Officier général"
-                        : joueur.grade
-                    }
-                  </strong>
-                </p>
-              </>
-            ) : (
-              <p
-                style={{
-                  margin:
-                    "4px 0",
-
-                  color:
-                    position <= 3
-                      ? "#ffffff"
-                      : undefined,
-                }}
-              >
-                🎖️ Grade :{" "}
-                <strong>
-                  {
-                    joueur.officier_general
-                      ? "Officier général"
-                      : joueur.grade
-                  }
-                </strong>
-              </p>
-            )}
-
-
-            {/* ================================================= */}
-            {/* OBUS */}
-            {/* ================================================= */}
-
-            <p
-              style={{
-                margin:
-                  "4px 0",
-
-                color:
-                  position <= 3
-                    ? "#ffffff"
-                    : undefined,
-              }}
-            >
-              💰{" "}
-              <strong>
-                {
-                  joueur.obus
-                }{" "}
-                Obus
-              </strong>
-            </p>
-
-
-            {/* ================================================= */}
-            {/* LIVES */}
-            {/* ================================================= */}
-
-            <p
-              style={{
-                margin:
-                  "4px 0",
-
-                color:
-                  position <= 3
-                    ? "#ffffff"
-                    : undefined,
-              }}
-            >
-              📺{" "}
-              <strong>
-                {
-                  joueur.lives_depuis_soldat
-                }{" "}
-                lives
-              </strong>
-            </p>
-          </div>
         </div>
       );
     }
   )}
 </div>
+
+
+{/* ================================================= */}
+{/* PROFIL JOUEUR */}
+{/* ================================================= */}
+
+{joueurSelectionne && (
+
+  <div
+    className="profil-classement-overlay"
+    onClick={() =>
+      setJoueurSelectionne(
+        null
+      )
+    }
+  >
+
+    <div
+      className="card profil-classement-card"
+      onClick={(e) =>
+        e.stopPropagation()
+      }
+    >
+
+      <button
+        className="profil-classement-fermer"
+        onClick={() =>
+          setJoueurSelectionne(
+            null
+          )
+        }
+        title="Fermer"
+      >
+        ✕
+      </button>
+
+
+      <p className="label">
+        PROFIL DU JOUEUR
+      </p>
+
+      <h2>
+        {
+          joueurSelectionne.pseudo
+        }
+      </h2>
+
+
+      <p>
+        🎖️ Grade :{" "}
+        <strong>
+          {
+            joueurSelectionne.officier_general
+              ? "Officier général"
+              : joueurSelectionne.grade
+          }
+        </strong>
+      </p>
+
+
+      {joueurSelectionne.punition && (
+        <p>
+          ⚠️ Punition :{" "}
+          <strong>
+            {
+              joueurSelectionne.punition
+            }
+          </strong>
+        </p>
+      )}
+
+
+      <p>
+        💰 Sac d&apos;Obus :{" "}
+        <strong>
+          {
+            joueurSelectionne.obus
+          }{" "}
+          Obus
+        </strong>
+      </p>
+
+
+      <p>
+        📺 Lives depuis Soldat :{" "}
+        <strong>
+          {
+            joueurSelectionne.lives_depuis_soldat
+          }
+        </strong>
+      </p>
+
+
+      {joueurSelectionne.total_lives != null && (
+        <p>
+          📊 Lives total :{" "}
+          <strong>
+            {
+              joueurSelectionne.total_lives
+            }
+          </strong>
+        </p>
+      )}
+
+    </div>
+
+  </div>
+
+)}
+
       {/* ================================================= */}
       {/* RETOUR */}
       {/* ================================================= */}
 
     </main>
   );
+}
+/* ===================================================== */
+/* CLASSEMENT COMPACT */
+/* ===================================================== */
+
+.classement-compact {
+  min-height: 64px;
+
+  margin-bottom: 8px;
+
+  padding: 10px 18px;
+
+  display: grid;
+
+  grid-template-columns:
+    65px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 15px;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.classement-compact:hover {
+  transform: translateY(-1px);
+}
+
+.classement-compact-position {
+  text-align: center;
+
+  font-size: 27px;
+}
+
+.classement-compact-pseudo {
+  font-size: 18px;
+
+  text-align: left;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.classement-compact-valeur {
+  font-size: 16px;
+
+  text-align: right;
+
+  white-space: nowrap;
+}
+
+
+/* ===================================================== */
+/* PROFIL DEPUIS LE CLASSEMENT */
+/* ===================================================== */
+
+.profil-classement-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  padding: 20px;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  background:
+    rgba(0, 0, 0, 0.8);
+}
+
+.profil-classement-card {
+  position: relative;
+
+  width: 100%;
+
+  max-width: 500px;
+
+  margin: 0;
+
+  text-align: center;
+}
+
+.card .profil-classement-fermer {
+  position: absolute;
+
+  top: 12px;
+
+  right: 12px;
+
+  width: 38px;
+
+  height: 38px;
+
+  margin: 0;
+
+  padding: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #222;
+
+  color: white;
+}
+
+
+/* ===================================================== */
+/* CLASSEMENT COMPACT TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+
+  .classement-compact {
+    min-height: 56px;
+
+    padding: 8px 10px;
+
+    grid-template-columns:
+      48px
+      minmax(0, 1fr)
+      auto;
+
+    gap: 8px;
+  }
+
+  .classement-compact-position {
+    font-size: 23px;
+  }
+
+  .classement-compact-pseudo {
+    font-size: 15px;
+  }
+
+  .classement-compact-valeur {
+    font-size: 14px;
+  }
 }
