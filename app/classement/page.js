@@ -641,7 +641,7 @@ export default function ClassementPage() {
 
 
       <p className="label">
-        PROFIL DU JOUEUR
+        PROFIL DU MEMBRE
       </p>
 
       <h2>
