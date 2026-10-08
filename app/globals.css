@@ -472,7 +472,13 @@ h1 {
 
 .classement-compact-position {
   text-align: center;
-  font-size: 27px;
+
+  font-size: 24px;
+  font-weight: 900;
+
+  letter-spacing: 0.5px;
+
+  line-height: 1;
 }
 
 .classement-compact-pseudo {
