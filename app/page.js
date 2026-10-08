@@ -548,8 +548,18 @@ export default function Home() {
     return (
       <main className="container">
         <div className="logo">
-          💣
-        </div>
+  <Image
+    src="/logo-obus.png"
+    alt="Logo La Tribu des Obus"
+    width={150}
+    height={150}
+    priority
+    style={{
+      width: "150px",
+      height: "auto",
+    }}
+  />
+</div>
 
         <h1>
           LA TRIBU DES OBUS
