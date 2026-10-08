@@ -118,7 +118,30 @@ export default function MentionsLegalesPage() {
             États-Unis
           </p>
         </section>
-
+      
+        {/* ================================================= */}
+        {/* SITE INTERNET */}
+        {/* ================================================= */}
+        
+        <section className="legal-section">
+          <h2>
+            4. Site internet
+          </h2>
+        
+          <p>
+            Adresse du site :
+          </p>
+        
+          <p>
+            <a
+              href="https://latribudesobus.com/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              https://latribudesobus.com/
+            </a>
+          </p>
+        </section>
 
         {/* ================================================= */}
         {/* PROPRIÉTÉ INTELLECTUELLE */}
@@ -126,7 +149,7 @@ export default function MentionsLegalesPage() {
 
         <section className="legal-section">
           <h2>
-            4. Propriété intellectuelle
+            5. Propriété intellectuelle
           </h2>
 
           <p>
@@ -158,7 +181,7 @@ export default function MentionsLegalesPage() {
 
         <section className="legal-section">
           <h2>
-            5. Contact
+            6. Contact
           </h2>
 
           <p>
