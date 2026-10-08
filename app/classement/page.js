@@ -206,22 +206,23 @@ export default function ClassementPage() {
   // =====================================================
   // MÉDAILLE
   // =====================================================
-
+  
   function medaille(position) {
     if (position === 1) {
       return "🥇";
     }
-
+  
     if (position === 2) {
       return "🥈";
     }
-
+  
     if (position === 3) {
       return "🥉";
     }
-
-    return `#${position}`;
+  
+    return position;
   }
+  
   // =====================================================
   // VALEUR UTILISÉE POUR LE CLASSEMENT
   // =====================================================
