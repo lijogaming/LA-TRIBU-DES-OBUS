@@ -77,7 +77,8 @@ export default function InventairePage() {
     useState(0);
 
   const [limite, setLimite] =
-    useState(30);
+  useState(30);
+
 
 // =====================================================
 // NOMBRE DE TIRS
@@ -85,6 +86,7 @@ export default function InventairePage() {
 
 const [nombreTirs, setNombreTirs] =
   useState("1");
+
 
 const [tirEnCours, setTirEnCours] =
   useState(false);
