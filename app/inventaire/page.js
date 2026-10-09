@@ -90,12 +90,27 @@ const [nombreTirs, setNombreTirs] =
 
 const [tirEnCours, setTirEnCours] =
   useState(false);
+const [tirEnCours, setTirEnCours] =
+  useState(false);
 
+
+// =====================================================
+// CONFIRMATION DU TIR
+// =====================================================
+
+const [modalConfirmationOuverte, setModalConfirmationOuverte] =
+  useState(false);
+
+const [tirEnAttente, setTirEnAttente] =
+  useState(null);
+
+
+// =====================================================
+// MESSAGE
+// =====================================================
 
 const [message, setMessage] =
   useState("");
-
-
   // =====================================================
   // INITIALISATION
   // =====================================================
