@@ -21,6 +21,33 @@ const supabase = createClient(
 
 
 // =====================================================
+// RARETÉS
+// =====================================================
+
+const RARETES = {
+  commun: {
+    nom: "Commun",
+    couleur: "#8b8b8b",
+  },
+
+  rare: {
+    nom: "Rare",
+    couleur: "#3b82f6",
+  },
+
+  epique: {
+    nom: "Épique",
+    couleur: "#a855f7",
+  },
+
+  legendaire: {
+    nom: "Légendaire",
+    couleur: "#e9bd58",
+  },
+};
+
+
+// =====================================================
 // PAGE MAGASIN
 // =====================================================
 
@@ -47,6 +74,12 @@ export default function MagasinPage() {
   const [message, setMessage] =
     useState("");
 
+  const [magasinOuvert, setMagasinOuvert] =
+    useState("Armurerie");
+
+  const [objetOuvert, setObjetOuvert] =
+    useState(false);
+
 
   // =====================================================
   // INITIALISATION
@@ -64,7 +97,7 @@ export default function MagasinPage() {
 
 
     // =====================================================
-    // UTILISATEUR CONNECTÉ
+    // UTILISATEUR
     // =====================================================
 
     const {
@@ -77,15 +110,14 @@ export default function MagasinPage() {
 
     if (!user) {
 
-      window.location.href =
-        "/";
+      window.location.href = "/";
 
       return;
     }
 
 
     // =====================================================
-    // CHARGER LE JOUEUR
+    // JOUEUR
     // =====================================================
 
     const {
@@ -125,7 +157,7 @@ export default function MagasinPage() {
 
 
     // =====================================================
-    // CHARGER LE LANCE-OBUS
+    // LANCE-OBUS
     // =====================================================
 
     const {
@@ -135,7 +167,7 @@ export default function MagasinPage() {
       await supabase
         .from("objets")
         .select(
-          "code,nom,description,prix,icone,actif,unique_par_joueur"
+          "code,nom,description,prix,icone,actif,unique_par_joueur,magasin,rarete"
         )
         .eq(
           "code",
@@ -150,7 +182,7 @@ export default function MagasinPage() {
     ) {
 
       setMessage(
-        "❌ Lance-Obus introuvable dans le magasin."
+        "❌ Lance-Obus introuvable."
       );
 
       setChargement(false);
@@ -165,7 +197,7 @@ export default function MagasinPage() {
 
 
     // =====================================================
-    // VÉRIFIER SI LE JOUEUR POSSÈDE L'OBJET
+    // POSSÉDÉ
     // =====================================================
 
     const {
@@ -191,19 +223,15 @@ export default function MagasinPage() {
 
 
     // =====================================================
-    // VÉRIFIER SI L'OBJET EST BLOQUÉ
+    // BLOQUÉ
     // =====================================================
 
     const {
       data: blocageData,
     } =
       await supabase
-        .from(
-          "blocages_objets"
-        )
-        .select(
-          "joueur_id"
-        )
+        .from("blocages_objets")
+        .select("joueur_id")
         .eq(
           "joueur_id",
           joueurData.id
@@ -241,23 +269,15 @@ export default function MagasinPage() {
     }
 
 
-    // =====================================================
-    // OBJET BLOQUÉ
-    // =====================================================
-
     if (bloque) {
 
       setMessage(
-        "🔒 Cet objet a été bloqué pour ton compte."
+        "🔒 Le Lance-Obus a été bloqué pour ton compte."
       );
 
       return;
     }
 
-
-    // =====================================================
-    // OBJET DÉJÀ POSSÉDÉ
-    // =====================================================
 
     if (possede) {
 
@@ -268,10 +288,6 @@ export default function MagasinPage() {
       return;
     }
 
-
-    // =====================================================
-    // PAS ASSEZ D'OBUS
-    // =====================================================
 
     if (
       Number(joueur.obus) <
@@ -289,13 +305,11 @@ export default function MagasinPage() {
     }
 
 
-    // =====================================================
-    // CONFIRMATION
-    // =====================================================
-
     const confirmation =
       window.confirm(
-        `Acheter le Lance-Obus pour ${objet.prix} Obus ?`
+        `Acheter le Lance-Obus pour ${Number(
+          objet.prix
+        ).toLocaleString("fr-FR")} Obus ?`
       );
 
 
@@ -303,10 +317,6 @@ export default function MagasinPage() {
       return;
     }
 
-
-    // =====================================================
-    // ACHAT
-    // =====================================================
 
     setAchatEnCours(true);
 
@@ -392,7 +402,7 @@ export default function MagasinPage() {
 
 
   // =====================================================
-  // PROFIL INTROUVABLE
+  // ERREUR
   // =====================================================
 
   if (
@@ -419,15 +429,6 @@ export default function MagasinPage() {
               "Impossible de charger le magasin."}
           </p>
 
-          <button
-            onClick={() => {
-              window.location.href =
-                "/";
-            }}
-          >
-            Retour
-          </button>
-
         </div>
 
       </main>
@@ -436,16 +437,29 @@ export default function MagasinPage() {
 
 
   // =====================================================
-  // ÉTAT DU BOUTON
+  // INFORMATIONS DE RARETÉ
   // =====================================================
+
+  const rarete =
+    RARETES[
+      objet.rarete
+    ] ||
+    RARETES.commun;
+
 
   const pasAssezObus =
     Number(joueur.obus) <
     Number(objet.prix);
 
 
+  // =====================================================
+  // TEXTE DU BOUTON
+  // =====================================================
+
   let texteBouton =
-    "💰 ACHETER — 3 000 OBUS";
+    `💰 ACHETER — ${Number(
+      objet.prix
+    ).toLocaleString("fr-FR")} OBUS`;
 
 
   if (achatEnCours) {
@@ -456,7 +470,7 @@ export default function MagasinPage() {
   } else if (bloque) {
 
     texteBouton =
-      "🔒 OBJET BLOQUÉ POUR VOUS";
+      "🔒 BLOQUÉ POUR VOUS";
 
   } else if (possede) {
 
@@ -471,12 +485,17 @@ export default function MagasinPage() {
 
 
   // =====================================================
-  // MAGASIN
+  // PAGE
   // =====================================================
 
   return (
 
     <main className="container">
+
+
+      {/* ================================================= */}
+      {/* TITRE */}
+      {/* ================================================= */}
 
       <div className="logo">
         🛒
@@ -489,7 +508,7 @@ export default function MagasinPage() {
 
 
       <p className="subtitle">
-        Dépense tes Obus
+        Choisis ton magasin
       </p>
 
 
@@ -500,20 +519,10 @@ export default function MagasinPage() {
       <div
         className="card"
         style={{
-          position:
-            "relative",
-
-          paddingTop:
-            "70px",
-
-          marginBottom:
-            "25px",
+          position: "relative",
+          paddingTop: "70px",
         }}
       >
-
-        {/* ================================================= */}
-        {/* RETOUR */}
-        {/* ================================================= */}
 
         <button
           onClick={() => {
@@ -522,35 +531,16 @@ export default function MagasinPage() {
           }}
           title="Retour"
           style={{
-            position:
-              "absolute",
-
-            top:
-              "15px",
-
-            left:
-              "15px",
-
-            width:
-              "42px",
-
-            height:
-              "42px",
-
-            margin:
-              "0",
-
-            padding:
-              "0",
-
-            display:
-              "flex",
-
-            alignItems:
-              "center",
-
-            justifyContent:
-              "center",
+            position: "absolute",
+            top: "15px",
+            left: "15px",
+            width: "42px",
+            height: "42px",
+            margin: "0",
+            padding: "0",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
 
@@ -588,372 +578,413 @@ export default function MagasinPage() {
 
 
         <h2>
-          💰 {joueur.obus} Obus
+          💰 {Number(
+            joueur.obus
+          ).toLocaleString(
+            "fr-FR"
+          )} Obus
         </h2>
 
       </div>
 
 
       {/* ================================================= */}
-      {/* LANCE-OBUS */}
+      {/* LES MAGASINS */}
+      {/* 3 MAGASINS PAR LIGNE */}
       {/* ================================================= */}
 
-      <div
-        className="card"
-        style={{
-          position:
-            "relative",
-
-          overflow:
-            "hidden",
-
-          border:
-            bloque
-              ? "1px solid #8f3232"
-              : possede
-              ? "1px solid #4d8f55"
-              : "1px solid rgba(233, 189, 88, 0.65)",
-
-          background:
-            bloque
-              ? "linear-gradient(180deg, #221313 0%, #121010 100%)"
-              : "linear-gradient(180deg, #1b1a16 0%, #111 100%)",
-        }}
-      >
+      <div className="liste-magasins">
 
 
         {/* ================================================= */}
-        {/* ÉTIQUETTE */}
-        {/* ================================================= */}
-
-        <div
-          style={{
-            display:
-              "inline-block",
-
-            padding:
-              "6px 12px",
-
-            marginBottom:
-              "18px",
-
-            border:
-              "1px solid #5b4722",
-
-            borderRadius:
-              "999px",
-
-            color:
-              "#e9bd58",
-
-            fontSize:
-              "11px",
-
-            fontWeight:
-              "900",
-
-            letterSpacing:
-              "1.8px",
-          }}
-        >
-          ARME DE LA TRIBU
-        </div>
-
-
-        {/* ================================================= */}
-        {/* DESIGN */}
-        {/* ================================================= */}
-
-        <div
-          style={{
-            width:
-              "120px",
-
-            height:
-              "120px",
-
-            margin:
-              "0 auto 18px",
-
-            display:
-              "flex",
-
-            alignItems:
-              "center",
-
-            justifyContent:
-              "center",
-
-            borderRadius:
-              "50%",
-
-            border:
-              "2px solid #6d5425",
-
-            background:
-              "radial-gradient(circle, #312410 0%, #141414 70%)",
-
-            boxShadow:
-              "0 0 35px rgba(233, 189, 88, 0.16)",
-
-            fontSize:
-              "64px",
-          }}
-        >
-          💥
-        </div>
-
-
-        <h2
-          style={{
-            marginBottom:
-              "5px",
-          }}
-        >
-          Lance-Obus
-        </h2>
-
-
-        <p
-          style={{
-            color:
-              "#e9bd58",
-
-            fontWeight:
-              "900",
-
-            fontSize:
-              "20px",
-
-            margin:
-              "8px 0 18px",
-          }}
-        >
-          💰 3 000 Obus
-        </p>
-
-
-        <p>
-          Tire sur les autres membres de
-          la Tribu et fais-leur perdre des
-          Obus.
-        </p>
-
-
-        <div
-          style={{
-            margin:
-              "22px 0",
-
-            padding:
-              "15px",
-
-            borderRadius:
-              "12px",
-
-            border:
-              "1px solid #2f2f2f",
-
-            background:
-              "#0e0e0e",
-
-            textAlign:
-              "left",
-          }}
-        >
-
-          <p
-            style={{
-              margin:
-                "3px 0",
-            }}
-          >
-            🎯 Maximum :
-            {" "}
-            <strong>
-              30 tirs / jour
-            </strong>
-          </p>
-
-
-          <p
-            style={{
-              margin:
-                "3px 0",
-            }}
-          >
-            💣 Chaque tir :
-            {" "}
-            <strong>
-              -1 Obus pour toi
-            </strong>
-          </p>
-
-
-          <p
-            style={{
-              margin:
-                "3px 0",
-            }}
-          >
-            💥 Cible :
-            {" "}
-            <strong>
-              -2 Obus
-            </strong>
-          </p>
-
-
-          <p
-            style={{
-              margin:
-                "3px 0",
-            }}
-          >
-            🎒 Limite :
-            {" "}
-            <strong>
-              1 Lance-Obus par membre
-            </strong>
-          </p>
-
-        </div>
-
-
-        {/* ================================================= */}
-        {/* BLOQUÉ */}
-        {/* ================================================= */}
-
-        {bloque && (
-
-          <div
-            style={{
-              marginBottom:
-                "15px",
-
-              padding:
-                "13px",
-
-              borderRadius:
-                "10px",
-
-              background:
-                "rgba(198, 40, 40, 0.13)",
-
-              border:
-                "1px solid rgba(255, 82, 82, 0.4)",
-
-              color:
-                "#ff7777",
-
-              fontWeight:
-                "bold",
-            }}
-          >
-            🔒 Cet objet a été bloqué
-            pour ton compte par
-            l&apos;administration.
-          </div>
-
-        )}
-
-
-        {/* ================================================= */}
-        {/* ACHETÉ */}
-        {/* ================================================= */}
-
-        {!bloque &&
-          possede && (
-
-          <div
-            style={{
-              marginBottom:
-                "15px",
-
-              padding:
-                "13px",
-
-              borderRadius:
-                "10px",
-
-              background:
-                "rgba(76, 175, 80, 0.12)",
-
-              border:
-                "1px solid rgba(76, 175, 80, 0.4)",
-
-              color:
-                "#7edc83",
-
-              fontWeight:
-                "bold",
-            }}
-          >
-            ✅ Tu possèdes déjà cet
-            objet. Retrouve-le dans ton
-            inventaire.
-          </div>
-
-        )}
-
-
-        {/* ================================================= */}
-        {/* BOUTON ACHAT */}
+        {/* ARMURERIE */}
         {/* ================================================= */}
 
         <button
-          onClick={
-            acheterLanceObus
+          type="button"
+          className={
+            magasinOuvert ===
+            "Armurerie"
+              ? "case-magasin case-magasin-active"
+              : "case-magasin"
           }
-          disabled={
-            achatEnCours ||
-            bloque ||
-            possede ||
-            pasAssezObus
+          onClick={() =>
+            setMagasinOuvert(
+              "Armurerie"
+            )
           }
-          style={{
-            opacity:
-              achatEnCours ||
-              bloque ||
-              possede ||
-              pasAssezObus
-                ? 0.55
-                : 1,
-
-            cursor:
-              achatEnCours ||
-              bloque ||
-              possede ||
-              pasAssezObus
-                ? "not-allowed"
-                : "pointer",
-          }}
         >
-          {texteBouton}
+
+          <span className="case-magasin-icon">
+            💥
+          </span>
+
+          <strong>
+            Armurerie
+          </strong>
+
+          <span>
+            Armes et objets offensifs
+          </span>
+
         </button>
 
 
         {/* ================================================= */}
-        {/* MESSAGE */}
+        {/* FUTUR MAGASIN 1 */}
         {/* ================================================= */}
 
-        {message && (
+        <button
+          type="button"
+          className="case-magasin case-magasin-ferme"
+          disabled
+        >
 
-          <p
-            style={{
-              marginTop:
-                "18px",
+          <span className="case-magasin-icon">
+            🔒
+          </span>
 
-              fontWeight:
-                "bold",
-            }}
-          >
-            {message}
-          </p>
+          <strong>
+            Prochainement
+          </strong>
 
-        )}
+          <span>
+            Futur magasin
+          </span>
+
+        </button>
+
+
+        {/* ================================================= */}
+        {/* FUTUR MAGASIN 2 */}
+        {/* ================================================= */}
+
+        <button
+          type="button"
+          className="case-magasin case-magasin-ferme"
+          disabled
+        >
+
+          <span className="case-magasin-icon">
+            🔒
+          </span>
+
+          <strong>
+            Prochainement
+          </strong>
+
+          <span>
+            Futur magasin
+          </span>
+
+        </button>
 
       </div>
+
+
+      {/* ================================================= */}
+      {/* ARMURERIE */}
+      {/* ================================================= */}
+
+      {magasinOuvert ===
+        "Armurerie" && (
+
+        <section className="armurerie-zone">
+
+
+          {/* ================================================= */}
+          {/* TITRE ARMURERIE */}
+          {/* ================================================= */}
+
+          <div className="armurerie-titre">
+
+            <p className="label">
+              MAGASIN
+            </p>
+
+            <h2>
+              💥 Armurerie
+            </h2>
+
+          </div>
+
+
+          {/* ================================================= */}
+          {/* OBJETS DE L'ARMURERIE */}
+          {/* 4 OBJETS PAR LIGNE */}
+          {/* ================================================= */}
+
+          <div className="armurerie-grille">
+
+
+            {/* ================================================= */}
+            {/* LANCE-OBUS */}
+            {/* ================================================= */}
+
+            <button
+              type="button"
+              className="objet-armurerie"
+              style={{
+                "--couleur-rarete":
+                  rarete.couleur,
+              }}
+              onClick={() => {
+
+                setMessage("");
+
+                setObjetOuvert(true);
+              }}
+            >
+
+
+              {/* ================================================= */}
+              {/* NOM */}
+              {/* ================================================= */}
+
+              <div className="objet-armurerie-nom">
+                Lance-Obus
+              </div>
+
+
+              {/* ================================================= */}
+              {/* RARETÉ */}
+              {/* ================================================= */}
+
+              <div className="objet-armurerie-rarete">
+                ({rarete.nom})
+              </div>
+
+
+              {/* ================================================= */}
+              {/* IMAGE */}
+              {/* ================================================= */}
+
+              <div className="objet-armurerie-image">
+                💥
+              </div>
+
+
+              {/* ================================================= */}
+              {/* PRIX */}
+              {/* ================================================= */}
+
+              <div className="objet-armurerie-prix">
+
+                💰{" "}
+
+                {Number(
+                  objet.prix
+                ).toLocaleString(
+                  "fr-FR"
+                )}{" "}
+
+                Obus
+
+              </div>
+
+
+              {/* ================================================= */}
+              {/* BLOQUÉ */}
+              {/* ================================================= */}
+
+              {bloque && (
+
+                <div className="objet-armurerie-badge">
+                  🔒
+                </div>
+
+              )}
+
+            </button>
+
+          </div>
+
+        </section>
+
+      )}
+
+
+      {/* ================================================= */}
+      {/* FENÊTRE DU LANCE-OBUS */}
+      {/* ================================================= */}
+
+      {objetOuvert && (
+
+        <div
+          className="objet-detail-overlay"
+          onClick={() =>
+            setObjetOuvert(false)
+          }
+        >
+
+          <div
+            className="objet-detail-popup"
+            style={{
+              "--couleur-rarete":
+                rarete.couleur,
+            }}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+          >
+
+
+            {/* ================================================= */}
+            {/* FERMER */}
+            {/* ================================================= */}
+
+            <button
+              type="button"
+              className="objet-detail-fermer"
+              onClick={() =>
+                setObjetOuvert(false)
+              }
+            >
+              ✕
+            </button>
+
+
+            {/* ================================================= */}
+            {/* NOM */}
+            {/* ================================================= */}
+
+            <div className="objet-detail-nom">
+              Lance-Obus
+            </div>
+
+
+            <div className="objet-detail-rarete">
+              ({rarete.nom})
+            </div>
+
+
+            {/* ================================================= */}
+            {/* IMAGE */}
+            {/* ================================================= */}
+
+            <div className="objet-detail-image">
+              💥
+            </div>
+
+
+            {/* ================================================= */}
+            {/* DESCRIPTION */}
+            {/* ================================================= */}
+
+            <p>
+              Le Lance-Obus permet de
+              viser un autre membre de
+              La Tribu des Obus.
+            </p>
+
+
+            <div className="objet-detail-regles">
+
+              <p>
+                🎯 Maximum :{" "}
+                <strong>
+                  30 utilisations par jour
+                </strong>
+              </p>
+
+              <p>
+                💣 À chaque tir :{" "}
+                <strong>
+                  tu perds 1 Obus
+                </strong>
+              </p>
+
+              <p>
+                💥 La cible perd :{" "}
+                <strong>
+                  2 Obus
+                </strong>
+              </p>
+
+              <p>
+                🎒 Quantité maximale :{" "}
+                <strong>
+                  1 par membre
+                </strong>
+              </p>
+
+            </div>
+
+
+            {/* ================================================= */}
+            {/* PRIX */}
+            {/* ================================================= */}
+
+            <div className="objet-detail-prix">
+
+              💰{" "}
+
+              {Number(
+                objet.prix
+              ).toLocaleString(
+                "fr-FR"
+              )}{" "}
+
+              Obus
+
+            </div>
+
+
+            {/* ================================================= */}
+            {/* BLOQUÉ */}
+            {/* ================================================= */}
+
+            {bloque && (
+
+              <div className="objet-detail-bloque">
+
+                🔒 Le Lance-Obus a été
+                bloqué pour ton compte
+                par l&apos;administration.
+
+              </div>
+
+            )}
+
+
+            {/* ================================================= */}
+            {/* BOUTON ACHAT */}
+            {/* ================================================= */}
+
+            <button
+              type="button"
+              className="objet-detail-acheter"
+              onClick={
+                acheterLanceObus
+              }
+              disabled={
+                achatEnCours ||
+                bloque ||
+                possede ||
+                pasAssezObus
+              }
+            >
+              {texteBouton}
+            </button>
+
+
+            {/* ================================================= */}
+            {/* MESSAGE */}
+            {/* ================================================= */}
+
+            {message && (
+
+              <p className="objet-detail-message">
+                {message}
+              </p>
+
+            )}
+
+          </div>
+
+        </div>
+
+      )}
 
     </main>
   );
