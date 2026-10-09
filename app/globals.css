@@ -1005,3 +1005,713 @@ h1 {
     0 18px 55px
     rgba(0, 0, 0, 0.45);
 }
+
+/* ===================================================== */
+/* MAGASINS */
+/* 3 MAGASINS PAR LIGNE */
+/* ===================================================== */
+
+.liste-magasins {
+  width: 100%;
+  max-width: 680px;
+
+  margin: 28px auto 45px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 24px;
+}
+
+
+.case-magasin {
+  width: 100%;
+  min-width: 0;
+
+  min-height: 190px;
+
+  margin: 0;
+  padding: 22px 14px;
+
+  border: 1px solid #333;
+  border-radius: 18px;
+
+  background:
+    rgba(20, 20, 20, 0.92);
+
+  color: white;
+
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  text-align: center;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+
+.case-magasin:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    #e9bd58;
+}
+
+
+.case-magasin-active {
+  border-color:
+    rgba(
+      233,
+      189,
+      88,
+      0.7
+    );
+}
+
+
+.case-magasin-ferme {
+  opacity: 0.35;
+
+  cursor:
+    not-allowed;
+}
+
+
+.case-magasin-icon {
+  font-size: 46px;
+  line-height: 1;
+}
+
+
+.case-magasin strong {
+  font-size: 21px;
+}
+
+
+.case-magasin span:last-child {
+  color: #888;
+
+  font-size: 13px;
+}
+
+
+/* ===================================================== */
+/* ARMURERIE */
+/* ===================================================== */
+
+.armurerie-zone {
+  width: 100%;
+  max-width: 1000px;
+
+  margin:
+    0 auto 40px;
+}
+
+
+.armurerie-titre {
+  margin-bottom: 22px;
+
+  text-align: left;
+}
+
+
+.armurerie-titre h2 {
+  margin:
+    5px 0 0;
+
+  font-size: 30px;
+}
+
+
+/* ===================================================== */
+/* OBJETS DE L'ARMURERIE */
+/* 4 OBJETS PAR LIGNE */
+/* ===================================================== */
+
+.armurerie-grille {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+
+/* ===================================================== */
+/* CASE D'UN OBJET */
+/* ===================================================== */
+
+.objet-armurerie {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  min-height: 265px;
+
+  margin: 0;
+  padding: 15px;
+
+  border:
+    2px solid
+    var(
+      --couleur-rarete
+    );
+
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #191919 0%,
+      #0c0c0c 100%
+    );
+
+  color: white;
+
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  text-align: center;
+
+  box-shadow:
+    0 15px 35px
+    rgba(0, 0, 0, 0.4);
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+
+.objet-armurerie:hover {
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 18px 42px
+    rgba(0, 0, 0, 0.55);
+}
+
+
+/* ===================================================== */
+/* NOM */
+/* CONTOUR = COULEUR DE RARETÉ */
+/* ===================================================== */
+
+.objet-armurerie-nom {
+  width: 100%;
+
+  padding: 8px 6px;
+
+  border:
+    1px solid
+    var(
+      --couleur-rarete
+    );
+
+  border-radius: 9px;
+
+  font-size: 16px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.6px;
+}
+
+
+/* ===================================================== */
+/* RARETÉ */
+/* ===================================================== */
+
+.objet-armurerie-rarete {
+  margin:
+    7px 0 13px;
+
+  color:
+    var(
+      --couleur-rarete
+    );
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+
+/* ===================================================== */
+/* IMAGE */
+/* CONTOUR = COULEUR DE RARETÉ */
+/* ===================================================== */
+
+.objet-armurerie-image {
+  width: 92px;
+  height: 92px;
+
+  margin:
+    auto 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    2px solid
+    var(
+      --couleur-rarete
+    );
+
+  border-radius: 16px;
+
+  background:
+    radial-gradient(
+      circle,
+      #292929 0%,
+      #111 72%
+    );
+
+  font-size: 51px;
+
+  box-shadow:
+    0 0 24px
+    color-mix(
+      in srgb,
+      var(--couleur-rarete)
+      20%,
+      transparent
+    );
+}
+
+
+/* ===================================================== */
+/* PRIX */
+/* ===================================================== */
+
+.objet-armurerie-prix {
+  width: 100%;
+
+  margin-top: 15px;
+
+  color: #eee;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+
+/* ===================================================== */
+/* PETIT CADENAS SI BLOQUÉ */
+/* ===================================================== */
+
+.objet-armurerie-badge {
+  position: absolute;
+
+  top: 8px;
+  right: 8px;
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #c62828;
+
+  font-size: 13px;
+}
+
+
+/* ===================================================== */
+/* FOND DE LA FENÊTRE OBJET */
+/* ===================================================== */
+
+.objet-detail-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 10000;
+
+  padding: 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background:
+    rgba(0, 0, 0, 0.84);
+
+  backdrop-filter:
+    blur(5px);
+}
+
+
+/* ===================================================== */
+/* FENÊTRE DÉTAIL OBJET */
+/* CONTOUR = COULEUR DE RARETÉ */
+/* ===================================================== */
+
+.objet-detail-popup {
+  position: relative;
+
+  width: 100%;
+  max-width: 500px;
+
+  max-height: 90vh;
+
+  padding:
+    35px 28px 28px;
+
+  overflow-y: auto;
+
+  border:
+    2px solid
+    var(
+      --couleur-rarete
+    );
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #191919 0%,
+      #0d0d0d 100%
+    );
+
+  box-shadow:
+    0 25px 80px
+    rgba(0, 0, 0, 0.7);
+
+  text-align: center;
+}
+
+
+/* ===================================================== */
+/* FERMER */
+/* ===================================================== */
+
+.objet-detail-fermer {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 38px;
+  height: 38px;
+
+  margin: 0;
+  padding: 0;
+
+  border:
+    1px solid #444;
+
+  border-radius: 10px;
+
+  background: #222;
+
+  color: white;
+
+  font-size: 17px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+/* ===================================================== */
+/* NOM DANS LA FENÊTRE */
+/* ===================================================== */
+
+.objet-detail-nom {
+  max-width: 300px;
+
+  margin:
+    8px auto 0;
+
+  padding: 9px 15px;
+
+  border:
+    1px solid
+    var(
+      --couleur-rarete
+    );
+
+  border-radius: 10px;
+
+  font-size: 25px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+
+.objet-detail-rarete {
+  margin:
+    8px 0 18px;
+
+  color:
+    var(
+      --couleur-rarete
+    );
+
+  font-size: 14px;
+  font-weight: 900;
+}
+
+
+/* ===================================================== */
+/* IMAGE DANS LA FENÊTRE */
+/* ===================================================== */
+
+.objet-detail-image {
+  width: 125px;
+  height: 125px;
+
+  margin:
+    0 auto 22px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    2px solid
+    var(
+      --couleur-rarete
+    );
+
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle,
+      #292929 0%,
+      #111 72%
+    );
+
+  font-size: 68px;
+}
+
+
+/* ===================================================== */
+/* RÈGLES DU LANCE-OBUS */
+/* ===================================================== */
+
+.objet-detail-regles {
+  margin:
+    22px 0;
+
+  padding:
+    16px;
+
+  border:
+    1px solid #333;
+
+  border-radius: 12px;
+
+  background:
+    #0d0d0d;
+
+  text-align: left;
+}
+
+
+.objet-detail-regles p {
+  margin:
+    7px 0;
+
+  color: #aaa;
+
+  line-height: 1.45;
+}
+
+
+/* ===================================================== */
+/* PRIX DANS LA FENÊTRE */
+/* ===================================================== */
+
+.objet-detail-prix {
+  margin:
+    20px 0;
+
+  color: #e9bd58;
+
+  font-size: 23px;
+  font-weight: 900;
+}
+
+
+/* ===================================================== */
+/* OBJET BLOQUÉ */
+/* ===================================================== */
+
+.objet-detail-bloque {
+  margin-bottom: 15px;
+
+  padding: 13px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      82,
+      82,
+      0.4
+    );
+
+  border-radius: 10px;
+
+  background:
+    rgba(
+      198,
+      40,
+      40,
+      0.13
+    );
+
+  color: #ff7777;
+
+  font-weight: bold;
+}
+
+
+/* ===================================================== */
+/* ACHETER */
+/* ===================================================== */
+
+.objet-detail-acheter {
+  width: 100%;
+
+  margin-top: 5px;
+
+  padding: 15px;
+
+  border: 0;
+
+  border-radius: 10px;
+
+  background:
+    var(
+      --couleur-rarete
+    );
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.objet-detail-acheter:disabled {
+  opacity: 0.5;
+
+  cursor:
+    not-allowed;
+}
+
+
+/* ===================================================== */
+/* MESSAGE DANS LA FENÊTRE */
+/* ===================================================== */
+
+.objet-detail-message {
+  margin-top: 16px;
+
+  font-weight: bold;
+}
+
+
+/* ===================================================== */
+/* MAGASIN SUR TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+
+  .liste-magasins {
+    max-width: 420px;
+
+    grid-template-columns:
+      1fr;
+
+    gap: 14px;
+  }
+
+
+  .case-magasin {
+    min-height: 145px;
+  }
+
+
+  .armurerie-grille {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 14px;
+  }
+
+
+  .objet-armurerie {
+    min-height: 240px;
+
+    padding: 12px 9px;
+  }
+
+
+  .objet-armurerie-nom {
+    font-size: 13px;
+  }
+
+
+  .objet-armurerie-image {
+    width: 75px;
+    height: 75px;
+
+    font-size: 42px;
+  }
+
+
+  .objet-armurerie-prix {
+    font-size: 13px;
+  }
+
+
+  .objet-detail-popup {
+    max-width: 360px;
+
+    padding:
+      35px 16px 22px;
+  }
+
+}
