@@ -79,6 +79,12 @@ export default function InventairePage() {
   const [limite, setLimite] =
     useState(30);
 
+  // =====================================================
+// NOMBRE DE TIRS
+// =====================================================
+
+const [nombreTirs, setNombreTirs] =
+  useState("1");
   const [tirEnCours, setTirEnCours] =
   useState(false);
 
@@ -401,13 +407,35 @@ const [message, setMessage] =
   }
 
 
-  // =====================================================
+// =====================================================
 // TIRER AVEC LE LANCE-OBUS
 // =====================================================
 
 async function tirer() {
 
   setMessage("");
+
+
+  // =====================================================
+  // NOMBRE DE TIRS
+  // =====================================================
+
+  const tirs =
+    Number(nombreTirs);
+
+
+  if (
+    !Number.isInteger(tirs) ||
+    tirs < 1 ||
+    tirs > 30
+  ) {
+
+    setMessage(
+      "❌ Entre un nombre de tirs entre 1 et 30."
+    );
+
+    return;
+  }
 
 
   // =====================================================
@@ -428,17 +456,18 @@ async function tirer() {
   // LIMITE QUOTIDIENNE
   // =====================================================
 
+  const tirsRestants =
+    limite -
+    utilisations;
+
+
   if (
-    utilisations +
-    nombreTirs >
-    limite
+    tirs >
+    tirsRestants
   ) {
 
     setMessage(
-      `❌ Impossible. Il te reste seulement ${
-        limite -
-        utilisations
-      } tir(s) aujourd'hui.`
+      `❌ Il te reste seulement ${tirsRestants} tir(s) aujourd'hui.`
     );
 
     return;
@@ -446,16 +475,16 @@ async function tirer() {
 
 
   // =====================================================
-  // SOLDE DU TIREUR
+  // SOLDE
   // =====================================================
 
   if (
     Number(joueur.obus) <
-    nombreTirs
+    tirs
   ) {
 
     setMessage(
-      `❌ Il te faut ${nombreTirs} Obus pour effectuer ce tir.`
+      `❌ Il te faut ${tirs} Obus pour effectuer ce tir.`
     );
 
     return;
@@ -463,7 +492,7 @@ async function tirer() {
 
 
   // =====================================================
-  // JOUEUR CIBLE
+  // CIBLE CHOISIE
   // =====================================================
 
   const joueurCible =
@@ -474,7 +503,7 @@ async function tirer() {
 
 
   const degats =
-    nombreTirs * 2;
+    tirs * 2;
 
 
   // =====================================================
@@ -483,7 +512,7 @@ async function tirer() {
 
   const confirmation =
     window.confirm(
-      `Envoyer ${nombreTirs} Obus sur ${joueurCible?.pseudo} ?\n\nTu perdras ${nombreTirs} Obus.\n${joueurCible?.pseudo} perdra ${degats} Obus.`
+      `Tirer ${tirs} Obus sur ${joueurCible?.pseudo} ?\n\nTu perdras ${tirs} Obus.\n${joueurCible?.pseudo} perdra ${degats} Obus.`
     );
 
 
@@ -493,7 +522,7 @@ async function tirer() {
 
 
   // =====================================================
-  // TIR
+  // ENVOI
   // =====================================================
 
   setTirEnCours(true);
@@ -510,7 +539,7 @@ async function tirer() {
           cible,
 
         p_nombre_tirs:
-          nombreTirs,
+          tirs,
       }
     );
 
@@ -551,7 +580,7 @@ async function tirer() {
     Number(
       data?.utilisations ??
       utilisations +
-        nombreTirs
+        tirs
     )
   );
 
@@ -567,12 +596,10 @@ async function tirer() {
 
   setCible("");
 
-  setNombreTirs(1);
+  setNombreTirs("1");
 
   setTirEnCours(false);
 }
-
-
   // =====================================================
   // CHARGEMENT
   // =====================================================
@@ -1144,10 +1171,12 @@ async function tirer() {
                   >
 
                     {tirEnCours
-                      ? "💥 TIR EN COURS..."
-                      : utilisations >= limite
-                      ? "🚫 30 / 30 — LIMITE ATTEINTE"
-                      : `💥 TIRER ${nombreTirs} OBUS`}
+  ? "💥 TIR EN COURS..."
+  : utilisations >= limite
+  ? "🚫 30 / 30 — LIMITE ATTEINTE"
+  : `💥 TIRER ${
+      nombreTirs || 0
+    } OBUS`}
 
                   </button>
 
