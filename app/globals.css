@@ -2785,3 +2785,145 @@ h1 {
   }
 
 }
+
+
+/* ===================================================== */
+/* LANCE-OBUS - CHOIX DU NOMBRE DE TIRS */
+/* ===================================================== */
+
+.lance-obus-quantite {
+  margin:
+    22px 0;
+
+  padding:
+    16px;
+
+  border:
+    1px solid #333;
+
+  border-radius:
+    12px;
+
+  background:
+    #0d0d0d;
+}
+
+
+/* ===================================================== */
+/* LANCE-OBUS - BOUTONS 1 / 2 / 10 / 15 / 30 */
+/* ===================================================== */
+
+.lance-obus-quantite-boutons {
+  width: 100%;
+
+  margin-top:
+    12px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      5,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    8px;
+}
+
+
+.lance-obus-quantite-bouton {
+  width: 100%;
+
+  margin: 0;
+
+  padding:
+    11px 4px;
+
+  border:
+    1px solid #444;
+
+  border-radius:
+    9px;
+
+  background:
+    #181818;
+
+  color:
+    white;
+
+  font-size:
+    14px;
+
+  font-weight:
+    900;
+
+  cursor:
+    pointer;
+}
+
+
+.lance-obus-quantite-bouton:hover {
+  border-color:
+    var(--rarete);
+}
+
+
+.lance-obus-quantite-actif {
+  border-color:
+    var(--rarete);
+
+  background:
+    var(--rarete);
+
+  color:
+    white;
+}
+
+
+.lance-obus-quantite-bouton:disabled {
+  opacity:
+    0.25;
+
+  cursor:
+    not-allowed;
+}
+
+
+/* ===================================================== */
+/* LANCE-OBUS - COÛT ET DÉGÂTS */
+/* ===================================================== */
+
+.lance-obus-degats {
+  margin:
+    13px 0 0;
+
+  color:
+    #999;
+
+  font-size:
+    13px;
+}
+
+
+/* ===================================================== */
+/* LANCE-OBUS - QUANTITÉS SUR TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+
+  .lance-obus-quantite-boutons {
+    gap:
+      5px;
+  }
+
+
+  .lance-obus-quantite-bouton {
+    padding:
+      10px 2px;
+
+    font-size:
+      12px;
+  }
+
+}
