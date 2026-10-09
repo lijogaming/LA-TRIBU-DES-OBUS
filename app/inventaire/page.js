@@ -422,7 +422,7 @@ const [message, setMessage] =
 // TIRER AVEC LE LANCE-OBUS
 // =====================================================
 
-async function tirer() {
+function tirer() {
 
   setMessage("");
 
@@ -513,30 +513,62 @@ async function tirer() {
     );
 
 
+  if (!joueurCible) {
+
+    setMessage(
+      "❌ Cible introuvable."
+    );
+
+    return;
+  }
+
+
   const degats =
     tirs * 2;
 
 
   // =====================================================
-  // CONFIRMATION
+  // OUVRIR LA CONFIRMATION
   // =====================================================
 
-  const confirmation =
-    window.confirm(
-      `Tirer ${tirs} Obus sur ${joueurCible?.pseudo} ?\n\nTu perdras ${tirs} Obus.\n${joueurCible?.pseudo} perdra ${degats} Obus.`
-    );
+  setTirEnAttente({
+    cibleId:
+      joueurCible.id,
+
+    ciblePseudo:
+      joueurCible.pseudo,
+
+    tirs:
+      tirs,
+
+    degats:
+      degats,
+  });
 
 
-  if (!confirmation) {
+  setModalConfirmationOuverte(
+    true
+  );
+}
+
+
+// =====================================================
+// CONFIRMER LE TIR
+// =====================================================
+
+async function confirmerTir() {
+
+  if (
+    !tirEnAttente ||
+    tirEnCours
+  ) {
     return;
   }
 
 
-  // =====================================================
-  // ENVOI
-  // =====================================================
-
   setTirEnCours(true);
+
+  setMessage("");
 
 
   const {
@@ -547,10 +579,10 @@ async function tirer() {
       "utiliser_lance_obus",
       {
         p_cible_id:
-          cible,
+          tirEnAttente.cibleId,
 
         p_nombre_tirs:
-          tirs,
+          tirEnAttente.tirs,
       }
     );
 
@@ -563,6 +595,14 @@ async function tirer() {
     );
 
     setTirEnCours(false);
+
+    setModalConfirmationOuverte(
+      false
+    );
+
+    setTirEnAttente(
+      null
+    );
 
     return;
   }
@@ -591,7 +631,7 @@ async function tirer() {
     Number(
       data?.utilisations ??
       utilisations +
-        tirs
+        tirEnAttente.tirs
     )
   );
 
@@ -601,15 +641,54 @@ async function tirer() {
   // =====================================================
 
   setMessage(
-    `💥 ${data?.cible || joueurCible?.pseudo} a pris ${data?.degats || degats} Obus dans la tête !`
+    `💥 ${
+      data?.cible ||
+      tirEnAttente.ciblePseudo
+    } a pris ${
+      data?.degats ||
+      tirEnAttente.degats
+    } Obus dans la tête !`
   );
 
+
+  // =====================================================
+  // FERMER LA CONFIRMATION
+  // =====================================================
+
+  setModalConfirmationOuverte(
+    false
+  );
+
+  setTirEnAttente(
+    null
+  );
 
   setCible("");
 
   setNombreTirs("1");
 
   setTirEnCours(false);
+}
+
+
+// =====================================================
+// ANNULER LE TIR
+// =====================================================
+
+function annulerTir() {
+
+  if (tirEnCours) {
+    return;
+  }
+
+
+  setModalConfirmationOuverte(
+    false
+  );
+
+  setTirEnAttente(
+    null
+  );
 }
   // =====================================================
   // CHARGEMENT
@@ -1234,7 +1313,210 @@ async function tirer() {
 
         );
 
-      })()}
+            })()}
+
+
+      {/* ================================================= */}
+      {/* CONFIRMATION DU TIR */}
+      {/* ================================================= */}
+
+      {modalConfirmationOuverte &&
+        tirEnAttente && (
+
+        <div
+          className="tir-confirmation-overlay"
+          onClick={
+            annulerTir
+          }
+        >
+
+          <div
+            className="tir-confirmation-popup"
+            onClick={(e) =>
+              e.stopPropagation()
+            }
+          >
+
+
+            {/* =========================================== */}
+            {/* FERMER */}
+            {/* =========================================== */}
+
+            <button
+              type="button"
+              className="tir-confirmation-fermer"
+              onClick={
+                annulerTir
+              }
+              disabled={
+                tirEnCours
+              }
+            >
+              ✕
+            </button>
+
+
+            {/* =========================================== */}
+            {/* TITRE */}
+            {/* =========================================== */}
+
+            <p className="tir-confirmation-label">
+              CONFIRMATION DU TIR
+            </p>
+
+
+            <h2 className="tir-confirmation-titre">
+              LANCE-OBUS
+            </h2>
+
+
+            {/* =========================================== */}
+            {/* IMAGE */}
+            {/* =========================================== */}
+
+            <div className="tir-confirmation-image">
+              💥
+            </div>
+
+
+            {/* =========================================== */}
+            {/* QUESTION */}
+            {/* =========================================== */}
+
+            <p className="tir-confirmation-question">
+
+              Es-tu sûr de vouloir tirer sur
+
+              <strong>
+                {" "}
+                {tirEnAttente.ciblePseudo}
+                {" "}
+              </strong>
+
+              ?
+
+            </p>
+
+
+            {/* =========================================== */}
+            {/* RÉCAPITULATIF */}
+            {/* =========================================== */}
+
+            <div className="tir-confirmation-resume">
+
+
+              <div className="tir-confirmation-ligne">
+
+                <span>
+                  🎯 Cible
+                </span>
+
+                <strong>
+                  {tirEnAttente.ciblePseudo}
+                </strong>
+
+              </div>
+
+
+              <div className="tir-confirmation-ligne">
+
+                <span>
+                  💣 Nombre de tirs
+                </span>
+
+                <strong>
+                  {tirEnAttente.tirs}
+                </strong>
+
+              </div>
+
+
+              <div className="tir-confirmation-ligne">
+
+                <span>
+                  💰 Ton coût
+                </span>
+
+                <strong>
+                  -{tirEnAttente.tirs} Obus
+                </strong>
+
+              </div>
+
+
+              <div className="tir-confirmation-ligne tir-confirmation-degats">
+
+                <span>
+                  💥 Dégâts cible
+                </span>
+
+                <strong>
+                  -{tirEnAttente.degats} Obus
+                </strong>
+
+              </div>
+
+
+            </div>
+
+
+            {/* =========================================== */}
+            {/* AVERTISSEMENT */}
+            {/* =========================================== */}
+
+            <p className="tir-confirmation-avertissement">
+              Le tir sera immédiatement appliqué après confirmation.
+            </p>
+
+
+            {/* =========================================== */}
+            {/* BOUTONS */}
+            {/* =========================================== */}
+
+            <div className="tir-confirmation-actions">
+
+
+              <button
+                type="button"
+                className="tir-confirmation-annuler"
+                onClick={
+                  annulerTir
+                }
+                disabled={
+                  tirEnCours
+                }
+              >
+                ANNULER
+              </button>
+
+
+              <button
+                type="button"
+                className="tir-confirmation-confirmer"
+                onClick={
+                  confirmerTir
+                }
+                disabled={
+                  tirEnCours
+                }
+              >
+
+                {tirEnCours
+                  ? "💥 TIR EN COURS..."
+                  : "💥 CONFIRMER LE TIR"}
+
+              </button>
+
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+      )}
+
 
     </main>
   );
