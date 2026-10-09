@@ -128,8 +128,8 @@ h1 {
   margin: 25px auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  columnGap: "28px",
-  rowGap: "28px",
+  column-gap: 28px;
+  row-gap: 28px;
 }
 
 .menu-card {
