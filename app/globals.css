@@ -2927,3 +2927,69 @@ h1 {
   }
 
 }
+/* ===================================================== */
+/* LANCE-OBUS - NOMBRE DE TIRS */
+/* ===================================================== */
+
+.lance-obus-quantite {
+  margin: 22px 0;
+
+  padding: 16px;
+
+  border: 1px solid #333;
+  border-radius: 12px;
+
+  background: #0d0d0d;
+}
+
+
+.lance-obus-quantite input {
+  width: 100%;
+
+  padding: 15px;
+
+  border:
+    1px solid var(--rarete);
+
+  border-radius: 10px;
+
+  background: #111;
+
+  color: white;
+
+  font-size: 20px;
+  font-weight: 900;
+
+  text-align: center;
+
+  outline: none;
+}
+
+
+.lance-obus-quantite input:focus {
+  box-shadow:
+    0 0 0 2px
+    rgba(59, 130, 246, 0.2);
+}
+
+
+/* ===================================================== */
+/* LANCE-OBUS - RÉSUMÉ DU TIR */
+/* ===================================================== */
+
+.lance-obus-resume {
+  margin-top: 14px;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  background: #151515;
+}
+
+
+.lance-obus-resume p {
+  margin: 5px 0;
+
+  font-size: 13px;
+}
