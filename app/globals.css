@@ -1715,3 +1715,601 @@ h1 {
   }
 
 }
+
+/* ===================================================== */
+/* PAGE MAGASIN - LISTE DES MAGASINS */
+/* ===================================================== */
+
+.magasins-grid {
+  width: 100%;
+  max-width: 680px;
+
+  margin: 28px auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 24px;
+}
+
+
+.magasin-card {
+  width: 100%;
+  min-width: 0;
+  min-height: 210px;
+
+  margin: 0;
+  padding: 22px 14px;
+
+  border: 1px solid #333;
+  border-radius: 18px;
+
+  background:
+    rgba(20, 20, 20, 0.92);
+
+  color: white;
+
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+
+.magasin-card:hover {
+  transform:
+    translateY(-2px);
+
+  border-color:
+    #e9bd58;
+}
+
+
+.magasin-card-icon {
+  margin-bottom: 10px;
+
+  font-size: 48px;
+}
+
+
+.magasin-card h2 {
+  margin:
+    8px 0;
+
+  font-size: 22px;
+}
+
+
+.magasin-card p {
+  margin: 4px 0;
+
+  color: #888;
+
+  font-size: 14px;
+}
+
+
+.magasin-card-ferme {
+  opacity: 0.35;
+
+  cursor:
+    not-allowed;
+}
+
+
+/* ===================================================== */
+/* ARMURERIE - GRILLE DES ARMES */
+/* 4 ARMES PAR LIGNE */
+/* ===================================================== */
+
+.armurerie-grille {
+  width: 100%;
+  max-width: 1000px;
+
+  margin:
+    35px auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 20px;
+}
+
+
+/* ===================================================== */
+/* CARTE D'UNE ARME */
+/* ===================================================== */
+
+.arme-card {
+  position: relative;
+
+  width: 100%;
+  min-width: 0;
+
+  min-height: 265px;
+
+  margin: 0;
+  padding: 16px 14px;
+
+  border:
+    2px solid
+    var(--rarete);
+
+  border-radius: 16px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #191919 0%,
+      #0c0c0c 100%
+    );
+
+  color: white;
+
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+
+  text-align: center;
+
+  box-shadow:
+    0 15px 35px
+    rgba(0, 0, 0, 0.4);
+
+  transition:
+    transform 0.15s ease;
+}
+
+
+.arme-card:hover {
+  transform:
+    translateY(-3px);
+}
+
+
+/* ===================================================== */
+/* NOM DE L'ARME */
+/* ===================================================== */
+
+.arme-card-nom {
+  width: 100%;
+
+  color: white;
+
+  font-size: 16px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.6px;
+}
+
+
+/* ===================================================== */
+/* RARETÉ */
+/* ===================================================== */
+
+.arme-card-rarete {
+  margin:
+    5px 0 14px;
+
+  color:
+    var(--rarete);
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+
+/* ===================================================== */
+/* IMAGE DE L'ARME */
+/* ===================================================== */
+
+.arme-card-image {
+  width: 92px;
+  height: 92px;
+
+  margin:
+    auto 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    2px solid
+    var(--rarete);
+
+  border-radius: 16px;
+
+  background:
+    radial-gradient(
+      circle,
+      #292929 0%,
+      #111 72%
+    );
+
+  font-size: 51px;
+}
+
+
+/* ===================================================== */
+/* PRIX */
+/* ===================================================== */
+
+.arme-card-prix {
+  width: 100%;
+
+  margin-top: 16px;
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 900;
+}
+
+
+/* ===================================================== */
+/* CADENAS */
+/* ===================================================== */
+
+.arme-card-cadenas {
+  position: absolute;
+
+  top: 8px;
+  right: 8px;
+
+  width: 27px;
+  height: 27px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #c62828;
+
+  font-size: 12px;
+}
+
+
+/* ===================================================== */
+/* FOND FENÊTRE DÉTAIL ARME */
+/* ===================================================== */
+
+.arme-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 10000;
+
+  padding: 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background:
+    rgba(0, 0, 0, 0.84);
+
+  backdrop-filter:
+    blur(5px);
+}
+
+
+/* ===================================================== */
+/* FENÊTRE DÉTAIL ARME */
+/* ===================================================== */
+
+.arme-popup {
+  position: relative;
+
+  width: 100%;
+  max-width: 500px;
+
+  max-height: 90vh;
+
+  padding:
+    38px 28px 28px;
+
+  overflow-y: auto;
+
+  border:
+    2px solid
+    var(--rarete);
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      #191919,
+      #0d0d0d
+    );
+
+  text-align: center;
+
+  box-shadow:
+    0 25px 80px
+    rgba(0, 0, 0, 0.7);
+}
+
+
+/* ===================================================== */
+/* FERMER */
+/* ===================================================== */
+
+.arme-popup-fermer {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 38px;
+  height: 38px;
+
+  margin: 0;
+  padding: 0;
+
+  border:
+    1px solid #444;
+
+  border-radius: 10px;
+
+  background: #222;
+
+  color: white;
+
+  cursor: pointer;
+}
+
+
+/* ===================================================== */
+/* RARETÉ FENÊTRE */
+/* ===================================================== */
+
+.arme-popup-rarete {
+  margin-bottom: 18px;
+
+  color:
+    var(--rarete);
+
+  font-weight: 900;
+}
+
+
+/* ===================================================== */
+/* IMAGE FENÊTRE */
+/* ===================================================== */
+
+.arme-popup-image {
+  width: 125px;
+  height: 125px;
+
+  margin:
+    0 auto 22px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    2px solid
+    var(--rarete);
+
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      circle,
+      #292929,
+      #111
+    );
+
+  font-size: 68px;
+}
+
+
+/* ===================================================== */
+/* RÈGLES */
+/* ===================================================== */
+
+.arme-popup-regles {
+  margin:
+    22px 0;
+
+  padding:
+    16px;
+
+  border:
+    1px solid #333;
+
+  border-radius: 12px;
+
+  background: #0d0d0d;
+
+  text-align: left;
+}
+
+
+.arme-popup-regles p {
+  margin:
+    7px 0;
+}
+
+
+/* ===================================================== */
+/* PRIX FENÊTRE */
+/* ===================================================== */
+
+.arme-popup-prix {
+  margin:
+    20px 0;
+
+  color: #e9bd58;
+
+  font-size: 23px;
+  font-weight: 900;
+}
+
+
+/* ===================================================== */
+/* BLOQUÉ */
+/* ===================================================== */
+
+.arme-popup-bloque {
+  margin-bottom: 15px;
+
+  padding: 13px;
+
+  border:
+    1px solid
+    rgba(
+      255,
+      82,
+      82,
+      0.4
+    );
+
+  border-radius: 10px;
+
+  background:
+    rgba(
+      198,
+      40,
+      40,
+      0.13
+    );
+
+  color: #ff7777;
+
+  font-weight: bold;
+}
+
+
+/* ===================================================== */
+/* BOUTON ACHETER */
+/* ===================================================== */
+
+.arme-popup-acheter {
+  width: 100%;
+
+  padding: 15px;
+
+  border: 0;
+
+  border-radius: 10px;
+
+  background:
+    var(--rarete);
+
+  color: white;
+
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+
+.arme-popup-acheter:disabled {
+  opacity: 0.5;
+
+  cursor:
+    not-allowed;
+}
+
+
+/* ===================================================== */
+/* MESSAGE */
+/* ===================================================== */
+
+.arme-popup-message {
+  margin-top: 16px;
+
+  font-weight: bold;
+}
+
+
+/* ===================================================== */
+/* MAGASIN + ARMURERIE SUR TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+
+  .magasins-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 14px;
+  }
+
+
+  .magasin-card {
+    min-height: 165px;
+
+    padding: 17px 10px;
+  }
+
+
+  .armurerie-grille {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 14px;
+  }
+
+
+  .arme-card {
+    min-height: 235px;
+
+    padding:
+      13px 9px;
+  }
+
+
+  .arme-card-nom {
+    font-size: 14px;
+  }
+
+
+  .arme-card-image {
+    width: 75px;
+    height: 75px;
+
+    font-size: 42px;
+  }
+
+
+  .arme-card-prix {
+    font-size: 13px;
+  }
+
+}
