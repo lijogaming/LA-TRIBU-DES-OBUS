@@ -80,11 +80,19 @@ export default function InventairePage() {
     useState(30);
 
   const [tirEnCours, setTirEnCours] =
-    useState(false);
+  useState(false);
 
-  const [message, setMessage] =
-    useState("");
 
+// =====================================================
+// NOMBRE D'OBUS À TIRER
+// =====================================================
+
+const [nombreTirs, setNombreTirs] =
+  useState(1);
+
+
+const [message, setMessage] =
+  useState("");
 
   // =====================================================
   // INITIALISATION
@@ -394,120 +402,175 @@ export default function InventairePage() {
 
 
   // =====================================================
-  // TIRER AVEC LE LANCE-OBUS
+// TIRER AVEC LE LANCE-OBUS
+// =====================================================
+
+async function tirer() {
+
+  setMessage("");
+
+
+  // =====================================================
+  // CIBLE
   // =====================================================
 
-  async function tirer() {
-
-    setMessage("");
-
-
-    if (!cible) {
-
-      setMessage(
-        "❌ Choisis un membre de la Tribu."
-      );
-
-      return;
-    }
-
-
-    if (
-      utilisations >=
-      limite
-    ) {
-
-      setMessage(
-        "❌ Tu as déjà utilisé le Lance-Obus 30 fois aujourd'hui."
-      );
-
-      return;
-    }
-
-
-    const joueurCible =
-      cibles.find(
-        (j) =>
-          j.id === cible
-      );
-
-
-    const confirmation =
-      window.confirm(
-        `Tirer un Obus sur ${joueurCible?.pseudo} ?`
-      );
-
-
-    if (!confirmation) {
-      return;
-    }
-
-
-    setTirEnCours(true);
-
-
-    const {
-      data,
-      error,
-    } =
-      await supabase.rpc(
-        "utiliser_lance_obus",
-        {
-          p_cible_id:
-            cible,
-        }
-      );
-
-
-    if (error) {
-
-      setMessage(
-        "❌ " +
-        error.message
-      );
-
-      setTirEnCours(false);
-
-      return;
-    }
-
-
-    // =====================================================
-    // NOUVEAU SOLDE
-    // =====================================================
-
-    setJoueur(
-      (ancien) => ({
-        ...ancien,
-
-        obus:
-          data?.nouveau_solde ??
-          ancien.obus,
-      })
-    );
-
-
-    // =====================================================
-    // NOUVEAU COMPTEUR
-    // =====================================================
-
-    setUtilisations(
-      Number(
-        data?.utilisations ??
-        utilisations + 1
-      )
-    );
-
+  if (!cible) {
 
     setMessage(
-      `💥 ${data?.cible || joueurCible?.pseudo} a pris 2 Obus dans la tête !`
+      "❌ Choisis un membre de la Tribu."
+    );
+
+    return;
+  }
+
+
+  // =====================================================
+  // LIMITE QUOTIDIENNE
+  // =====================================================
+
+  if (
+    utilisations +
+    nombreTirs >
+    limite
+  ) {
+
+    setMessage(
+      `❌ Impossible. Il te reste seulement ${
+        limite -
+        utilisations
+      } tir(s) aujourd'hui.`
+    );
+
+    return;
+  }
+
+
+  // =====================================================
+  // SOLDE DU TIREUR
+  // =====================================================
+
+  if (
+    Number(joueur.obus) <
+    nombreTirs
+  ) {
+
+    setMessage(
+      `❌ Il te faut ${nombreTirs} Obus pour effectuer ce tir.`
+    );
+
+    return;
+  }
+
+
+  // =====================================================
+  // JOUEUR CIBLE
+  // =====================================================
+
+  const joueurCible =
+    cibles.find(
+      (j) =>
+        j.id === cible
     );
 
 
-    setCible("");
+  const degats =
+    nombreTirs * 2;
+
+
+  // =====================================================
+  // CONFIRMATION
+  // =====================================================
+
+  const confirmation =
+    window.confirm(
+      `Envoyer ${nombreTirs} Obus sur ${joueurCible?.pseudo} ?\n\nTu perdras ${nombreTirs} Obus.\n${joueurCible?.pseudo} perdra ${degats} Obus.`
+    );
+
+
+  if (!confirmation) {
+    return;
+  }
+
+
+  // =====================================================
+  // TIR
+  // =====================================================
+
+  setTirEnCours(true);
+
+
+  const {
+    data,
+    error,
+  } =
+    await supabase.rpc(
+      "utiliser_lance_obus",
+      {
+        p_cible_id:
+          cible,
+
+        p_nombre_tirs:
+          nombreTirs,
+      }
+    );
+
+
+  if (error) {
+
+    setMessage(
+      "❌ " +
+      error.message
+    );
 
     setTirEnCours(false);
+
+    return;
   }
+
+
+  // =====================================================
+  // NOUVEAU SOLDE
+  // =====================================================
+
+  setJoueur(
+    (ancien) => ({
+      ...ancien,
+
+      obus:
+        data?.nouveau_solde ??
+        ancien.obus,
+    })
+  );
+
+
+  // =====================================================
+  // NOUVEAU COMPTEUR
+  // =====================================================
+
+  setUtilisations(
+    Number(
+      data?.utilisations ??
+      utilisations +
+        nombreTirs
+    )
+  );
+
+
+  // =====================================================
+  // MESSAGE
+  // =====================================================
+
+  setMessage(
+    `💥 ${data?.cible || joueurCible?.pseudo} a pris ${data?.degats || degats} Obus dans la tête !`
+  );
+
+
+  setCible("");
+
+  setNombreTirs(1);
+
+  setTirEnCours(false);
+}
 
 
   // =====================================================
@@ -941,7 +1004,76 @@ export default function InventairePage() {
                     </strong>
 
                   </div>
+{/* ===================================== */}
+{/* NOMBRE D'OBUS À TIRER */}
+{/* ===================================== */}
 
+<div className="lance-obus-quantite">
+
+  <p className="label">
+    NOMBRE D&apos;OBUS À TIRER
+  </p>
+
+
+  <div className="lance-obus-quantite-boutons">
+
+    {[1, 2, 10, 15, 30].map(
+      (nombre) => {
+
+        const depasseLimite =
+          utilisations +
+          nombre >
+          limite;
+
+        return (
+
+          <button
+            type="button"
+            key={nombre}
+            disabled={
+              tirEnCours ||
+              depasseLimite
+            }
+            className={
+              nombreTirs ===
+              nombre
+                ? "lance-obus-quantite-bouton lance-obus-quantite-actif"
+                : "lance-obus-quantite-bouton"
+            }
+            onClick={() =>
+              setNombreTirs(
+                nombre
+              )
+            }
+          >
+            {nombre}
+          </button>
+
+        );
+      }
+    )}
+
+  </div>
+
+
+  <p className="lance-obus-degats">
+
+    Tu dépenses{" "}
+    <strong>
+      {nombreTirs} Obus
+    </strong>
+
+    {" • "}
+
+    La cible perd{" "}
+
+    <strong>
+      {nombreTirs * 2} Obus
+    </strong>
+
+  </p>
+
+</div>
 
                   {/* ===================================== */}
                   {/* CIBLE */}
@@ -1015,7 +1147,7 @@ export default function InventairePage() {
                       ? "💥 TIR EN COURS..."
                       : utilisations >= limite
                       ? "🚫 30 / 30 — LIMITE ATTEINTE"
-                      : "💥 TIRER"}
+                      : `💥 TIRER ${nombreTirs} OBUS`}
 
                   </button>
 
