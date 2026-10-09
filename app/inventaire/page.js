@@ -79,22 +79,19 @@ export default function InventairePage() {
   const [limite, setLimite] =
     useState(30);
 
-  // =====================================================
+// =====================================================
 // NOMBRE DE TIRS
 // =====================================================
 
 const [nombreTirs, setNombreTirs] =
   useState("1");
-  const [tirEnCours, setTirEnCours] =
+
+const [tirEnCours, setTirEnCours] =
   useState(false);
 
 
-// =====================================================
-// NOMBRE D'OBUS À TIRER
-// =====================================================
-
-const [nombreTirs, setNombreTirs] =
-  useState(1);
+const [message, setMessage] =
+  useState("");
 
 
 const [message, setMessage] =
@@ -1042,66 +1039,86 @@ async function tirer() {
   </p>
 
 
-  <div className="lance-obus-quantite-boutons">
+  <input
+    type="number"
+    min="1"
+    max="30"
+    step="1"
+    value={nombreTirs}
+    onChange={(e) => {
 
-    {[1, 2, 10, 15, 30].map(
-      (nombre) => {
+      const valeur =
+        e.target.value;
 
-        const depasseLimite =
-          utilisations +
-          nombre >
-          limite;
 
-        return (
+      if (valeur === "") {
 
-          <button
-            type="button"
-            key={nombre}
-            disabled={
-              tirEnCours ||
-              depasseLimite
-            }
-            className={
-              nombreTirs ===
-              nombre
-                ? "lance-obus-quantite-bouton lance-obus-quantite-actif"
-                : "lance-obus-quantite-bouton"
-            }
-            onClick={() =>
-              setNombreTirs(
-                nombre
-              )
-            }
-          >
-            {nombre}
-          </button>
+        setNombreTirs("");
 
+        return;
+      }
+
+
+      const nombre =
+        Number(valeur);
+
+
+      if (
+        Number.isInteger(nombre) &&
+        nombre >= 1 &&
+        nombre <= 30
+      ) {
+
+        setNombreTirs(
+          valeur
         );
       }
-    )}
 
-  </div>
+    }}
+    placeholder="Entre un nombre de 1 à 30"
+  />
 
 
-  <p className="lance-obus-degats">
+  {/* ===================================== */}
+  {/* RÉSUMÉ DU TIR */}
+  {/* ===================================== */}
 
-    Tu dépenses{" "}
-    <strong>
-      {nombreTirs} Obus
-    </strong>
+  {nombreTirs &&
+    Number(nombreTirs) >= 1 && (
 
-    {" • "}
+    <div className="lance-obus-resume">
 
-    La cible perd{" "}
+      <p>
+        💣 Tu dépenses :{" "}
+        <strong>
+          {Number(nombreTirs)} Obus
+        </strong>
+      </p>
 
-    <strong>
-      {nombreTirs * 2} Obus
-    </strong>
 
-  </p>
+      <p>
+        💥 La cible perd :{" "}
+        <strong>
+          {Number(nombreTirs) * 2} Obus
+        </strong>
+      </p>
+
+
+      <p>
+        🎯 Compteur après tir :{" "}
+        <strong>
+          {utilisations +
+            Number(nombreTirs)}
+          {" / "}
+          {limite}
+        </strong>
+      </p>
+
+    </div>
+
+  )}
 
 </div>
-
                   {/* ===================================== */}
                   {/* CIBLE */}
                   {/* ===================================== */}
