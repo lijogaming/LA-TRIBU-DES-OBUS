@@ -87,12 +87,8 @@ export default function InventairePage() {
 const [nombreTirs, setNombreTirs] =
   useState("1");
 
-
 const [tirEnCours, setTirEnCours] =
   useState(false);
-const [tirEnCours, setTirEnCours] =
-  useState(false);
-
 
 // =====================================================
 // CONFIRMATION DU TIR
