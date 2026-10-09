@@ -2786,221 +2786,13 @@ h1 {
 
 }
 
-
-/* ===================================================== */
-/* LANCE-OBUS - CHOIX DU NOMBRE DE TIRS */
-/* ===================================================== */
-
-.lance-obus-quantite {
-  margin:
-    22px 0;
-
-  padding:
-    16px;
-
-  border:
-    1px solid #333;
-
-  border-radius:
-    12px;
-
-  background:
-    #0d0d0d;
-}
-
-
-/* ===================================================== */
-/* LANCE-OBUS - BOUTONS 1 / 2 / 10 / 15 / 30 */
-/* ===================================================== */
-
-.lance-obus-quantite-boutons {
-  width: 100%;
-
-  margin-top:
-    12px;
-
-  display: grid;
-
-  grid-template-columns:
-    repeat(
-      5,
-      minmax(0, 1fr)
-    );
-
-  gap:
-    8px;
-}
-
-
-.lance-obus-quantite-bouton {
-  width: 100%;
-
-  margin: 0;
-
-  padding:
-    11px 4px;
-
-  border:
-    1px solid #444;
-
-  border-radius:
-    9px;
-
-  background:
-    #181818;
-
-  color:
-    white;
-
-  font-size:
-    14px;
-
-  font-weight:
-    900;
-
-  cursor:
-    pointer;
-}
-
-
-.lance-obus-quantite-bouton:hover {
-  border-color:
-    var(--rarete);
-}
-
-
-.lance-obus-quantite-actif {
-  border-color:
-    var(--rarete);
-
-  background:
-    var(--rarete);
-
-  color:
-    white;
-}
-
-
-.lance-obus-quantite-bouton:disabled {
-  opacity:
-    0.25;
-
-  cursor:
-    not-allowed;
-}
-
-
-/* ===================================================== */
-/* LANCE-OBUS - COÛT ET DÉGÂTS */
-/* ===================================================== */
-
-.lance-obus-degats {
-  margin:
-    13px 0 0;
-
-  color:
-    #999;
-
-  font-size:
-    13px;
-}
-
-
-/* ===================================================== */
-/* LANCE-OBUS - QUANTITÉS SUR TÉLÉPHONE */
-/* ===================================================== */
-
-@media (max-width: 700px) {
-
-  .lance-obus-quantite-boutons {
-    gap:
-      5px;
-  }
-
-
-  .lance-obus-quantite-bouton {
-    padding:
-      10px 2px;
-
-    font-size:
-      12px;
-  }
-
-}
-/* ===================================================== */
-/* LANCE-OBUS - NOMBRE DE TIRS */
-/* ===================================================== */
-
-.lance-obus-quantite {
-  margin: 22px 0;
-
-  padding: 16px;
-
-  border: 1px solid #333;
-  border-radius: 12px;
-
-  background: #0d0d0d;
-}
-
-
-.lance-obus-quantite input {
-  width: 100%;
-
-  padding: 15px;
-
-  border:
-    1px solid var(--rarete);
-
-  border-radius: 10px;
-
-  background: #111;
-
-  color: white;
-
-  font-size: 20px;
-  font-weight: 900;
-
-  text-align: center;
-
-  outline: none;
-}
-
-
-.lance-obus-quantite input:focus {
-  box-shadow:
-    0 0 0 2px
-    rgba(59, 130, 246, 0.2);
-}
-
-
-/* ===================================================== */
-/* LANCE-OBUS - RÉSUMÉ DU TIR */
-/* ===================================================== */
-
-.lance-obus-resume {
-  margin-top: 14px;
-
-  padding: 12px;
-
-  border-radius: 10px;
-
-  background: #151515;
-}
-
-
-.lance-obus-resume p {
-  margin: 5px 0;
-
-  font-size: 13px;
-}
-
-
 /* ===================================================== */
 /* LANCE-OBUS - NOMBRE D'OBUS À TIRER */
 /* ===================================================== */
 
 .lance-obus-quantite {
   margin: 22px 0;
+
   padding: 16px;
 
   border: 1px solid #333;
@@ -3009,6 +2801,10 @@ h1 {
   background: #0d0d0d;
 }
 
+
+/* ===================================================== */
+/* LANCE-OBUS - CASE DU NOMBRE */
+/* ===================================================== */
 
 .lance-obus-quantite input {
   width: 100%;
@@ -3046,9 +2842,12 @@ h1 {
 
 .lance-obus-resume {
   margin-top: 14px;
+
   padding: 12px;
 
-  border: 1px solid #292929;
+  border:
+    1px solid #292929;
+
   border-radius: 10px;
 
   background: #151515;
