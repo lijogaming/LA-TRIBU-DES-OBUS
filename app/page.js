@@ -234,7 +234,7 @@ const [reseauxOuverts, setReseauxOuverts] =
 
           options: {
             redirectTo:
-              `${window.location.origin}/auth/callback`,
+              "https://latribudesobus.com/auth/callback",
 
             scopes:
               "https://www.googleapis.com/auth/youtube.readonly",
