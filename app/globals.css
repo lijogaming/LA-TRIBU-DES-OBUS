@@ -3649,3 +3649,348 @@ h1 {
   }
 
 }
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - 3 CLASSEMENTS */
+/* ===================================================== */
+
+.classements-publics-zone {
+  width: 100%;
+  max-width: 1050px;
+
+  margin:
+    35px auto 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 16px;
+
+  align-items: stretch;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - COLONNE DE CLASSEMENT */
+/* ===================================================== */
+
+.classement-public-colonne.card {
+  width: 100%;
+  max-width: none;
+
+  margin: 0;
+
+  padding:
+    24px 16px;
+
+  border:
+    1px solid #333;
+
+  border-radius:
+    16px;
+
+  background:
+    rgba(
+      20,
+      20,
+      20,
+      0.95
+    );
+}
+
+
+.classement-public-colonne h2 {
+  margin:
+    10px 0 20px;
+
+  font-size:
+    24px;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - LISTE */
+/* ===================================================== */
+
+.classement-public-colonne
+.classement-public-liste {
+  width: 100%;
+
+  margin-top: 15px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - LIGNE */
+/* ===================================================== */
+
+.classement-public-colonne
+.classement-public-ligne {
+  width: 100%;
+  min-height: 62px;
+
+  padding:
+    9px 10px;
+
+  display: grid;
+
+  grid-template-columns:
+    42px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 9px;
+
+  border:
+    1px solid #303030;
+
+  border-radius:
+    11px;
+
+  background:
+    #111;
+
+  text-align: left;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - TOP 3 */
+/* ===================================================== */
+
+.classement-public-colonne
+.classement-public-ligne:nth-child(1) {
+  border-color:
+    rgba(
+      233,
+      189,
+      88,
+      0.75
+    );
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(
+        233,
+        189,
+        88,
+        0.11
+      ),
+      #111 55%
+    );
+}
+
+
+.classement-public-colonne
+.classement-public-ligne:nth-child(2) {
+  border-color:
+    rgba(
+      190,
+      190,
+      190,
+      0.55
+    );
+}
+
+
+.classement-public-colonne
+.classement-public-ligne:nth-child(3) {
+  border-color:
+    rgba(
+      190,
+      120,
+      65,
+      0.55
+    );
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - POSITION */
+/* ===================================================== */
+
+.classement-public-colonne
+.classement-public-position {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  font-size:
+    17px;
+
+  font-weight:
+    900;
+}
+
+
+.classement-public-colonne
+.classement-public-ligne:nth-child(-n + 3)
+.classement-public-position {
+  font-size:
+    22px;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - JOUEUR */
+/* ===================================================== */
+
+.classement-public-colonne
+.classement-public-joueur {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+
+.classement-public-colonne
+.classement-public-joueur strong {
+  color:
+    white;
+
+  font-size:
+    14px;
+
+  font-weight:
+    900;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+.classement-public-colonne
+.classement-public-joueur span {
+  color:
+    #888;
+
+  font-size:
+    11px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - OBUS */
+/* ===================================================== */
+
+.classement-public-colonne
+.classement-public-obus {
+  color:
+    #e9bd58;
+
+  font-size:
+    11px;
+
+  font-weight:
+    900;
+
+  text-align:
+    left;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - CASE INVITATION */
+/* ===================================================== */
+
+.classement-public-invitation-case {
+  width: 100%;
+  max-width: 1050px;
+
+  margin:
+    18px auto 0;
+
+  padding:
+    20px 25px;
+
+  border:
+    1px solid
+    rgba(
+      233,
+      189,
+      88,
+      0.55
+    );
+
+  background:
+    rgba(
+      20,
+      20,
+      20,
+      0.95
+    );
+}
+
+
+.classement-public-invitation-case
+.classement-public-invitation {
+  margin:
+    0 !important;
+
+  color:
+    #e9bd58 !important;
+
+  font-size:
+    16px;
+
+  font-weight:
+    900;
+
+  text-align:
+    center;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - CLASSEMENTS TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 900px) {
+
+  .classements-publics-zone {
+    max-width:
+      620px;
+
+    grid-template-columns:
+      1fr;
+
+    gap:
+      16px;
+  }
+
+
+  .classement-public-colonne.card {
+    padding:
+      24px 16px;
+  }
+
+
+  .classement-public-invitation-case {
+    max-width:
+      620px;
+  }
+
+}
