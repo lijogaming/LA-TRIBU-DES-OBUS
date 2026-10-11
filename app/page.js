@@ -775,7 +775,7 @@ if (!user) {
           <span>
             Le classement permet de suivre la progression
             des membres de la Tribu selon leurs Obus,
-            leurs lives et leurs grades.
+            le nombre de lives auxquels ils ont participé et leurs grades.
           </span>
 
         </div>
