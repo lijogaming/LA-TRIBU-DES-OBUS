@@ -49,6 +49,75 @@ export default function Home() {
 
 const [reseauxOuverts, setReseauxOuverts] =
   useState(false);
+
+  // =====================================================
+// CLASSEMENT PUBLIC
+// =====================================================
+
+const [
+  classementPublic,
+  setClassementPublic,
+] = useState([]);
+
+const [
+  chargementClassementPublic,
+  setChargementClassementPublic,
+] = useState(true);
+
+
+// =====================================================
+// CHARGER LE CLASSEMENT PUBLIC
+// =====================================================
+
+useEffect(() => {
+
+  chargerClassementPublic();
+
+}, []);
+
+
+async function chargerClassementPublic() {
+
+  setChargementClassementPublic(
+    true
+  );
+
+
+  const {
+    data,
+    error,
+  } =
+    await supabase.rpc(
+      "lister_classement_public"
+    );
+
+
+  if (error) {
+
+    console.error(
+      "Erreur classement public :",
+      error
+    );
+
+    setClassementPublic([]);
+
+    setChargementClassementPublic(
+      false
+    );
+
+    return;
+  }
+
+
+  setClassementPublic(
+    data || []
+  );
+
+
+  setChargementClassementPublic(
+    false
+  );
+}
   
   // =====================================================
   // DONS D'OBUS
@@ -582,122 +651,544 @@ const [reseauxOuverts, setReseauxOuverts] =
   }
 
   // =====================================================
-  // NON CONNECTÉ
-  // =====================================================
+// NON CONNECTÉ
+// =====================================================
 
-  if (!user) {
-    return (
-      <main className="container">
-        <div className="logo">
-  <Image
-    src="/logo-obus.png"
-    alt="Logo La Tribu des Obus"
-    width={150}
-    height={150}
-    priority
-    style={{
-      width: "150px",
-      height: "auto",
-    }}
-  />
-</div>
+if (!user) {
+  return (
+    <main className="container">
 
-        <h1>
+
+      {/* ================================================= */}
+      {/* IDENTITÉ DE LA TRIBU */}
+      {/* ================================================= */}
+
+      <div className="logo">
+
+        <Image
+          src="/logo-obus.png"
+          alt="Logo La Tribu des Obus"
+          width={150}
+          height={150}
+          priority
+          style={{
+            width: "150px",
+            height: "auto",
+          }}
+        />
+
+      </div>
+
+
+      <h1>
+        LA TRIBU DES OBUS
+      </h1>
+
+
+      <p className="subtitle">
+        Le jeu communautaire interactif lié aux lives
+        YouTube de La Tribu des Obus.
+      </p>
+
+
+      {/* ================================================= */}
+      {/* PRÉSENTATION DE L'APPLICATION */}
+      {/* ================================================= */}
+
+      <div className="card">
+
+        <p className="label">
           LA TRIBU DES OBUS
-        </h1>
-
-        <p className="subtitle">
-          Rejoins la Tribu,
-          participe aux lives et
-          monte dans les grades.
         </p>
 
-        <div className="card">
-          <p className="label">
-            TON AVENTURE COMMENCE ICI
-          </p>
 
-          <h2>
-            Bienvenue dans La Tribu
-            des Obus.
-          </h2>
+        <h2>
+          Participe aux lives et fais évoluer ton profil
+        </h2>
 
-          <p>
-            Connecte-toi avec ton
-            compte Google pour
-            accéder à ton profil,
-            consulter ton grade et
-            voir ton sac
-            d&apos;Obus.
-          </p>
 
-          <div className="legal-consent">
+        <p>
+          La Tribu des Obus est une application communautaire
+          associée aux lives YouTube de La Tribu des Obus.
+        </p>
 
-  <label>
-    <input
-      type="checkbox"
-      checked={conditionsAcceptees}
-      onChange={(e) =>
-        setConditionsAcceptees(
-          e.target.checked
-        )
-      }
-    />
 
-    <span>
-      J’ai lu et j’accepte les{" "}
-      <a
-        href="/cgu"
-        target="_blank"
-      >
-        CGU
-      </a>
-      {" "}et la{" "}
-      <a
-        href="/confidentialite"
-        target="_blank"
-      >
-        Politique de confidentialité
-      </a>.
-      {" "}J’accepte également les{" "}
-      <a
-        href="https://www.youtube.com/t/terms"
-        target="_blank"
-        rel="noreferrer"
-      >
-        Conditions d’utilisation de YouTube
-      </a>.
-    </span>
-  </label>
+        <p>
+          Les membres peuvent participer aux lives,
+          gagner des Obus, progresser dans les grades,
+          consulter leur classement et utiliser différentes
+          fonctionnalités du jeu.
+        </p>
 
-</div>
 
-<button
-  onClick={
-    connexionGoogle
-  }
-  disabled={
-    !conditionsAcceptees
-  }
-  style={{
-    opacity:
-      conditionsAcceptees
-        ? 1
-        : 0.45,
+        <p>
+          Chaque membre possède son propre profil avec
+          son grade, son nombre d&apos;Obus, sa progression
+          et les objets qu&apos;il possède.
+        </p>
 
-    cursor:
-      conditionsAcceptees
-        ? "pointer"
-        : "not-allowed",
-  }}
->
-  Se connecter avec Google
-</button>
+      </div>
+
+
+      {/* ================================================= */}
+      {/* FONCTIONNALITÉS */}
+      {/* ================================================= */}
+
+      <div className="features">
+
+        <div>
+
+          <strong>
+            💣 LES OBUS
+          </strong>
+
+          <span>
+            Les membres peuvent gagner des Obus grâce
+            à leur participation aux lives et les utiliser
+            dans les différentes fonctionnalités du jeu.
+          </span>
+
         </div>
-      </main>
-    );
-  }
 
+
+        <div>
+
+          <strong>
+            🎖️ LES GRADES
+          </strong>
+
+          <span>
+            Les membres progressent dans les grades
+            de La Tribu des Obus en participant aux
+            différents lives YouTube.
+          </span>
+
+        </div>
+
+
+        <div>
+
+          <strong>
+            🏆 LE CLASSEMENT
+          </strong>
+
+          <span>
+            Le classement permet de suivre la progression
+            des membres de la Tribu selon leurs Obus,
+            leurs lives et leurs grades.
+          </span>
+
+        </div>
+
+
+        <div>
+
+          <strong>
+            🛒 LE MAGASIN
+          </strong>
+
+          <span>
+            Les membres peuvent utiliser leurs Obus
+            pour acheter certains objets disponibles
+            dans les magasins du jeu.
+          </span>
+
+        </div>
+
+
+        <div>
+
+          <strong>
+            🎒 L&apos;INVENTAIRE
+          </strong>
+
+          <span>
+            Les objets obtenus sont conservés dans
+            l&apos;inventaire personnel du membre et peuvent
+            proposer différentes fonctionnalités.
+          </span>
+
+        </div>
+
+
+        <div>
+
+          <strong>
+            🎮 INTERACTIONS
+          </strong>
+
+          <span>
+            Certaines fonctionnalités permettent aux
+            membres d&apos;interagir entre eux dans le cadre
+            du jeu et de la communauté.
+          </span>
+
+        </div>
+
+      </div>
+
+
+      {/* ================================================= */}
+      {/* GOOGLE ET YOUTUBE */}
+      {/* ================================================= */}
+
+      <div
+        className="card"
+        style={{
+          marginTop: "35px",
+        }}
+      >
+
+        <p className="label">
+          CONNEXION GOOGLE ET YOUTUBE
+        </p>
+
+
+        <h2>
+          Pourquoi demandons-nous un accès YouTube ?
+        </h2>
+
+
+        <p>
+          La Tribu des Obus utilise la connexion Google
+          afin d&apos;identifier le membre et d&apos;associer
+          son compte YouTube à son profil dans le jeu.
+        </p>
+
+
+        <p>
+          L&apos;autorisation YouTube demandée permet
+          d&apos;accéder en lecture aux informations YouTube
+          nécessaires au fonctionnement de certaines
+          fonctionnalités de La Tribu des Obus.
+        </p>
+
+
+        <p>
+          Elle est notamment utilisée pour vérifier
+          certaines actions nécessaires à la progression
+          du membre dans le jeu, comme son abonnement
+          à la chaîne YouTube de La Tribu des Obus et
+          le like du live demandé pour devenir Soldat.
+        </p>
+
+
+        <p>
+          Ces informations sont utilisées uniquement
+          pour faire fonctionner les fonctionnalités
+          de La Tribu des Obus, associer le bon compte
+          YouTube au bon joueur et appliquer les règles
+          de progression liées aux lives.
+        </p>
+
+
+        <p>
+          La connexion Google n&apos;est pas nécessaire
+          pour consulter cette page d&apos;accueil,
+          les Conditions générales d&apos;utilisation
+          ou la Politique de confidentialité.
+        </p>
+
+      </div>
+
+
+      {/* ================================================= */}
+      {/* CONFIDENTIALITÉ */}
+      {/* ================================================= */}
+
+      <div
+        className="card"
+        style={{
+          marginTop: "35px",
+        }}
+      >
+
+        <p className="label">
+          VIE PRIVÉE ET TRANSPARENCE
+        </p>
+
+
+        <h2>
+          Tes données et La Tribu des Obus
+        </h2>
+
+
+        <p>
+          Tu peux consulter notre Politique de
+          confidentialité pour connaître les informations
+          utilisées par l&apos;application et la manière
+          dont elles sont traitées.
+        </p>
+
+
+        <a
+          href="/confidentialite"
+          style={{
+            color: "#e9bd58",
+            fontWeight: "900",
+            fontSize: "16px",
+          }}
+        >
+          Consulter la Politique de confidentialité
+        </a>
+
+
+        <br />
+        <br />
+
+
+        <a
+          href="/cgu"
+          style={{
+            color: "#e9bd58",
+            fontWeight: "900",
+            fontSize: "16px",
+          }}
+        >
+          Consulter les Conditions générales d&apos;utilisation
+        </a>
+
+      </div>
+
+      {/* ================================================= */}
+      {/* CLASSEMENT PUBLIC */}
+      {/* ================================================= */}
+
+      <div
+        className="card classement-public-accueil"
+        style={{
+          marginTop: "35px",
+        }}
+      >
+
+        <p className="label">
+          🏆 CLASSEMENT DE LA TRIBU
+        </p>
+
+
+        <h2>
+          Les meilleurs membres
+        </h2>
+
+
+        <p>
+          Découvre les membres qui possèdent actuellement
+          le plus d&apos;Obus dans La Tribu des Obus.
+        </p>
+
+
+        {/* ============================================= */}
+        {/* CHARGEMENT */}
+        {/* ============================================= */}
+
+        {chargementClassementPublic && (
+
+          <p className="classement-public-message">
+            Chargement du classement...
+          </p>
+
+        )}
+
+
+        {/* ============================================= */}
+        {/* CLASSEMENT VIDE */}
+        {/* ============================================= */}
+
+        {!chargementClassementPublic &&
+          classementPublic.length === 0 && (
+
+          <p className="classement-public-message">
+            Aucun membre dans le classement pour le moment.
+          </p>
+
+        )}
+
+
+        {/* ============================================= */}
+        {/* TOP 10 */}
+        {/* ============================================= */}
+
+        {!chargementClassementPublic &&
+          classementPublic.length > 0 && (
+
+          <div className="classement-public-liste">
+
+            {classementPublic.map(
+              (membre, index) => (
+
+                <div
+                  className="classement-public-ligne"
+                  key={`${membre.pseudo}-${index}`}
+                >
+
+                  <div className="classement-public-position">
+
+                    {index === 0
+                      ? "🥇"
+                      : index === 1
+                      ? "🥈"
+                      : index === 2
+                      ? "🥉"
+                      : `${index + 1}`}
+
+                  </div>
+
+
+                  <div className="classement-public-joueur">
+
+                    <strong>
+                      {membre.pseudo}
+                    </strong>
+
+                    <span>
+                      🎖️ {membre.grade}
+                    </span>
+
+                  </div>
+
+
+                  <div className="classement-public-obus">
+
+                    💰{" "}
+
+                    {Number(
+                      membre.obus ?? 0
+                    ).toLocaleString(
+                      "fr-FR"
+                    )}
+
+                    {" "}Obus
+
+                  </div>
+
+                </div>
+
+              )
+            )}
+
+          </div>
+
+        )}
+
+
+        <p className="classement-public-invitation">
+          Rejoins la Tribu et tente de grimper dans le classement !
+        </p>
+
+      </div>
+
+      {/* ================================================= */}
+      {/* CONNEXION */}
+      {/* ================================================= */}
+
+      <div
+        className="card"
+        style={{
+          marginTop: "35px",
+        }}
+      >
+
+        <p className="label">
+          REJOINDRE LA TRIBU
+        </p>
+
+
+        <h2>
+          Ton aventure commence ici
+        </h2>
+
+
+        <p>
+          La présentation du site et les informations
+          relatives à la confidentialité sont accessibles
+          librement. La connexion Google est uniquement
+          nécessaire pour accéder à ton profil de joueur
+          et aux fonctionnalités personnalisées du jeu.
+        </p>
+
+
+        <div className="legal-consent">
+
+          <label>
+
+            <input
+              type="checkbox"
+              checked={
+                conditionsAcceptees
+              }
+              onChange={(e) =>
+                setConditionsAcceptees(
+                  e.target.checked
+                )
+              }
+            />
+
+
+            <span>
+
+              J&apos;ai lu et j&apos;accepte les{" "}
+
+              <a
+                href="/cgu"
+                target="_blank"
+              >
+                CGU
+              </a>
+
+              {" "}et la{" "}
+
+              <a
+                href="/confidentialite"
+                target="_blank"
+              >
+                Politique de confidentialité
+              </a>.
+
+              {" "}J&apos;accepte également les{" "}
+
+              <a
+                href="https://www.youtube.com/t/terms"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Conditions d&apos;utilisation de YouTube
+              </a>.
+
+            </span>
+
+          </label>
+
+        </div>
+
+
+        <button
+          onClick={
+            connexionGoogle
+          }
+          disabled={
+            !conditionsAcceptees
+          }
+          style={{
+            opacity:
+              conditionsAcceptees
+                ? 1
+                : 0.45,
+
+            cursor:
+              conditionsAcceptees
+                ? "pointer"
+                : "not-allowed",
+          }}
+        >
+          Se connecter avec Google
+        </button>
+
+      </div>
+
+
+    </main>
+  );
+}
   // =====================================================
   // ADMIN SANS FICHE JOUEUR
   // =====================================================
