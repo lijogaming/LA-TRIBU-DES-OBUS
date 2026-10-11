@@ -687,7 +687,7 @@ if (!user) {
 
       <p className="subtitle">
         Le jeu communautaire interactif lié aux lives
-        YouTube de La Tribu des Obus.
+        YouTube des chaînes de Lijo.
       </p>
 
 
@@ -709,13 +709,13 @@ if (!user) {
 
         <p>
           La Tribu des Obus est une application communautaire
-          associée aux lives YouTube de La Tribu des Obus.
+          associée aux lives YouTube des chaînes de Lijo.
         </p>
 
 
         <p>
-          Les membres peuvent participer aux lives,
-          gagner des Obus, progresser dans les grades,
+          Les membres peuvent participer aux lives YouTube
+          de Lijo, gagner des Obus, progresser dans les grades,
           consulter leur classement et utiliser différentes
           fonctionnalités du jeu.
         </p>
@@ -760,7 +760,7 @@ if (!user) {
           <span>
             Les membres progressent dans les grades
             de La Tribu des Obus en participant aux
-            différents lives YouTube.
+            différents lives YouTube de Lijo.
           </span>
 
         </div>
@@ -852,7 +852,8 @@ if (!user) {
         <p>
           La Tribu des Obus utilise la connexion Google
           afin d&apos;identifier le membre et d&apos;associer
-          son compte YouTube à son profil dans le jeu.
+          son compte YouTube à son profil dans le jeu
+          communautaire de Lijo.
         </p>
 
 
@@ -868,8 +869,8 @@ if (!user) {
           Elle est notamment utilisée pour vérifier
           certaines actions nécessaires à la progression
           du membre dans le jeu, comme son abonnement
-          à la chaîne YouTube de La Tribu des Obus et
-          le like du live demandé pour devenir Soldat.
+          aux chaînes YouTube de Lijo et le like
+          du live demandé pour devenir Soldat.
         </p>
 
 
