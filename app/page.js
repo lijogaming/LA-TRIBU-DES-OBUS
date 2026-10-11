@@ -951,133 +951,265 @@ if (!user) {
 
       </div>
 
-      {/* ================================================= */}
+           {/* ================================================= */}
       {/* CLASSEMENT PUBLIC */}
       {/* ================================================= */}
 
-      <div
-        className="card classement-public-accueil"
-        style={{
-          marginTop: "35px",
-        }}
-      >
-
-        <p className="label">
-          🏆 CLASSEMENT DE LA TRIBU
-        </p>
-
-
-        <h2>
-          Les meilleurs membres
-        </h2>
-
-
-        <p>
-          Découvre les membres qui possèdent actuellement
-          le plus d&apos;Obus dans La Tribu des Obus.
-        </p>
-
+      <div className="classements-publics-zone">
 
         {/* ============================================= */}
-        {/* CHARGEMENT */}
+        {/* CLASSEMENT PAR GRADES */}
         {/* ============================================= */}
 
-        {chargementClassementPublic && (
+        <div className="card classement-public-colonne">
 
-          <p className="classement-public-message">
-            Chargement du classement...
+          <p className="label">
+            🎖️ CLASSEMENT
           </p>
 
-        )}
+          <h2>
+            Grades
+          </h2>
+
+
+          {chargementClassementPublic ? (
+
+            <p className="classement-public-message">
+              Chargement...
+            </p>
+
+          ) : (
+
+            <div className="classement-public-liste">
+
+              {classementPublic
+                .filter(
+                  (membre) =>
+                    membre.classement ===
+                    "grade"
+                )
+                .map(
+                  (membre, index) => (
+
+                    <div
+                      className="classement-public-ligne"
+                      key={`grade-${membre.pseudo}-${index}`}
+                    >
+
+                      <div className="classement-public-position">
+
+                        {Number(membre.rang) === 1
+                          ? "🥇"
+                          : Number(membre.rang) === 2
+                          ? "🥈"
+                          : Number(membre.rang) === 3
+                          ? "🥉"
+                          : `#${membre.rang}`}
+
+                      </div>
+
+
+                      <div className="classement-public-joueur">
+
+                        <strong>
+                          {membre.pseudo}
+                        </strong>
+
+                        <span>
+                          🎖️ {membre.grade}
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                  )
+                )}
+
+            </div>
+
+          )}
+
+        </div>
 
 
         {/* ============================================= */}
-        {/* CLASSEMENT VIDE */}
+        {/* CLASSEMENT PAR LIVES TOTAL */}
         {/* ============================================= */}
 
-        {!chargementClassementPublic &&
-          classementPublic.length === 0 && (
+        <div className="card classement-public-colonne">
 
-          <p className="classement-public-message">
-            Aucun membre dans le classement pour le moment.
+          <p className="label">
+            📺 CLASSEMENT
           </p>
 
-        )}
+          <h2>
+            Lives total
+          </h2>
+
+
+          {chargementClassementPublic ? (
+
+            <p className="classement-public-message">
+              Chargement...
+            </p>
+
+          ) : (
+
+            <div className="classement-public-liste">
+
+              {classementPublic
+                .filter(
+                  (membre) =>
+                    membre.classement ===
+                    "lives"
+                )
+                .map(
+                  (membre, index) => (
+
+                    <div
+                      className="classement-public-ligne"
+                      key={`lives-${membre.pseudo}-${index}`}
+                    >
+
+                      <div className="classement-public-position">
+
+                        {Number(membre.rang) === 1
+                          ? "🥇"
+                          : Number(membre.rang) === 2
+                          ? "🥈"
+                          : Number(membre.rang) === 3
+                          ? "🥉"
+                          : `#${membre.rang}`}
+
+                      </div>
+
+
+                      <div className="classement-public-joueur">
+
+                        <strong>
+                          {membre.pseudo}
+                        </strong>
+
+                        <span>
+                          📺{" "}
+                          {Number(
+                            membre.total_lives ?? 0
+                          ).toLocaleString(
+                            "fr-FR"
+                          )}{" "}
+                          lives
+                        </span>
+
+                      </div>
+
+                    </div>
+
+                  )
+                )}
+
+            </div>
+
+          )}
+
+        </div>
 
 
         {/* ============================================= */}
-        {/* TOP 10 */}
+        {/* CLASSEMENT PAR OBUS */}
         {/* ============================================= */}
 
-        {!chargementClassementPublic &&
-          classementPublic.length > 0 && (
+        <div className="card classement-public-colonne">
 
-          <div className="classement-public-liste">
+          <p className="label">
+            💰 CLASSEMENT
+          </p>
 
-            {classementPublic.map(
-              (membre, index) => (
-
-                <div
-                  className="classement-public-ligne"
-                  key={`${membre.pseudo}-${index}`}
-                >
-
-                  <div className="classement-public-position">
-
-                    {index === 0
-                      ? "🥇"
-                      : index === 1
-                      ? "🥈"
-                      : index === 2
-                      ? "🥉"
-                      : `${index + 1}`}
-
-                  </div>
+          <h2>
+            Obus
+          </h2>
 
 
-                  <div className="classement-public-joueur">
+          {chargementClassementPublic ? (
 
-                    <strong>
-                      {membre.pseudo}
-                    </strong>
+            <p className="classement-public-message">
+              Chargement...
+            </p>
 
-                    <span>
-                      🎖️ {membre.grade}
-                    </span>
+          ) : (
 
-                  </div>
+            <div className="classement-public-liste">
+
+              {classementPublic
+                .filter(
+                  (membre) =>
+                    membre.classement ===
+                    "obus"
+                )
+                .map(
+                  (membre, index) => (
+
+                    <div
+                      className="classement-public-ligne"
+                      key={`obus-${membre.pseudo}-${index}`}
+                    >
+
+                      <div className="classement-public-position">
+
+                        {Number(membre.rang) === 1
+                          ? "🥇"
+                          : Number(membre.rang) === 2
+                          ? "🥈"
+                          : Number(membre.rang) === 3
+                          ? "🥉"
+                          : `#${membre.rang}`}
+
+                      </div>
 
 
-                  <div className="classement-public-obus">
+                      <div className="classement-public-joueur">
 
-                    💰{" "}
+                        <strong>
+                          {membre.pseudo}
+                        </strong>
 
-                    {Number(
-                      membre.obus ?? 0
-                    ).toLocaleString(
-                      "fr-FR"
-                    )}
+                        <span className="classement-public-obus">
+                          💰{" "}
+                          {Number(
+                            membre.obus ?? 0
+                          ).toLocaleString(
+                            "fr-FR"
+                          )}{" "}
+                          Obus
+                        </span>
 
-                    {" "}Obus
+                      </div>
 
-                  </div>
+                    </div>
 
-                </div>
+                  )
+                )}
 
-              )
-            )}
+            </div>
 
-          </div>
+          )}
 
-        )}
+        </div>
 
+      </div>
+
+
+      {/* ================================================= */}
+      {/* INVITATION CLASSEMENT */}
+      {/* ================================================= */}
+
+      <div className="card classement-public-invitation-case">
 
         <p className="classement-public-invitation">
           Rejoins la Tribu et tente de grimper dans le classement !
         </p>
 
       </div>
-
       {/* ================================================= */}
       {/* CONNEXION */}
       {/* ================================================= */}
