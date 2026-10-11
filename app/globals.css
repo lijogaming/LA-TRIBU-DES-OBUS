@@ -3292,3 +3292,360 @@ h1 {
   }
 
 }
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - CLASSEMENT */
+/* ===================================================== */
+
+.classement-public-accueil {
+  width: 100%;
+  max-width: 720px;
+
+  padding:
+    32px 28px;
+
+  border:
+    2px solid
+    rgba(
+      233,
+      189,
+      88,
+      0.55
+    );
+
+  background:
+    linear-gradient(
+      180deg,
+      #191919 0%,
+      #0d0d0d 100%
+    );
+
+  box-shadow:
+    0 20px 55px
+    rgba(0, 0, 0, 0.45);
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - LISTE DU CLASSEMENT */
+/* ===================================================== */
+
+.classement-public-liste {
+  width: 100%;
+
+  margin-top: 25px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - LIGNE D'UN MEMBRE */
+/* ===================================================== */
+
+.classement-public-ligne {
+  width: 100%;
+  min-height: 68px;
+
+  padding:
+    10px 15px;
+
+  display: grid;
+
+  grid-template-columns:
+    55px
+    minmax(0, 1fr)
+    auto;
+
+  align-items: center;
+
+  gap: 12px;
+
+  border:
+    1px solid #303030;
+
+  border-radius:
+    12px;
+
+  background:
+    #121212;
+
+  text-align: left;
+
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+
+.classement-public-ligne:hover {
+  transform:
+    translateY(-1px);
+
+  border-color:
+    rgba(
+      233,
+      189,
+      88,
+      0.6
+    );
+
+  background:
+    #181818;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - TOP 3 */
+/* ===================================================== */
+
+.classement-public-ligne:nth-child(1) {
+  border-color:
+    rgba(
+      233,
+      189,
+      88,
+      0.8
+    );
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(
+        233,
+        189,
+        88,
+        0.10
+      ),
+      #121212 45%
+    );
+}
+
+
+.classement-public-ligne:nth-child(2) {
+  border-color:
+    rgba(
+      190,
+      190,
+      190,
+      0.55
+    );
+}
+
+
+.classement-public-ligne:nth-child(3) {
+  border-color:
+    rgba(
+      190,
+      120,
+      65,
+      0.55
+    );
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - POSITION */
+/* ===================================================== */
+
+.classement-public-position {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color:
+    #aaa;
+
+  font-size:
+    21px;
+
+  font-weight:
+    900;
+
+  text-align: center;
+}
+
+
+.classement-public-ligne:nth-child(-n + 3)
+.classement-public-position {
+  font-size:
+    27px;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - JOUEUR */
+/* ===================================================== */
+
+.classement-public-joueur {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 5px;
+}
+
+
+.classement-public-joueur strong {
+  color:
+    #f5f5f5;
+
+  font-size:
+    16px;
+
+  font-weight:
+    900;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+.classement-public-joueur span {
+  color:
+    #888;
+
+  font-size:
+    12px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - OBUS */
+/* ===================================================== */
+
+.classement-public-obus {
+  color:
+    #e9bd58;
+
+  font-size:
+    14px;
+
+  font-weight:
+    900;
+
+  white-space: nowrap;
+
+  text-align: right;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - MESSAGES */
+/* ===================================================== */
+
+.classement-public-message {
+  margin:
+    25px 0 10px;
+
+  padding:
+    18px;
+
+  border:
+    1px solid #303030;
+
+  border-radius:
+    10px;
+
+  background:
+    #111;
+
+  color:
+    #888;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - INVITATION */
+/* ===================================================== */
+
+.classement-public-invitation {
+  margin:
+    22px 0 0 !important;
+
+  color:
+    #e9bd58 !important;
+
+  font-size:
+    14px;
+
+  font-weight:
+    900;
+}
+
+
+/* ===================================================== */
+/* ACCUEIL PUBLIC - CLASSEMENT SUR TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+
+  .classement-public-accueil {
+    padding:
+      25px 14px;
+  }
+
+
+  .classement-public-ligne {
+    min-height:
+      62px;
+
+    padding:
+      9px 10px;
+
+    grid-template-columns:
+      42px
+      minmax(0, 1fr)
+      auto;
+
+    gap:
+      8px;
+  }
+
+
+  .classement-public-position {
+    font-size:
+      18px;
+  }
+
+
+  .classement-public-ligne:nth-child(-n + 3)
+  .classement-public-position {
+    font-size:
+      23px;
+  }
+
+
+  .classement-public-joueur strong {
+    font-size:
+      14px;
+  }
+
+
+  .classement-public-joueur span {
+    font-size:
+      11px;
+  }
+
+
+  .classement-public-obus {
+    font-size:
+      12px;
+  }
+
+}
