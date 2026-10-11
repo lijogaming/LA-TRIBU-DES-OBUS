@@ -199,45 +199,124 @@ export default function ConfidentialitePage() {
         </section>
 
 
-        {/* ================================================= */}
-        {/* PRESTATAIRES */}
+               {/* ================================================= */}
+        {/* PARTAGE DES DONNÉES GOOGLE */}
         {/* ================================================= */}
 
         <section className="legal-section">
           <h2>
-            5. Prestataires techniques
+            5. Partage, transfert et divulgation des données Google
           </h2>
 
           <p>
-            Le fonctionnement du service repose notamment sur :
+            Les données obtenues par l&apos;intermédiaire de Google
+            et des API YouTube sont utilisées uniquement pour
+            fournir les fonctionnalités de La Tribu des Obus.
+          </p>
+
+          <p>
+            Elles ne sont ni vendues, ni louées, ni utilisées
+            à des fins publicitaires ou de profilage commercial.
+          </p>
+
+          <p>
+            Certaines de ces données peuvent être traitées par
+            les prestataires techniques nécessaires au
+            fonctionnement de l&apos;application :
           </p>
 
           <ul>
             <li>
-              Supabase pour l’authentification et la base de données ;
+              <strong>Supabase</strong>, utilisé pour
+              l&apos;authentification, la gestion des comptes
+              utilisateurs et la base de données ;
             </li>
 
             <li>
-              Vercel pour l’hébergement du site ;
+              <strong>Vercel</strong>, utilisé pour
+              l&apos;hébergement et l&apos;exécution de
+              l&apos;application web ;
             </li>
 
             <li>
-              Google pour l’authentification ;
-            </li>
-
-            <li>
-              YouTube pour les fonctionnalités utilisant
-              YouTube API Services.
+              <strong>Google et YouTube</strong>, utilisés pour
+              l&apos;authentification Google et les fonctionnalités
+              reposant sur les YouTube API Services.
             </li>
           </ul>
 
           <p>
+            Ces prestataires ne reçoivent ou ne traitent les
+            données que dans la mesure nécessaire à la fourniture
+            de leurs services techniques et au fonctionnement
+            de La Tribu des Obus.
+          </p>
+
+          <p>
+            Les données utilisateur Google ne sont pas partagées,
+            transférées ou divulguées à d&apos;autres tiers pour
+            des finalités publicitaires, commerciales ou de revente.
+          </p>
+
+          <p>
             Certains prestataires peuvent traiter des données
-            en dehors de l’Espace économique européen selon
-            leurs propres mécanismes juridiques applicables.
+            en dehors de l&apos;Espace économique européen selon
+            les mécanismes juridiques et garanties applicables
+            à leurs services.
           </p>
         </section>
 
+
+        {/* ================================================= */}
+        {/* PROTECTION DES DONNÉES */}
+        {/* ================================================= */}
+
+        <section className="legal-section">
+          <h2>
+            6. Protection et sécurité des données
+          </h2>
+
+          <p>
+            La Tribu des Obus met en œuvre des mesures techniques
+            et organisationnelles destinées à protéger les données
+            personnelles et les données utilisateur Google contre
+            l&apos;accès non autorisé, la divulgation, l&apos;altération,
+            la perte ou l&apos;utilisation abusive.
+          </p>
+
+          <p>
+            Les échanges entre l&apos;utilisateur et le site
+            sont réalisés au moyen de connexions HTTPS sécurisées.
+          </p>
+
+          <p>
+            L&apos;accès aux données administratives est limité
+            aux personnes et services techniques autorisés ayant
+            besoin de ces informations pour assurer le fonctionnement,
+            la sécurité ou l&apos;administration de La Tribu des Obus.
+          </p>
+
+          <p>
+            Les données sont hébergées à l&apos;aide de services
+            techniques disposant de mécanismes de sécurité destinés
+            à protéger les informations lors de leur transmission
+            et de leur stockage.
+          </p>
+
+          <p>
+            Les identifiants, autorisations et jetons d&apos;accès
+            Google ou YouTube ne sont pas affichés publiquement
+            et sont utilisés uniquement lorsque cela est nécessaire
+            au fonctionnement des fonctionnalités autorisées.
+          </p>
+
+          <p>
+            La Tribu des Obus demande uniquement les autorisations
+            Google et YouTube nécessaires au fonctionnement des
+            fonctionnalités proposées, notamment l&apos;accès
+            YouTube en lecture.
+          </p>
+        </section>
 
         {/* ================================================= */}
         {/* CONSERVATION */}
@@ -245,7 +324,7 @@ export default function ConfidentialitePage() {
 
         <section className="legal-section">
           <h2>
-            6. Conservation
+            7. Conservation
           </h2>
 
           <p>
@@ -268,7 +347,7 @@ export default function ConfidentialitePage() {
 
         <section className="legal-section">
           <h2>
-            7. Vos droits
+            8. Vos droits
           </h2>
 
           <p>
@@ -302,7 +381,7 @@ export default function ConfidentialitePage() {
 
         <section className="legal-section">
           <h2>
-            8. Retirer l’accès Google / YouTube
+            9. Retirer l’accès Google / YouTube
           </h2>
 
           <p>
@@ -334,7 +413,7 @@ export default function ConfidentialitePage() {
 
         <section className="legal-section">
           <h2>
-            9. Cookies et stockage technique
+            10. Cookies et stockage technique
           </h2>
 
           <p>
@@ -358,7 +437,7 @@ export default function ConfidentialitePage() {
 
         <section className="legal-section">
           <h2>
-            10. Modification de cette politique
+            11. Modification de cette politique
           </h2>
 
           <p>
