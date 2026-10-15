@@ -302,16 +302,17 @@ async function chargerClassementPublic() {
           provider: "google",
 
           options: {
+            options: {
             redirectTo:
-              "https://latribudesobus.com/auth/callback",
-
+              `${window.location.origin}/auth/callback`,
+          
             scopes:
               "https://www.googleapis.com/auth/youtube.readonly",
-
+          
             queryParams: {
               access_type:
                 "offline",
-
+          
               prompt:
                 "consent",
             },
