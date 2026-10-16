@@ -302,7 +302,6 @@ async function chargerClassementPublic() {
           provider: "google",
 
           options: {
-            options: {
             redirectTo:
               `${window.location.origin}/auth/callback`,
           
