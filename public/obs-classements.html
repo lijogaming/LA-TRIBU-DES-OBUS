@@ -1,1 +1,938 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>La Tribu des Obus — Classements OBS (DEV, v11)</title>
+  <style>
+    /*
+      CALIBRAGE V7 : SCÈNE RÉELLE uniquement = 940 × 529 px (16:9),
+      la bordure grise de la capture OBS n'est pas dans la scène.
+      Le contenu est agrandi proportionnellement à la taille de la source OBS.
+      Aucun fond n'est dessiné sur la caméra ou sur l'image vidéo.
+    */
+    :root {
+      --panel: rgba(12, 14, 21, .95);
+      --panel-strong: rgba(15, 16, 21, .97);
+      --ink: #f8fafc;
+      --muted: #adb8ca;
+      --edge: #373b46;
+      --gold: #ffc14c;
+      --blue: #80bdff;
+      --good: #77d9a7;
+      --bad: #ff9e8c;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: transparent !important; overflow: hidden; }
+    body { font-family: Inter, system-ui, -apple-system, Segoe UI, Arial, sans-serif; color: var(--ink); }
+    #viewport { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+    #scene { position: absolute; top: 0; left: 0; width: 940px; height: 529px; transform-origin: top left; }
+    .side { position: absolute; left: 67px; top: 160px; width: 188px; height: 394px; display: flex; flex-direction: column; gap: 6px; }
+    .ranking { border: 1px solid rgba(135, 151, 193, .26); border-radius: 9px; padding: 7px 6px 6px; background: var(--panel); box-shadow: 0 3px 16px rgba(0,0,0,.28); height: 115px; flex: 0 0 115px; }
+    .ranking-head { display: flex; justify-content: space-between; align-items: center; min-height: 18px; padding: 0 2px 4px; }
+    .ranking-label { font-size: 10.5px; font-weight: 850; letter-spacing: .12px; }
+    .ranking-label .mini { margin-right: 4px; }
+    .ranking-page { font-size: 8px; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .ranking-list { display: grid; grid-template-rows: repeat(3, 25px); gap: 3px; }
+    .player-line { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 2px 4px; border: 1px solid rgba(120, 129, 152, .27); border-radius: 5px; background: rgba(5, 7, 15, .64); height: 25px; }
+    .player-line.first { border-color: rgba(255, 193, 76, .88); background: rgba(255, 193, 76, .08); }
+    .player-line.second { border-color: rgba(174, 193, 233, .53); }
+    .player-line.third { border-color: rgba(207, 132, 81, .55); }
+    .place { width: 20px; flex: 0 0 20px; text-align: center; font-size: 10px; font-weight: 850; color: var(--muted); }
+    .first .place { color: var(--gold); }
+    .second .place { color: #dce6ff; }
+    .third .place { color: #f0ae80; }
+    .player-data { min-width: 0; flex: 1; line-height: 1.1; }
+    .name { font-size: 9.7px; font-weight: 850; letter-spacing: -.05px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .secondary { margin-top: 2px; display: flex; gap: 3px; align-items: baseline; font-size: 8px; color: var(--muted); overflow: hidden; white-space: nowrap; }
+    .secondary .metric { color: var(--gold); font-weight: 800; overflow: hidden; text-overflow: ellipsis; }
+    .secondary .separator { color: #64748b; }
+    .secondary .grade { overflow: hidden; text-overflow: ellipsis; }
+
+
+
+    .empty { justify-content: center; border-style: dashed; color: #77859a; font-size: 9px; }
+    .side-footer { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; text-align: center; }
+    .dots { display: flex; align-items: center; gap: 5px; }
+    .dot { width: 16px; height: 3px; border-radius: 5px; background: #465067; }
+    .dot.active { background: var(--gold); box-shadow: 0 0 8px rgba(255,193,76,.35); }
+    .sync-status { font-size: 8px; font-weight: 650; color: #96a7bf; max-width: 175px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sync-status .pulse { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--gold); margin-right: 4px; vertical-align: middle; }
+    .sync-status.live .pulse { background: var(--good); }
+    .sync-status.error .pulse { background: var(--bad); }
+    /* Cette barre se trouve sous la vidéo de la capture et n'empiète pas dessus. */
+    .search-panel { position: absolute; left: 263px; top: 457px; width: 735px; height: 97px; padding: 9px 12px; display: flex; gap: 12px; background: var(--panel-strong); border: 1px solid rgba(128, 144, 182, .38); border-radius: 9px; box-shadow: 0 5px 20px rgba(0,0,0,.26); }
+    .search-left { flex: 0 0 242px; min-width: 0; display: flex; flex-direction: column; }
+    .microheading { color: #dfe6f3; font-size: 9px; letter-spacing: .85px; text-transform: uppercase; font-weight: 850; margin-bottom: 7px; }
+    .microheading .mini { color: var(--gold); }
+    .inputwrap { display: flex; height: 32px; background: #070a14; border: 1px solid #687080; border-radius: 6px; align-items: center; padding: 0 9px; gap: 7px; pointer-events: auto; }
+    .inputwrap:focus-within { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(255,193,76,.20); }
+    .mag { color: var(--gold); font-size: 15px; }
+    #search { background: none; border: none; padding: 0; width: 100%; color: #fff; outline: none; font: 700 11px Inter,system-ui,sans-serif; min-width: 0; }
+    #search::placeholder { color: #8592a6; font-weight: 500; }
+    .subhint { font-size: 8px; color: #8996aa; padding-top: 5px; }
+    .result-area { flex: 1; border-left: 1px solid #343946; padding-left: 12px; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+    .search-id { display: flex; align-items: center; gap: 7px; min-height: 20px; overflow: hidden; white-space: nowrap; }
+    #result-name { font-size: 11.6px; font-weight: 850; overflow: hidden; text-overflow: ellipsis; }
+    #result-grade { max-width: 130px; font-size: 9px; font-weight: 650; color: #d3b77a; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+
+
+    .result-ranks { display: flex; gap: 6px; margin-top: 5px; }
+    .rank-pill { flex: 1; min-width: 0; height: 37px; border: 1px solid #3c404b; border-radius: 6px; background: rgba(3, 6, 14, .70); padding: 5px 7px; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+    .rank-pill .rp-name { color: #aebacb; font-size: 8.2px; font-weight: 700; }
+    .rank-pill .rp-value { color: #fff; font-weight: 900; font-size: 12px; font-variant-numeric: tabular-nums; }
+    .rank-pill .rp-value b { color: var(--gold); }
+    .rank-pill .rp-value small { font-weight: 600; font-size: 8px; color: #abb8cc; }
+    .result-placeholder { color: #aab6c8; font-size: 11px; line-height: 1.55; }
+    .result-placeholder b { color: var(--gold); }
+
+    /* STYLE ALIGNÉ SUR LE CLASSEMENT OFFICIEL : or, argent, bronze */
+    :root {
+      --panel: rgba(18, 18, 18, .98);
+      --panel-strong: rgba(17, 17, 17, .985);
+      --gold: #f0c457;
+      --muted: #bbc0c8;
+      --edge: #333438;
+      --good: #9ce39b;
+      --bad: #ff9a69;
+    }
+    .side { left: 66px; top: 160px; width: 190px; height: 394px; gap: 6px; }
+    .ranking {
+      flex: 0 0 121px;
+      height: 121px;
+      padding: 5px 5px 5px;
+      border: 1px solid rgba(200, 162, 68, .43);
+      border-radius: 10px;
+      background: linear-gradient(160deg, rgba(23, 23, 23, .985), rgba(14, 14, 16, .985));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 4px 14px rgba(0,0,0,.29);
+    }
+    .ranking-head { height: 24px; min-height: 24px; padding: 0 3px 4px; align-items: end; }
+    .ranking-title { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .ranking-title .kicker { font-size: 6.5px; letter-spacing: 1.05px; text-transform: uppercase; color: #a9aeb9; font-weight: 900; line-height: 1.05; margin-bottom: 1px; }
+    .ranking-title strong { font-size: 11.6px; line-height: 1.03; font-weight: 850; color: #fff; letter-spacing: -.3px; margin-top: 0; }
+    .ranking-page { display: flex; align-items: center; gap: 4px; color: #b9bdc6; font-size: 7px; white-space: nowrap; padding-bottom: 1px; }
+    .ranking-list { grid-template-rows: repeat(3, 27px); gap: 3px; }
+    .player-line {
+      height: 27px;
+      gap: 4px;
+      border: 1px solid #3c3c3f;
+      border-radius: 6px;
+      padding: 2px 4px;
+      background: linear-gradient(95deg, #111114, #111112);
+    }
+    .player-line.first {
+      background: linear-gradient(103deg, #9b7400 0%, #947000 60%, #765300 100%);
+      border-color: #f5cb46;
+      box-shadow: inset 0 0 0 1px rgba(255,242,171,.08);
+    }
+    .player-line.second {
+      background: linear-gradient(103deg, #60666d 0%, #535961 57%, #464b54 100%);
+      border-color: #aeb7c1;
+    }
+    .player-line.third {
+      background: linear-gradient(103deg, #764426 0%, #704027 55%, #58311f 100%);
+      border-color: #c57b39;
+    }
+    .place { flex: 0 0 20px; width: 20px; font-size: 11px; line-height: 1; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.6); }
+    .first .place, .second .place, .third .place { color: #fff; }
+    .player-data { line-height: 1.06; }
+    .name { font-size: 9px; font-weight: 900; line-height: 1.05; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.75); }
+    .secondary { margin-top: 3px; font-size: 8px; font-weight: 650; color: #e5e7eb; gap: 2px; }
+    .secondary .metric { color: #fff; font-weight: 800; }
+    .secondary .grade { color: #e2e4e7; }
+    .secondary .separator { color: #c3c6ca; }
+
+
+    .empty { background: #111; border-color: #303035; color: #92969c; font-size: 8.8px; }
+    .side-footer { gap: 2px; }
+    .dots { gap: 4px; }
+    .dot { width: 10px; height: 2px; background: #50515a; }
+    .dot.active { background: #ebbe4c; }
+    .sync-status { font-size: 7.3px; color: #b5b8c1; }
+    .sync-status .pulse { background: #f1bf3f; width: 4px; height: 4px; }
+    .search-panel {
+      background: linear-gradient(135deg, rgba(22,22,22,.99), rgba(15,15,16,.99));
+      border: 1px solid rgba(200, 162, 68, .5);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.045), 0 5px 16px rgba(0,0,0,.29);
+      border-radius: 10px;
+      padding: 9px 11px;
+      gap: 10px;
+    }
+    .search-left { flex: 0 0 235px; }
+    .microheading { font-size: 9px; color: #f0f0f2; letter-spacing: 1.15px; margin-bottom: 7px; }
+    .microheading .mini { color: var(--gold); }
+    .inputwrap { height: 32px; border: 1px solid #65615c; background: #0f0f10; border-radius: 6px; }
+    .inputwrap:focus-within { border-color: #f0bf48; box-shadow: 0 0 0 1px #856722; }
+    .mag { color: #eabe57; }
+    #search { font-size: 10.5px; }
+    .subhint { font-size: 7.4px; color: #a0a0a6; }
+    .result-area { border-left: 1px solid rgba(202,169,82,.32); padding-left: 10px; }
+    .search-id { gap: 5px; min-height: 22px; flex-wrap: wrap; row-gap: 4px; overflow: visible; white-space: normal; }
+    #result-name { font-size: 11.3px; color: #fff; text-shadow: 0 1px 1px rgba(0,0,0,.65); }
+    #result-grade { font-size: 9px; color: #e4d4ac; max-width: none; }
+
+
+
+    .result-ranks { gap: 5px; margin-top: 4px; }
+    .rank-pill {
+      height: 38px;
+      border: 1px solid #4a4a4c;
+      border-radius: 6px;
+      background: linear-gradient(145deg, #151516, #0d0d0e);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+      padding: 5px 7px;
+    }
+    .rank-pill .rp-name { color: #babcc4; font-size: 8px; font-weight: 850; }
+    .rank-pill .rp-value { color: #fff; font-size: 12px; }
+    .rank-pill .rp-value b { color: #f0c457; }
+    .rank-pill .rp-value small { color: #c8c9d0; font-size: 7.8px; }
+    .rank-pill.first {
+      background: linear-gradient(103deg, #9b7400 0%, #947000 60%, #765300 100%);
+      border-color: #f5cb46;
+      box-shadow: inset 0 0 0 1px rgba(255,242,171,.08);
+    }
+    .rank-pill.first .rp-name, .rank-pill.first .rp-value small { color: #fff2cc; }
+    .rank-pill.first .rp-value b { color: #ffffff; }
+    .rank-pill.second {
+      background: linear-gradient(103deg, #60666d 0%, #535961 57%, #464b54 100%);
+      border-color: #aeb7c1;
+    }
+    .rank-pill.second .rp-name, .rank-pill.second .rp-value small { color: #eef3ff; }
+    .rank-pill.second .rp-value b { color: #ffffff; }
+    .rank-pill.third {
+      background: linear-gradient(103deg, #764426 0%, #704027 55%, #58311f 100%);
+      border-color: #c57b39;
+    }
+    .rank-pill.third .rp-name, .rank-pill.third .rp-value small { color: #ffe3d1; }
+    .rank-pill.third .rp-value b { color: #ffffff; }
+    .result-placeholder { color: #c4c5cd; font-size: 10.8px; }
+    .result-placeholder b { color: #f0c457; }
+
+    .player-line.clickable, .search-id.clickable { pointer-events: auto; cursor: pointer; }
+    .player-line.clickable:hover, .search-id.clickable:hover { filter: brightness(1.04); }
+    .profile-backdrop {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,.36);
+      pointer-events: auto;
+      z-index: 9999;
+      padding: 24px;
+    }
+    .profile-backdrop.open { display: flex; }
+    .profile-modal {
+      width: min(400px, 92vw);
+      border: 1px solid rgba(200, 162, 68, .82);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(20,20,21,.985), rgba(15,15,16,.99));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 18px 60px rgba(0,0,0,.45);
+      padding: 30px 28px 24px;
+      position: relative;
+      color: #fff;
+    }
+    .profile-close {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      width: 34px;
+      height: 34px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(66,68,73,.86);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .profile-kicker {
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: #aeb2bb;
+      font-weight: 900;
+      margin: 10px 0 10px;
+    }
+    .profile-name {
+      text-align: center;
+      font-size: 26px;
+      line-height: 1.1;
+      font-weight: 900;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 8px rgba(0,0,0,.35);
+    }
+    .profile-list {
+      display: grid;
+      gap: 14px;
+      max-width: 280px;
+      margin: 0 auto;
+    }
+    .profile-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 13px;
+      color: #f1f2f3;
+      min-height: 18px;
+    }
+    .profile-row .icon { width: 18px; text-align: center; flex: 0 0 18px; }
+    .profile-row strong { color: #f3f4f6; font-size: 14px; }
+    /* Punition textuelle accolée au grade ; aucune pastille/icone de statut. */
+    .punishment-text { color: #ff6262; font-weight: 850; }
+    .grade-inline { color: #f1e0bb; font-weight: 750; }
+    .separator-inline { color: #d0c4b9; padding: 0 3px; }
+    .ranking-head { align-items: center; height: 24px; min-height: 24px; }
+    .ranking-title { display: flex; flex-direction: row; align-items: center; gap: 6px; min-width: 0; }
+    .ranking-title strong { font-size: 12px; line-height: 1.2; }
+    .ranking-title .rank-icon { font-size: 13px; line-height: 1; flex: 0 0 auto; }
+    /* 2 lignes : pseudo + grade toujours visible ; statistique de catégorie à droite sur la première ligne. */
+    .player-data { display: flex; flex-direction: column; justify-content: center; min-width: 0; width: 100%; gap: 2px; padding: 0 2px 0 1px; }
+    .player-top { display: flex; align-items: center; gap: 3px; min-width: 0; }
+    .player-top .name { min-width: 0; flex: 1; font-size: 9px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+    .player-top .top-metric { flex: 0 0 auto; font-size: 7.4px; font-weight: 800; color: #fff; white-space: nowrap; }
+    .player-line .secondary { display: flex; align-items: center; gap: 0; min-width: 0; overflow: hidden; white-space: nowrap; margin-top: 0; font-size: 7.7px; line-height: 1.15; width: 100%; }
+    .player-line .secondary .grade-inline { color: #fff3d3; min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .player-line .secondary .punishment-text { white-space: nowrap; flex: 0 0 auto; font-size: 7.7px; }
+    .player-line .secondary .single-metric { color: #f2f3f5; min-width: 0; flex: 0 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 750; }
+    .search-id { min-height: 24px; align-items: baseline; gap: 7px; }
+    #result-grade { font-size: 10px; color: #e8d7b4; white-space: normal; overflow: visible; max-width: none; }
+    #result-grade .punishment-text { font-size: 9px; }
+    .profile-row { align-items: baseline; flex-wrap: wrap; }
+    #profile-grade { white-space: nowrap; }
+    #profile-punition { white-space: nowrap; }
+
+    /* V7 : les deux zones sont positionnées par rapport à la scène SEULE.
+       Caméra : x=0..194, y=0..129 ; vidéo : x=194..940, y=0..421.
+       Aucun style n'est appliqué au fond gris d'OBS, hors de la scène. */
+    .side { left: 6px; top: 136px; width: 184px; height: 389px; }
+    .ranking { height: 115px; flex: 0 0 115px; }
+    .ranking-head { height: 23px; min-height: 23px; }
+    .ranking-list { grid-template-rows: repeat(3, 24px); gap: 3px; }
+    .player-line { height: 24px; padding-left: 5px; padding-right: 5px; }
+    .search-panel { left: 202px; top: 426px; width: 730px; height: 97px; }
+    .result-area { justify-content: center; }
+    .search-id { display: flex; align-items: center; min-height: 29px; gap: 0; flex-wrap: nowrap; overflow: hidden; }
+    .result-identity { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+    .result-user-row { display: flex; align-items: center; gap: 6px; min-width: 0; height: 14px; }
+    .result-avatar { flex: 0 0 14px; width: 14px; font-size: 11px; line-height: 1; }
+    #result-name { display: block; min-width: 0; flex: 1; font-size: 11.3px; line-height: 1.2;
+                   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #result-grade { display: flex; align-items: baseline; padding-left: 20px; gap: 0; min-width: 0;
+                    font-size: 9px; line-height: 1.2; height: 12px;
+                    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #result-grade .grade-inline { min-width: 0; flex: 0 1 auto; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #result-grade .separator-inline { flex: 0 0 auto; }
+    #result-grade .punishment-text { flex: 0 1 auto; min-width: 0; white-space: nowrap; overflow: hidden;
+                                    text-overflow: ellipsis; color: #ff6969; font-size: 9px; font-weight: 850; }
+    .result-ranks { margin-top: 5px; flex-shrink: 0; }
+
+    /* V8 : titre entre la bande blanche du compteur et le premier classement. */
+    .website-title {
+      position: absolute;
+      left: 6px;
+      top: 131px;
+      width: 184px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #f0c457;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: .15px;
+      white-space: nowrap;
+      text-shadow: 0 2px 5px rgba(0,0,0,.8);
+    }
+    /* On réduit légèrement l'espacement vertical pour libérer la place du titre. */
+    .side { top: 159px; height: 365px; gap: 5px; }
+    .ranking { height: 109px; flex: 0 0 109px; padding: 4px 5px; }
+    .ranking-head { height: 22px; min-height: 22px; }
+    .ranking-list { grid-template-rows: repeat(3, 23px); gap: 2px; }
+    .player-line { height: 23px; }
+
+    /* Le pseudo reste au-dessus, le grade + la punition sont DANS la carte Grades. */
+    .search-id { height: 18px; min-height: 18px; flex: 0 0 18px; }
+    .result-identity { gap: 0; }
+    .result-user-row { height: 16px; }
+    .result-ranks { margin-top: 4px; }
+    .rank-pill { height: 50px; padding: 4px 7px; gap: 2px; }
+    .rank-pill .rp-name { font-size: 8px; line-height: 9px; }
+    .rank-pill .rp-value { line-height: 13px; }
+    .rank-pill .rp-grade {
+      display: flex;
+      align-items: baseline;
+      min-width: 0;
+      max-width: 100%;
+      height: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      font-size: 9px;
+      line-height: 11px;
+      color: #fff;
+    }
+    .rank-pill .rp-grade .grade-inline {
+      color: #fff;
+      font-size: 9px;
+      font-weight: 750;
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .rank-pill .rp-grade .separator-inline { flex: 0 0 auto; }
+    .rank-pill .rp-grade .punishment-text {
+      color: #ff6969;
+      font-size: 9px;
+      flex: 0 1 auto;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+
+    /* V10 — Uniquement les trois blocs à gauche : 2 joueurs par écran, top 10.
+       Le cadre conserve sa place et ses dimensions dans la scène OBS. */
+    .ranking-list { grid-template-rows: repeat(2, 36px); gap: 4px; }
+    .player-line { height: 36px; padding: 3px 6px; gap: 5px; min-width: 0; }
+    .player-line .place { flex: 0 0 19px; width: 19px; font-size: 11.5px; }
+    .player-line .player-data { gap: 3px; min-width: 0; padding: 0; }
+    .player-line .player-top { min-width: 0; }
+    .player-line .player-top .name { font-size: 10.5px; line-height: 1.13; max-width: 100%; }
+    .player-line .secondary { font-size: 10.1px; line-height: 1.18; min-width: 0; max-width: 100%; }
+    .player-line .secondary .single-metric,
+    .player-line .secondary .grade-inline { font-size: 10.1px; line-height: 1.18; }
+    .player-line .secondary .grade-inline,
+    .player-line .secondary .single-metric {
+      overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    }
+    .player-line .secondary .punishment-text {
+      font-size: 9.5px; flex: 0 1 auto; min-width: 0;
+      overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+    }
+    .empty { height: 36px; }
+    .side-footer .sync-status { font-size: 8px; line-height: 12px; }
+
+    /* V12 — Dans la recherche, grade / punition sur la même ligne que le rang. */
+    .result-ranks .rank-pill { align-items: stretch; }
+    .result-ranks .rank-pill .rp-value {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      width: 100%;
+      flex-shrink: 0;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .result-ranks .rank-pill .rp-grade-inline {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 9px;
+      line-height: 11px;
+      color: #fff;
+      font-weight: 750;
+    }
+    .result-ranks .rank-pill .rp-grade-inline .grade-inline {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #fff;
+      font-size: 9px;
+      font-weight: 750;
+    }
+    .result-ranks .rank-pill .rp-grade-inline .separator-inline { flex: 0 0 auto; }
+    .result-ranks .rank-pill .rp-grade-inline .punishment-text {
+      color: #ff6969;
+      font-size: 9px;
+      font-weight: 850;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* V13 : configuration locale OBS, cachée dès connexion. */
+    .obs-config {
+      position: absolute; left: 260px; top: 65px; width: 535px;
+      padding: 24px 26px; border: 1px solid #e4b950; border-radius: 14px;
+      background: rgba(15,16,20,.98); z-index: 100; pointer-events: auto;
+      box-shadow: 0 10px 40px rgba(0,0,0,.55);
+    }
+    .obs-config[hidden] { display: none !important; }
+    .obs-config h2 { font-size: 19px; color: #f2cc72; margin: 0 0 10px; }
+    .obs-config p { font-size: 12px; line-height: 1.55; margin: 0 0 14px; color: #e2e5eb; }
+    .obs-config label { font-size: 11px; display: block; margin-bottom: 5px; color: #e4e6eb; }
+    .obs-config .config-controls { display: flex; gap: 8px; }
+    .obs-config input { flex: 1; min-width: 0; font-size: 13px; border-radius: 6px;
+      border: 1px solid #796b52; color: white; background: #090b12; padding: 10px; }
+    .obs-config button { padding: 9px 12px; border: 1px solid #e7bf5b; border-radius: 7px;
+      font-size: 12px; font-weight: 800; background: #8d680c; color: white; cursor: pointer; }
+    .obs-config .config-error { color: #ff9999; font-size: 11px; margin-top: 8px; min-height: 15px; }
+    .obs-config .config-note { font-size: 10px; color: #c9bd9f; margin: 12px 0 0; }
+    .reconfig { pointer-events:auto; display: none; font-size: 8px; border: 0;
+      color: #a2a2a2; background: transparent; padding: 0; cursor: pointer; }
+    .side-footer:hover .reconfig { display:block; }
+  </style>
+</head>
+<body>
+<div id="viewport">
+  <main id="scene" aria-label="Overlay de classements La Tribu des Obus">
+    <div class="obs-config" id="obs-config" hidden aria-label="Configurer le jeton OBS DEV">
+      <h2>Connexion aux classements DEV</h2>
+      <p>Saisis ton jeton <strong>OBS_CLASSEMENT_TOKEN</strong> uniquement ici, depuis OBS → clic droit → Interagir. Il est enregistré localement dans le navigateur OBS, jamais dans le site ni dans GitHub.</p>
+      <label for="obs-token">Jeton OBS DEV</label>
+      <div class="config-controls">
+        <input id="obs-token" type="password" autocomplete="off" spellcheck="false" placeholder="Coller le jeton privé" />
+        <button id="obs-connect" type="button">Connecter</button>
+      </div>
+      <div class="config-error" id="config-error" role="status"></div>
+      <p class="config-note">Configure avant de lancer un live. L'overlay est en mode DEV et ne transmet pas les jetons au public.</p>
+    </div>
+    <div class="website-title">latribudesobus.com</div>
+    <aside class="side" aria-label="Classements par groupes de deux">
+      <section class="ranking" id="ranking-grades" aria-label="Classement grades">
+        <div class="ranking-head"><div class="ranking-title"><span class="rank-icon" aria-hidden="true">🏅</span><strong>Grades</strong></div><span class="ranking-page"><span data-page></span></span></div>
+        <div class="ranking-list" data-list></div>
+      </section>
+      <section class="ranking" id="ranking-lives" aria-label="Classement lives total">
+        <div class="ranking-head"><div class="ranking-title"><span class="rank-icon" aria-hidden="true">📺</span><strong>Lives total</strong></div><span class="ranking-page"><span data-page></span></span></div>
+        <div class="ranking-list" data-list></div>
+      </section>
+      <section class="ranking" id="ranking-obus" aria-label="Classement obus">
+        <div class="ranking-head"><div class="ranking-title"><span class="rank-icon" aria-hidden="true">💰</span><strong>Obus</strong></div><span class="ranking-page"><span data-page></span></span></div>
+        <div class="ranking-list" data-list></div>
+      </section>
+      <div class="side-footer">
+        <div class="dots" aria-hidden="true"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="sync-status" id="sync"><span class="pulse"></span>DONNÉES DEV · connexion requise</div>
+        <button class="reconfig" id="obs-reconfig" type="button" aria-label="Modifier le jeton OBS">Configuration</button>
+      </div>
+    </aside>
+    <section class="search-panel" aria-label="Recherche de joueur">
+      <div class="search-left">
+        <label class="microheading" for="search"><span class="mini">⌕</span> Rechercher un joueur</label>
+        <div class="inputwrap"><span class="mag">⌕</span><input id="search" type="search" autocomplete="off" spellcheck="false" placeholder="Tape un pseudo, ex. Fer…" aria-label="Pseudo du joueur"></div>
+        <div class="subhint">OBS : clic droit sur la source → Interagir</div>
+      </div>
+      <div class="result-area" id="result" aria-live="polite">
+        <div class="result-placeholder">🔎 Tape un pseudo pour afficher son <b>rang dans les 3 classements</b>.</div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="profile-backdrop" id="profile-backdrop" aria-hidden="true">
+  <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-name">
+    <button class="profile-close" id="profile-close" aria-label="Fermer">✕</button>
+    <div class="profile-kicker">Profil du membre</div>
+    <div class="profile-name" id="profile-name">@pseudo</div>
+    <div class="profile-list">
+      <div class="profile-row"><span class="icon">🏅</span><span id="profile-grade">Grade : —</span><span id="profile-punition" class="punishment-text"></span></div>
+      <div class="profile-row"><span class="icon">💰</span><span id="profile-obus">Sac d'Obus : —</span></div>
+      <div class="profile-row"><span class="icon">🪪</span><span id="profile-soldat">Lives depuis Soldat : —</span></div>
+      <div class="profile-row"><span class="icon">📊</span><span id="profile-lives">Lives total : —</span></div>
+    </div>
+  </div>
+</div>
+<script>
+'use strict';
+/**
+ * OVERLAY OBS DEV (page statique /public/obs-classements.html).
+ * L'API est appelée sur CE MÊME DOMAINE DEV, sans CORS.
+ * Jamais de clés Supabase ni de jetons dans ce fichier GitHub.
+ * Le jeton OBS est saisi depuis OBS → Interagir et reste stocké localement.
+ * Toute protection Vercel Preview demeure activée.
+ */
+const CONFIG = {
+  mode: 'api',              // vrais joueurs DEV, aucune donnée démo affichée
+  apiUrl: '/api/classement-obs/route', // chemin testé fonctionnel dans Vercel DEV
+  refreshMs: 15000,       // rafraîchissement en mode api : 15 secondes
+  slideMs: 8000,          // changement des 2 lignes affichées : 8 secondes
+  steps: 5                // positions 1–2, 3–4, 5–6, 7–8, 9–10, puis retour
+};
+
+// Version connectée : ne publier aucun profil de démonstration.
+const DEMO_PLAYERS = [];
+
+let players = [];
+let currentPage = 0;
+const scene = document.getElementById('scene');
+const result = document.getElementById('result');
+const search = document.getElementById('search');
+const sync = document.getElementById('sync');
+const backdrop = document.getElementById('profile-backdrop');
+const closeBtn = document.getElementById('profile-close');
+const number = new Intl.NumberFormat('fr-FR');
+
+function fitScene() {
+  const scale = Math.min(window.innerWidth / 940, window.innerHeight / 529);
+  const x = Math.round((window.innerWidth - 940 * scale) / 2);
+  const y = Math.round((window.innerHeight - 529 * scale) / 2);
+  scene.style.transform = `translate(${x}px,${y}px) scale(${scale})`;
+}
+window.addEventListener('resize', fitScene, {passive:true});
+fitScene();
+
+// Aucun pseudo venu d'une API n'est injecté comme HTML : on utilise textContent.
+function element(tag, className, text) {
+  const e = document.createElement(tag);
+  if (className) e.className = className;
+  if (text !== undefined) e.textContent = String(text);
+  return e;
+}
+function punishmentName(p) {
+  return typeof p.punitionNom === 'string' ? p.punitionNom.trim() : '';
+}
+function appendGrade(target, p, includePrefix=false) {
+  if (includePrefix) target.append(element('span','', '🏅 '));
+  target.append(element('span','grade-inline',p.grade || 'Grade inconnu'));
+  const penalty = punishmentName(p);
+  if (penalty) {
+    target.append(element('span','separator-inline',' - '));
+    target.append(element('span','punishment-text',penalty));
+  }
+}
+function formatMaybeNumber(value, suffix='') { return value == null ? '—' : number.format(value)+suffix; }
+function asRank(value) { return Number.isInteger(value) && value > 0 ? value : null; }
+function rankOf(p, type) { return asRank(p.rangs && p.rangs[type]); }
+function sorted(type) {
+  // Même tri que le classement DEV : rang d'abord ; à grade égal,
+  // les lives depuis Soldat départagent l'ordre d'affichage.
+  // Pour les Obus / Lives ex æquo, on préserve l'ordre initial des données.
+  return players.filter(p => rankOf(p,type)!==null).slice().sort((a,b) => {
+    const diff = rankOf(a,type) - rankOf(b,type);
+    if (diff !== 0) return diff;
+    if (type === 'grades') return nombreOfficiel(b.livesDepuisSoldat) - nombreOfficiel(a.livesDepuisSoldat);
+    return 0;
+  });
+}
+function metricText(p,type) {
+  if (type === 'grades') return p.grade || 'Grade inconnu';
+  if (type === 'lives') return p.livesTotal == null ? 'Lives inconnus' : number.format(p.livesTotal)+' lives';
+  return p.obus == null ? 'Obus inconnus' : number.format(p.obus)+' Obus';
+}
+function renderRanking(type) {
+  const root = document.getElementById('ranking-'+type);
+  const list = root.querySelector('[data-list]');
+  const page = root.querySelector('[data-page]');
+  const ordered = sorted(type).slice(0, 10); // uniquement les 10 premiers joueurs de cette catégorie
+  list.replaceChildren();
+  page.textContent = `${currentPage*2+1}–${(currentPage+1)*2}`;
+  for (let i=0;i<2;i++) {
+    const index = currentPage*2+i;
+    const p = ordered[index];
+    if (!p) {
+      list.append(element('div','player-line empty','— Aucun joueur —'));
+      continue;
+    }
+    const rank = rankOf(p,type);
+    const line = element('div','player-line' + (rank===1?' first':rank===2?' second':rank===3?' third':''));
+    const place = element('span','place',rank<=3 ? ['','🥇','🥈','🥉'][rank] : '#'+rank);
+    const info = element('span','player-data');
+    const top = element('span','player-top');
+    const username = element('span','name',p.pseudo);
+    username.title = p.pseudo;
+    top.append(username);
+    const sub = element('span','secondary');
+    if (type === 'grades') {
+      appendGrade(sub,p);
+    } else {
+      sub.append(element('span','single-metric',metricText(p,type)));
+    }
+    info.append(top,sub);
+    line.append(place,info);
+    line.classList.add('clickable');
+    line.addEventListener('click', () => openProfile(p));
+    list.append(line);
+  }
+}
+function renderRankings() {
+  ['grades','lives','obus'].forEach(renderRanking);
+  document.querySelectorAll('.dot').forEach((e,i)=> e.classList.toggle('active', i===currentPage));
+}
+function normalize(value) {
+  return String(value || '').toLocaleLowerCase('fr').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/^@/,'').replace(/[^a-z0-9]/g,'');
+}
+function editDistance(a,b) {
+  let row = Array.from({length:b.length+1},(_,j)=>j);
+  for(let i=1;i<=a.length;i++){
+    const next=[i];
+    for(let j=1;j<=b.length;j++) next[j] = Math.min(next[j-1]+1,row[j]+1,row[j-1]+(a[i-1]===b[j-1]?0:1));
+    row=next;
+  }
+  return row[b.length];
+}
+function bestPlayer(query) {
+  const q=normalize(query);
+  if(!q) return null;
+  const candidates=players.map(p=>{
+    const n=normalize(p.pseudo);
+    // Correspondance exacte, début de pseudo, inclusion, puis tolérance aux fautes courtes.
+    const score = n===q ? 10000 : n.startsWith(q) ? 9000-q.length*0.001 : n.includes(q) ? 8000-n.indexOf(q) :
+      q.length>=3 ? 1000-Math.min(editDistance(q,n),editDistance(q,n.slice(0,q.length)))*150 : -Infinity;
+    return {p,score,n};
+  }).sort((a,b)=>b.score-a.score || a.n.localeCompare(b.n,'fr'));
+  const best=candidates[0];
+  return best && best.score >= 550 ? best.p : null;
+}
+
+function openProfile(p) {
+  if (!p) return;
+  document.getElementById('profile-name').textContent = p.pseudo || '—';
+  document.getElementById('profile-grade').textContent = 'Grade : ' + (p.grade || 'Inconnu');
+  document.getElementById('profile-punition').textContent = punishmentName(p) ? ' - ' + punishmentName(p) : '';
+  document.getElementById('profile-obus').textContent = "Sac d'Obus : " + formatMaybeNumber(p.obus, ' Obus');
+  document.getElementById('profile-soldat').textContent = 'Lives depuis Soldat : ' + formatMaybeNumber(p.livesDepuisSoldat);
+  document.getElementById('profile-lives').textContent = 'Lives total : ' + formatMaybeNumber(p.livesTotal);
+  backdrop.classList.add('open');
+  backdrop.setAttribute('aria-hidden','false');
+}
+function closeProfile() {
+  backdrop.classList.remove('open');
+  backdrop.setAttribute('aria-hidden','true');
+}
+closeBtn.addEventListener('click', closeProfile);
+backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeProfile(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeProfile(); });
+function renderSearch() {
+  const q=search.value.trim();
+  const p=bestPlayer(q);
+  result.replaceChildren();
+  if (!q) {
+    const placeholder=element('div','result-placeholder');
+    placeholder.append('🔎 Tape un pseudo pour afficher son ',element('b','', 'rang dans les 3 classements'),'.');
+    result.append(placeholder);
+    return;
+  }
+  if (!p) {
+    result.append(element('div','result-placeholder','Aucun joueur correspondant à « '+q+' ».'));
+    return;
+  }
+  const line=element('div','search-id clickable');
+  const identity=element('div','result-identity');
+  const userRow=element('div','result-user-row');
+  const avatar=element('span','result-avatar','👤');
+  const username=element('span',''); username.id='result-name'; username.textContent=p.pseudo;
+  userRow.append(avatar,username);
+  identity.append(userRow);
+  line.append(identity);
+  line.addEventListener('click', () => openProfile(p));
+  const rankRow=element('div','result-ranks');
+  for(const [type,icon,label,units,value] of [
+    ['grades','🏅','Grades','',p.grade],
+    ['lives','📺','Lives',' lives',p.livesTotal],
+    ['obus','💰','Obus',' Obus',p.obus]
+  ]) {
+    const rank=rankOf(p,type);
+    const medalClass = rank===1 ? ' first' : rank===2 ? ' second' : rank===3 ? ' third' : '';
+    const cell=element('div','rank-pill'+medalClass);
+    cell.append(element('span','rp-name',icon+' '+label));
+    const val=element('span','rp-value');
+    val.append(element('b','',rank ? '#'+rank : '—'));
+    if (type==='grades') {
+      const gradeInline=element('span','rp-grade-inline');
+      appendGrade(gradeInline,p);
+      val.append(gradeInline);
+    } else if (value!=null) {
+      val.append(element('small','', ' · '+number.format(value)+units));
+    }
+    cell.append(val);
+    rankRow.append(cell);
+  }
+  result.append(line,rankRow);
+}
+search.addEventListener('input',renderSearch);
+setInterval(()=>{
+  currentPage=(currentPage+1)%CONFIG.steps;
+  renderRankings();
+},CONFIG.slideMs);
+
+// Logique issue du composant ClassementPage de DEV transmis le 21/10/2026.
+// Un ordre de grade plus élevé l'emporte. Les punitions ne changent jamais le score.
+const ORDRE_GRADES_DEV = Object.freeze({
+  'Civil':0, 'Soldat':1, 'Adgent':2, 'Adgent Lijo':3, 'Colonel':4,
+  'Colonel en Chef':5, 'Vice Amiral':6, 'Amiral':7,
+  'Général':8, 'Sergent':9, 'Sergent Chef':10, 'Officier général':11
+});
+function scoreGradeOfficiel(row) {
+  if (row.officier_general === true) return 11;
+  return ORDRE_GRADES_DEV[row.grade] ?? 0;
+}
+function nombreOfficiel(valeur) {
+  // Number(...) utilisé sur la page officielle ; les valeurs nulles valent 0.
+  const n = Number(valeur ?? 0);
+  return Number.isFinite(n) ? n : 0;
+}
+function classerLignesOfficielles(rows) {
+  const data = rows.map((p, index) => ({...p, __index:index}));
+  const classementParType = {
+    obus: data.slice().sort((a,b) => nombreOfficiel(b.obus)-nombreOfficiel(a.obus)),
+    lives: data.slice().sort((a,b) => nombreOfficiel(b.total_lives)-nombreOfficiel(a.total_lives)),
+    grades: data.slice().sort((a,b) =>
+      scoreGradeOfficiel(b)-scoreGradeOfficiel(a) ||
+      nombreOfficiel(b.lives_depuis_soldat)-nombreOfficiel(a.lives_depuis_soldat)
+    )
+  };
+  const rangsParIndex = data.map(() => ({}));
+  for (const [type, liste] of Object.entries(classementParType)) {
+    let rangPrecedent = 0;
+    let valeurPrecedente = null;
+    liste.forEach((p,index) => {
+      const valeur = type === 'grades' ? scoreGradeOfficiel(p) :
+        type === 'lives' ? nombreOfficiel(p.total_lives) : nombreOfficiel(p.obus);
+      const rang = index > 0 && valeur === valeurPrecedente ? rangPrecedent : index+1;
+      rangsParIndex[p.__index][type] = rang;
+      rangPrecedent = rang;
+      valeurPrecedente = valeur;
+    });
+  }
+  return rows.map((p,index) => ({
+    pseudo:p.pseudo,
+    // Le grade spécial est affiché comme sur le classement DEV.
+    grade:p.officier_general === true ? 'Officier général' : p.grade,
+    punitionNom: typeof p.punition === 'string' ? p.punition : '',
+    livesTotal:nombreOfficiel(p.total_lives),
+    livesDepuisSoldat:nombreOfficiel(p.lives_depuis_soldat),
+    obus:nombreOfficiel(p.obus),
+    rangs:rangsParIndex[index]
+  }));
+}
+
+function normalizeResponse(raw) {
+  if (!raw || !Array.isArray(raw.joueurs)) throw new Error('Format JSON : joueurs[] manquant');
+  // On accepte seulement les champs attendus et une taille raisonnable de données publiques.
+  if (raw.joueurs.length>5000) throw new Error('Trop de joueurs');
+  const valides = raw.joueurs.filter(p=>p && typeof p.pseudo==='string' && p.pseudo.trim());
+  // La future route DEV pourra envoyer les champs bruts autorisés de lister_classement
+  // ou les objets normalisés de l'overlay. Calcul sur le tableau complet AVANT recherche.
+  const enForme = valides.some(p=>!p.rangs || typeof p.rangs!=='object')
+    ? classerLignesOfficielles(valides)
+    : valides;
+  return enForme.map(p=>({
+    pseudo:p.pseudo.trim().slice(0,100),
+    grade: typeof p.grade==='string' ? p.grade.slice(0,100) : '',
+    punitionNom:typeof p.punitionNom==='string' ? p.punitionNom.slice(0,80) : '',
+    livesTotal:Number.isFinite(p.livesTotal)&&p.livesTotal>=0 ? p.livesTotal : null,
+    obus:Number.isFinite(p.obus) ? p.obus : null,
+    livesDepuisSoldat:Number.isFinite(p.livesDepuisSoldat)&&p.livesDepuisSoldat>=0 ? p.livesDepuisSoldat : null,
+    rangs:{
+      grades:asRank(p.rangs?.grades),
+      lives:asRank(p.rangs?.lives),
+      obus:asRank(p.rangs?.obus)
+    }
+  }));
+}
+const TOKEN_KEY = 'obs-dev-classement-token-v1';
+const tokenInput = document.getElementById('obs-token');
+const configPanel = document.getElementById('obs-config');
+const configError = document.getElementById('config-error');
+const connectBtn = document.getElementById('obs-connect');
+const reconfigBtn = document.getElementById('obs-reconfig');
+let obsToken = '';
+try { obsToken = localStorage.getItem(TOKEN_KEY) || ''; } catch { obsToken = ''; }
+function showConfig(message = '') {
+  configError.textContent = message;
+  configPanel.hidden = false;
+  tokenInput.value = '';
+  sync.className = 'sync-status error';
+  sync.textContent = 'Connexion OBS DEV requise';
+}
+async function connect() {
+  const supplied = tokenInput.value.trim();
+  if (supplied.length < 32) {
+    showConfig('Jeton invalide : au moins 32 caractères.');
+    return;
+  }
+  obsToken = supplied;
+  configError.textContent = '';
+  connectBtn.disabled = true;
+  await refresh();
+  connectBtn.disabled = false;
+}
+connectBtn.addEventListener('click', connect);
+tokenInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') connect();
+});
+reconfigBtn.addEventListener('click', () => showConfig());
+
+function apiRequestUrl() {
+  const url = new URL(CONFIG.apiUrl, location.origin);
+  // Le lien partagé Vercel Preview comporte éventuellement un paramètre
+  // d'accès à la branche. Il doit aussi accompagner les requêtes API,
+  // sans modifier ni exposer la valeur dans les messages ou GitHub.
+  const share = new URLSearchParams(location.search);
+  for (const [key,value] of share.entries()) {
+    if (key !== 'utm_source' && key !== 'utm_medium' && key !== 'utm_campaign' &&
+        key !== 'x-vercel-protection-bypass') {
+      url.searchParams.set(key,value);
+    }
+  }
+  return url;
+}
+
+let fetching=false;
+async function refresh() {
+  if (CONFIG.mode !== 'api' || fetching || !obsToken) return;
+  fetching=true;
+  try {
+    const response = await fetch(apiRequestUrl(), {
+      method: 'GET',
+      headers: { Authorization: 'Bearer ' + obsToken },
+      credentials: 'same-origin',
+      cache: 'no-store',
+      redirect: 'follow'
+    });
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      throw new Error('Réponse non JSON (protection Vercel ou redirection)');
+    }
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.code || 'HTTP '+response.status);
+    const updated=normalizeResponse(data);
+    players=updated;
+    renderRankings();
+    renderSearch();
+    try { localStorage.setItem(TOKEN_KEY, obsToken); } catch {}
+    configPanel.hidden = true;
+    sync.className='sync-status live';
+    sync.replaceChildren(element('span','pulse'),document.createTextNode(
+      'DEV · '+updated.length+' joueurs · '+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
+    ));
+  } catch(err) {
+    console.error('Overlay OBS DEV : données non actualisées', err.message);
+    sync.className='sync-status error';
+    sync.textContent='Données DEV indisponibles';
+    if (configPanel.hidden === false) configError.textContent =
+      err.message === 'ACCES_REFUSE' ? 'Jeton refusé par l’API DEV.' :
+      err.message.includes('non JSON') ? 'Protection Vercel : accès OBS à vérifier.' :
+      'Connexion impossible : '+err.message;
+    // Après un échec, les données validées restent à l'écran.
+  } finally { fetching=false; }
+}
+if (CONFIG.mode==='api') {
+  if (!location.protocol.startsWith('http')) {
+    showConfig('Cette version doit être hébergée sur Vercel DEV, pas ouverte comme fichier local.');
+  } else if (!obsToken) {
+    showConfig();
+  } else {
+    sync.textContent = 'Connexion aux données DEV…';
+    refresh();
+  }
+  setInterval(refresh, CONFIG.refreshMs);
+}
+renderRankings();
+renderSearch();
+</script>
+</body>
+</html>
 
