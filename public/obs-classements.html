@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
-  <title>La Tribu des Obus — Classements OBS (PROD, v16 Top 5 + Réseaux (logos))</title>
+  <title>La Tribu des Obus — Classements OBS (PROD, v17 Top 5 + Réseaux — Grade / punition séparés)</title>
   <style>
     /*
       CALIBRAGE V7 : SCÈNE RÉELLE uniquement = 940 × 529 px (16:9),
@@ -582,6 +582,64 @@
     .social-name { color: #f4f4f6; font-size: 8.7px; font-weight: 800; letter-spacing: -.12px; }
     .social-handle { color: #f7d586; font-size: 9px; font-weight: 850; margin-left: auto; letter-spacing: -.17px; }
     .social-handle.discord-link { font-size: 8px; letter-spacing: -.25px; color: #f2d6a4; }
+
+    /* V17 — Recherche : punition discrète en haut à droite de la carte Grades.
+       Le grade et le rang restent ensemble sur la seconde ligne, sans punition. */
+    .result-ranks .rank-pill.grade-rank-pill .rp-head {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+      gap: 3px;
+      line-height: 13px;
+    }
+    .result-ranks .rank-pill.grade-rank-pill .rp-head .rp-name {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+    .result-ranks .rank-pill.grade-rank-pill .rp-punition {
+      margin-left: auto;
+      color: #ff7777;
+      font-size: 9px;
+      font-weight: 850;
+      line-height: 13px;
+      min-width: 0;
+      max-width: 82px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: right;
+    }
+    .result-ranks .rank-pill.grade-rank-pill .rp-value {
+      width: 100%;
+      min-width: 0;
+      gap: 4px;
+    }
+    .result-ranks .rank-pill.grade-rank-pill .rp-value > b {
+      flex: 0 0 auto;
+    }
+    .result-ranks .rank-pill.grade-rank-pill .rp-grade-inline {
+      display: block;
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: clip;
+      line-height: 17px;
+    }
+    .result-ranks .rank-pill.grade-rank-pill .rp-grade-inline .grade-inline {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+      color: #fff;
+      font-size: 12.5px;
+      line-height: 17px;
+      letter-spacing: -.15px;
+      font-weight: 850;
+    }
   </style>
 </head>
 <body>
@@ -875,13 +933,28 @@ function renderSearch() {
   ]) {
     const rank=rankOf(p,type);
     const medalClass = rank===1 ? ' first' : rank===2 ? ' second' : rank===3 ? ' third' : '';
-    const cell=element('div','rank-pill'+medalClass);
-    cell.append(element('span','rp-name',icon+' '+label));
+    const cell=element('div','rank-pill'+medalClass+(type==='grades'?' grade-rank-pill':''));
+    if (type==='grades') {
+      // La punition reste dans le coin supérieur droit, à côté de « Grades ».
+      const head=element('div','rp-head');
+      head.append(element('span','rp-name',icon+' '+label));
+      const penalty=punishmentName(p);
+      if (penalty) {
+        const tag=element('span','rp-punition',penalty);
+        tag.title=penalty;
+        head.append(tag);
+      }
+      cell.append(head);
+    } else {
+      cell.append(element('span','rp-name',icon+' '+label));
+    }
     const val=element('span','rp-value');
     val.append(element('b','',rank ? '#'+rank : '—'));
     if (type==='grades') {
       const gradeInline=element('span','rp-grade-inline');
-      appendGrade(gradeInline,p);
+      const gradeText=element('span','grade-inline',p.grade || 'Grade inconnu');
+      gradeText.title=p.grade || 'Grade inconnu';
+      gradeInline.append(gradeText);
       val.append(gradeInline);
     } else if (value!=null) {
       val.append(element('small','', ' · '+number.format(value)+units));
@@ -890,6 +963,15 @@ function renderSearch() {
     rankRow.append(cell);
   }
   result.append(line,rankRow);
+  // Adapter uniquement les grades longs pour afficher leur nom complet.
+  const gradeText=rankRow.querySelector('.grade-rank-pill .grade-inline');
+  if (gradeText) {
+    let fontSize=12.5;
+    while (gradeText.scrollWidth > gradeText.clientWidth + 1 && fontSize > 9) {
+      fontSize-=0.5;
+      gradeText.style.fontSize=fontSize+'px';
+    }
+  }
 }
 search.addEventListener('input',renderSearch);
 setInterval(()=>{
