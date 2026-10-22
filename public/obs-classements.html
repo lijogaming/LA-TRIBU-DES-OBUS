@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
-  <title>La Tribu des Obus — Classements OBS (PROD, v17 Top 5 + Réseaux — Grade / punition séparés)</title>
+  <title>La Tribu des Obus — Classements OBS (PROD, v18 Top 5 + Réseaux — logos centrés)</title>
   <style>
     /*
       CALIBRAGE V7 : SCÈNE RÉELLE uniquement = 940 × 529 px (16:9),
@@ -575,8 +575,9 @@
       line-height: 1;
     }
     .social-icon.discord { background: #5865f2; font-size: 9px; }
-    .social-icon.youtube { background: #e62121; font-size: 10px; }
-    .social-icon.instagram { background: linear-gradient(135deg, #f8be56, #d63192 57%, #7a49d6); font-size: 14px; }
+    /* V18 : logos YouTube et Instagram dessinés et centrés dans leur SVG. */
+    .social-icon.youtube, .social-icon.instagram { background: transparent; }
+    .social-icon.youtube svg, .social-icon.instagram svg { width: 17px; height: 17px; flex: none; }
     .social-icon.tiktok { background: #191c25; }
     .social-icon svg { width: 14px; height: 14px; display: block; }
     .social-name { color: #f4f4f6; font-size: 8.7px; font-weight: 800; letter-spacing: -.12px; }
@@ -688,14 +689,30 @@
         </div>
         <div class="social-item">
           <span class="social-icon youtube" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false"><path fill="#fff" d="M9 7.4 16.7 12 9 16.6z"/></svg>
+            <svg viewBox="0 0 24 24" focusable="false" aria-label="YouTube">
+              <rect x="1.5" y="4" width="21" height="16" rx="5" fill="#ff0000"/>
+              <path fill="#fff" d="M10.2 8.7L16 12l-5.8 3.3V8.7z"/>
+            </svg>
           </span>
           <span class="social-name">Chaîne secondaire</span>
           <span class="social-handle">@lijo_2</span>
         </div>
         <div class="social-item">
           <span class="social-icon instagram" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false"><rect x="4" y="4" width="16" height="16" rx="5" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="#fff" stroke-width="2.5"/><circle cx="17" cy="7.2" r="1.3" fill="#fff"/></svg>
+            <svg viewBox="0 0 24 24" focusable="false" aria-label="Instagram">
+              <defs>
+                <linearGradient id="iggrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#feda75"/>
+                  <stop offset="35%" stop-color="#fa7e1e"/>
+                  <stop offset="65%" stop-color="#d62976"/>
+                  <stop offset="100%" stop-color="#4f5bd5"/>
+                </linearGradient>
+              </defs>
+              <rect x="1.5" y="1.5" width="21" height="21" rx="6" fill="url(#iggrad)"/>
+              <rect x="6.1" y="6.1" width="11.8" height="11.8" rx="4" fill="none" stroke="#fff" stroke-width="1.8"/>
+              <circle cx="12" cy="12" r="3.15" fill="none" stroke="#fff" stroke-width="1.8"/>
+              <circle cx="16.9" cy="7.2" r="1.15" fill="#fff"/>
+            </svg>
           </span>
           <span class="social-name">Instagram</span>
           <span class="social-handle">@lijo_all</span>
