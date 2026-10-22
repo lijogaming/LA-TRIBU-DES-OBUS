@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="dark">
-  <title>La Tribu des Obus — Classements OBS (PROD, v13)</title>
+  <title>La Tribu des Obus — Classements OBS (PROD, v14 Top 5)</title>
   <style>
     /*
       CALIBRAGE V7 : SCÈNE RÉELLE uniquement = 940 × 529 px (16:9),
@@ -483,40 +483,41 @@
     .reconfig { pointer-events:auto; display: none; font-size: 8px; border: 0;
       color: #a2a2a2; background: transparent; padding: 0; cursor: pointer; }
     .side-footer:hover .reconfig { display:block; }
+
+    /* V14 — Une seule catégorie visible par page : Top 5 complet. */
+    .side { height: auto; gap: 0; }
+    .ranking { height: 212px; flex: 0 0 212px; padding: 4px 5px 5px; }
+    .ranking[hidden] { display: none !important; }
+    .ranking-head { height: 22px; min-height: 22px; }
+    .ranking-page { font-size: 8px; letter-spacing: .3px; font-weight: 850; }
+    .ranking-list { grid-template-rows: repeat(5, 32px); gap: 4px; }
+    .ranking-list .player-line { height: 32px; padding: 2px 5px; }
+    .ranking-list .player-line .player-data { gap: 2px; }
+    .side-footer {
+      flex: 0 0 auto;
+      min-height: 30px;
+      padding-top: 7px;
+      justify-content: flex-start;
+      gap: 6px;
+    }
+    .dots { gap: 6px; }
+    .dot { width: 15px; height: 3px; }
+    .sync-status { font-size: 8px; }
+
+    /* Conserver la lisibilité agrandie des 3 cases de recherche. */
+    .result-ranks .rank-pill .rp-name { font-size: 10.5px; line-height: 13px; }
+    .result-ranks .rank-pill .rp-value b { font-size: 15px; line-height: 18px; }
+    .result-ranks .rank-pill .rp-value small {
+      font-size: 12.5px; line-height: 17px; font-weight: 850;
+    }
+    .result-ranks .rank-pill .rp-grade-inline,
+    .result-ranks .rank-pill .rp-grade-inline .grade-inline {
+      font-size: 12.5px; line-height: 17px; font-weight: 850;
+    }
+    .result-ranks .rank-pill .rp-grade-inline .punishment-text {
+      font-size: 10.5px; line-height: 15px;
+    }
   </style>
-
-<style>
-/* Agrandir les textes des 3 cases de recherche OBS */
-
-.result-ranks .rank-pill .rp-name {
-  font-size: 10.5px;
-  line-height: 13px;
-}
-
-.result-ranks .rank-pill .rp-value b {
-  font-size: 15px;
-  line-height: 18px;
-}
-
-.result-ranks .rank-pill .rp-value small {
-  font-size: 12.5px;
-  line-height: 17px;
-  font-weight: 850;
-}
-
-.result-ranks .rank-pill .rp-grade-inline,
-.result-ranks .rank-pill .rp-grade-inline .grade-inline {
-  font-size: 12.5px;
-  line-height: 17px;
-  font-weight: 850;
-}
-
-.result-ranks .rank-pill .rp-grade-inline .punishment-text {
-  font-size: 10.5px;
-  line-height: 15px;
-}
-</style>
-
 </head>
 <body>
 <div id="viewport">
@@ -533,7 +534,7 @@
       <p class="config-note">Configure avant de lancer un live. L'overlay est en mode PROD et ne transmet pas les jetons au public.</p>
     </div>
     <div class="website-title">latribudesobus.com</div>
-    <aside class="side" aria-label="Classements par groupes de deux">
+    <aside class="side" aria-label="Top 5 par catégorie — Grades, Lives et Obus">
       <section class="ranking" id="ranking-grades" aria-label="Classement grades">
         <div class="ranking-head"><div class="ranking-title"><span class="rank-icon" aria-hidden="true">🏅</span><strong>Grades</strong></div><span class="ranking-page"><span data-page></span></span></div>
         <div class="ranking-list" data-list></div>
@@ -547,7 +548,7 @@
         <div class="ranking-list" data-list></div>
       </section>
       <div class="side-footer">
-        <div class="dots" aria-hidden="true"><span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="dots" aria-hidden="true"><span class="dot active"></span><span class="dot"></span><span class="dot"></span></div>
         <div class="sync-status" id="sync"><span class="pulse"></span>DONNÉES PROD · connexion requise</div>
         <button class="reconfig" id="obs-reconfig" type="button" aria-label="Modifier le jeton OBS">Configuration</button>
       </div>
@@ -589,8 +590,8 @@ const CONFIG = {
   mode: 'api',              // vrais joueurs PROD, aucune donnée démo affichée
   apiUrl: '/api/classement-obs', // chemin confirmé sur le déploiement Vercel PROD
   refreshMs: 15000,       // rafraîchissement en mode api : 15 secondes
-  slideMs: 8000,          // changement des 2 lignes affichées : 8 secondes
-  steps: 5                // positions 1–2, 3–4, 5–6, 7–8, 9–10, puis retour
+  slideMs: 8000,          // défilement Grades → Lives → Obus toutes les 8 secondes
+  steps: 3                // une page Top 5 par catégorie, puis retour à Grades
 };
 
 // Version connectée : ne publier aucun profil de démonstration.
@@ -657,11 +658,11 @@ function renderRanking(type) {
   const root = document.getElementById('ranking-'+type);
   const list = root.querySelector('[data-list]');
   const page = root.querySelector('[data-page]');
-  const ordered = sorted(type).slice(0, 10); // uniquement les 10 premiers joueurs de cette catégorie
+  const ordered = sorted(type).slice(0, 5); // cinq membres par catégorie
   list.replaceChildren();
-  page.textContent = `${currentPage*2+1}–${(currentPage+1)*2}`;
-  for (let i=0;i<2;i++) {
-    const index = currentPage*2+i;
+  page.textContent = 'TOP 5';
+  for (let i=0;i<5;i++) {
+    const index = i;
     const p = ordered[index];
     if (!p) {
       list.append(element('div','player-line empty','— Aucun joueur —'));
@@ -689,7 +690,12 @@ function renderRanking(type) {
   }
 }
 function renderRankings() {
-  ['grades','lives','obus'].forEach(renderRanking);
+  const categories = ['grades','lives','obus'];
+  categories.forEach((type, index) => {
+    const panel = document.getElementById('ranking-' + type);
+    panel.hidden = index !== currentPage;
+    renderRanking(type);
+  });
   document.querySelectorAll('.dot').forEach((e,i)=> e.classList.toggle('active', i===currentPage));
 }
 function normalize(value) {
