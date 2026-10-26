@@ -312,9 +312,13 @@ export default function ClassementPage() {
         CLASSEMENT
       </h1>
 
+      
       <p className="subtitle">
         Les membres de La Tribu des Obus
       </p>
+
+      <link rel="stylesheet" href="/profil-membre.css" />
+
 
       {/* ================================================= */}
       {/* FILTRES */}
