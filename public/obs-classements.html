@@ -663,7 +663,9 @@
       letter-spacing: -.15px;
       font-weight: 850;
     }
+
   </style>
+  <link rel="stylesheet" href="/profil-membre.css">
 </head>
 <body>
 <div id="viewport">
@@ -763,17 +765,26 @@
     </section>
   </main>
 </div>
-<div class="profile-backdrop" id="profile-backdrop" aria-hidden="true">
-  <div class="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-name">
-    <button class="profile-close" id="profile-close" aria-label="Fermer">✕</button>
-    <div class="profile-kicker">Profil du membre</div>
-    <div class="profile-name" id="profile-name">@pseudo</div>
-    <div class="profile-list">
-      <div class="profile-row"><span class="icon">🏅</span><span id="profile-grade">Grade : —</span><span id="profile-punition" class="punishment-text"></span></div>
-      <div class="profile-row"><span class="icon">💰</span><span id="profile-obus">Sac d'Obus : —</span></div>
-      <div class="profile-row"><span class="icon">🪪</span><span id="profile-soldat">Lives depuis Soldat : —</span></div>
-      <div class="profile-row"><span class="icon">📊</span><span id="profile-lives">Lives total : —</span></div>
-    </div>
+
+<div class="profile-backdrop profil-classement-overlay" id="profile-backdrop" aria-hidden="true">
+  <div class="profile-modal card profil-classement-card" role="dialog" aria-modal="true" aria-labelledby="profile-name">
+
+    <button class="profile-close profil-classement-fermer" id="profile-close" type="button" aria-label="Fermer">✕</button>
+
+    <p class="label">PROFIL DU MEMBRE</p>
+
+    <h2 id="profile-name">@pseudo</h2>
+
+    <p>🎖️ Grade : <strong id="profile-grade">—</strong></p>
+
+    <p id="profile-punition-ligne" hidden>⚠️ Punition : <strong id="profile-punition">—</strong></p>
+
+    <p>💰 Sac d'Obus : <strong id="profile-obus">—</strong></p>
+
+    <p>📺 Lives depuis Soldat : <strong id="profile-soldat">—</strong></p>
+
+    <p>📊 Lives total : <strong id="profile-lives">—</strong></p>
+
   </div>
 </div>
 <script>
