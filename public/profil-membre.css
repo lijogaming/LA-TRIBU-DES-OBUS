@@ -1,0 +1,99 @@
+
+/* PROFIL COMMUN : CLASSEMENT ET OVERLAY OBS */
+
+.profil-classement-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  pointer-events: auto;
+}
+
+.profil-classement-overlay .profil-classement-card {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0;
+  padding: 38px;
+  border: 3px solid rgba(233, 189, 88, 0.65);
+  border-radius: 18px;
+  background: rgba(20, 20, 20, 0.92);
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.45);
+  color: #f5f5f5;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.profil-classement-overlay .profil-classement-card .label {
+  margin: 1em 0;
+  color: #aaa;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  line-height: 1.6;
+}
+
+.profil-classement-overlay .profil-classement-card h2 {
+  margin: 12px 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.profil-classement-overlay .profil-classement-card p {
+  margin: 1em 0;
+  color: #aaa;
+  line-height: 1.6;
+}
+
+.profil-classement-overlay .profil-classement-card p strong {
+  font-weight: 700;
+}
+
+.profil-classement-overlay .profil-classement-card .profil-classement-fermer {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: #222;
+  color: #fff;
+  font: 700 16px Arial, Helvetica, sans-serif;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.profil-classement-overlay .profil-classement-card .profil-classement-fermer:hover {
+  transform: translateY(-2px);
+}
+
+/* VISIBILITÉ DE LA FENÊTRE OBS */
+
+#profile-backdrop.profil-classement-overlay:not(.open) {
+  display: none;
+}
+
+#profile-backdrop.profil-classement-overlay.open {
+  display: flex;
+}
+
+/* ADAPTATION TÉLÉPHONE */
+
+@media (max-width: 700px) {
+  .profil-classement-overlay .profil-classement-card {
+    padding: 28px 18px;
+  }
+}
