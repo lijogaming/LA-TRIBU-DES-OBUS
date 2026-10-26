@@ -937,11 +937,13 @@ function bestPlayer(query) {
 function openProfile(p) {
   if (!p) return;
   document.getElementById('profile-name').textContent = p.pseudo || '—';
-  document.getElementById('profile-grade').textContent = 'Grade : ' + (p.grade || 'Inconnu');
-  document.getElementById('profile-punition').textContent = punishmentName(p) ? ' - ' + punishmentName(p) : '';
-  document.getElementById('profile-obus').textContent = "Sac d'Obus : " + formatMaybeNumber(p.obus, ' Obus');
-  document.getElementById('profile-soldat').textContent = 'Lives depuis Soldat : ' + formatMaybeNumber(p.livesDepuisSoldat);
-  document.getElementById('profile-lives').textContent = 'Lives total : ' + formatMaybeNumber(p.livesTotal);
+  document.getElementById('profile-grade').textContent = p.grade || 'Inconnu';
+  const punition = punishmentName(p);
+  document.getElementById('profile-punition-ligne').hidden = !punition;
+  document.getElementById('profile-punition').textContent = punition;
+  document.getElementById('profile-obus').textContent = formatMaybeNumber(p.obus, ' Obus');
+  document.getElementById('profile-soldat').textContent = formatMaybeNumber(p.livesDepuisSoldat);
+  document.getElementById('profile-lives').textContent = formatMaybeNumber(p.livesTotal);
   backdrop.classList.add('open');
   backdrop.setAttribute('aria-hidden','false');
 }
