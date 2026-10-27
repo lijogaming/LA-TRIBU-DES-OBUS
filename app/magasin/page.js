@@ -16,7 +16,7 @@ export default function MagasinPage() {
       </div>
 
       <h1>
-        MAGASIN
+        MAGASINS
       </h1>
 
       <p className="subtitle">
