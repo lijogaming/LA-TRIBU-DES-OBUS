@@ -124,8 +124,8 @@ export default function MagasinPage() {
             <img
               src="/magasins/armurerie.png"
               alt=""
-              width={70}
-              height={70}
+              width={100}
+              height={100}
               style={{
                 display: "block",
                 margin: "0 auto",
