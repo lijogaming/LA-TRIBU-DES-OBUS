@@ -1722,7 +1722,7 @@ className="card profil-principal-card"  style={{
           </div>
       
           <h2>
-            Magasin
+            Magasins
           </h2>
       
           <p>
