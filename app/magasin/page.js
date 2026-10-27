@@ -121,7 +121,17 @@ export default function MagasinPage() {
         >
 
           <div className="magasin-card-icon">
-            💥
+            <img
+              src="/magasins/armurerie.png"
+              alt=""
+              width={44}
+              height={44}
+              style={{
+                display: "block",
+                margin: "0 auto",
+                objectFit: "contain"
+              }}
+            />
           </div>
 
           <h2>
