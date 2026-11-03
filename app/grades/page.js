@@ -22,7 +22,7 @@ const grades = [
   {
     nom: "Adgent Lijo",
     condition: "7 lives depuis Soldat",
-    deblocage: "Déblocage supplémentaire à définir.",
+    deblocage: "Récompenses à définir.",
   },
   {
     nom: "Colonel",
@@ -33,36 +33,36 @@ const grades = [
   {
     nom: "Colonel en Chef",
     condition: "15 lives depuis Soldat",
-    deblocage: "Déblocage supplémentaire à définir.",
+    deblocage: "Récompenses à définir.",
   },
   {
     nom: "Vice Amiral",
     condition: "20 lives depuis Soldat",
-    deblocage: "Déblocage supplémentaire à définir.",
+    deblocage: "Récompenses à définir.",
   },
   {
     nom: "Amiral",
     condition: "30 lives depuis Soldat",
-    deblocage: "Déblocage supplémentaire à définir.",
+    deblocage: "Récompenses à définir.",
   },
   {
     nom: "Général",
     condition: "40 lives depuis Soldat",
-    deblocage: "Déblocage supplémentaire à définir.",
+    deblocage: "Récompenses à définir.",
   },
   {
     nom: "Sergent",
     condition: "50 lives depuis Soldat",
-    deblocage: "Déblocage supplémentaire à définir.",
+    deblocage: "Récompenses à définir.",
   },
   {
     nom: "Sergent Chef",
     condition: "70 lives depuis Soldat",
-    deblocage: "Grade automatique maximum atteint.",
+    deblocage: "Grade maximum atteint.",
   },
   {
     nom: "Officier général",
-    condition: "Attribution spéciale",
+    condition: "Attribution manuelle",
     deblocage:
       "Grade spécial attribué manuellement. Aucun avantage supplémentaire défini pour le moment.",
   },
@@ -82,13 +82,12 @@ export default function GradesPage() {
       <h1>GRADES</h1>
 
       <p className="subtitle">
-        Découvre les grades de La Tribu des Obus
-        et les avantages débloqués à chaque étape.
+        Voici les grades déblocables en venant mettre un message dans un des lives de Lijo.
       </p>
 
       <div className="grades-liste">
         <div className="grades-entete">
-          <strong>GRADED</strong>
+          <strong>GRADES</strong>
           <strong>RÉCOMPENSES</strong>
         </div>
 
