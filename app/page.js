@@ -51,6 +51,25 @@ const [reseauxOuverts, setReseauxOuverts] =
   useState(false);
 
   // =====================================================
+  // NOTIFICATIONS
+  // =====================================================
+
+  const [notifications, setNotifications] =
+    useState([]);
+
+  const [notificationsOuvertes, setNotificationsOuvertes] =
+    useState(false);
+
+  const [chargementNotifications, setChargementNotifications] =
+    useState(false);
+
+  const [erreurNotifications, setErreurNotifications] =
+    useState("");
+
+  const [notificationEnCours, setNotificationEnCours] =
+    useState(null);
+  
+  // =====================================================
 // CLASSEMENT PUBLIC
 // =====================================================
 
@@ -251,6 +270,93 @@ async function chargerClassementPublic() {
       actif = false;
     };
   }, [user]);
+
+  // =====================================================
+  // CHARGER LES NOTIFICATIONS
+  // =====================================================
+
+  useEffect(() => {
+    if (!joueur?.id) {
+      setNotifications([]);
+      setChargementNotifications(false);
+      return;
+    }
+
+    let actif = true;
+    setChargementNotifications(true);
+
+    async function chargerNotifications() {
+      const depuis = new Date(
+        Date.now() - 14 * 24 * 60 * 60 * 1000
+      ).toISOString();
+
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("id, type_notification, message, lu, created_at")
+        .eq("joueur_id", joueur.id)
+        .gte("created_at", depuis)
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (!actif) return;
+
+      setChargementNotifications(false);
+
+      if (error) {
+        console.error("Erreur notifications :", error);
+        setErreurNotifications(
+          "Impossible de charger les notifications."
+        );
+        return;
+      }
+
+      setNotifications(data || []);
+      setErreurNotifications("");
+    }
+
+    chargerNotifications();
+
+    const intervalle = setInterval(
+      chargerNotifications,
+      60000
+    );
+
+    return () => {
+      actif = false;
+      clearInterval(intervalle);
+    };
+  }, [joueur?.id]);
+
+  // =====================================================
+  // MARQUER UNE NOTIFICATION COMME LUE
+  // =====================================================
+
+  async function marquerNotificationLue(id) {
+    setNotificationEnCours(id);
+
+    const { error } = await supabase.rpc(
+      "marquer_notification_lue",
+      { p_notification_id: id }
+    );
+
+    if (error) {
+      console.error("Erreur lecture notification :", error);
+      setErreurNotifications(
+        "Impossible de marquer cette notification comme lue."
+      );
+    } else {
+      setNotifications((anciennes) =>
+        anciennes.map((notification) =>
+          notification.id === id
+            ? { ...notification, lu: true }
+            : notification
+        )
+      );
+      setErreurNotifications("");
+    }
+
+    setNotificationEnCours(null);
+  }
 
   // =====================================================
   // CHARGER LES JOUEURS POUR LES DONS
@@ -1527,11 +1633,59 @@ if (!user) {
       {/* ================================================= */}
 
       <div
-className="card profil-principal-card"  style={{
+className="card profil-principal-card"  
+  style={{
     position: "relative",
     paddingTop: "70px",
   }}
 >
+  
+  {/* ================================================= */}
+  {/* ENVELOPPE DES NOTIFICATIONS */}
+  {/* ================================================= */}
+
+  <button
+    type="button"
+    className="notifications-bouton-profil"
+    onClick={() => setNotificationsOuvertes(true)}
+    title="Ouvrir les notifications"
+    aria-label="Ouvrir les notifications"
+  >
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <rect
+        x="3"
+        y="5"
+        width="18"
+        height="14"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M4 7 L12 13 L20 7"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+
+    {notifications.some((notification) => !notification.lu) && (
+      <Image
+        src="/alerte-notification.png"
+        alt=""
+        width={19}
+        height={22}
+        className="notifications-alerte"
+      />
+    )}
+  </button>
+
   <button
   onClick={deconnexion}
   title="Se déconnecter"
@@ -1673,6 +1827,100 @@ className="card profil-principal-card"  style={{
           </div>
         )}
       </div>
+
+  {/* ================================================= */}
+  {/* FENÊTRE DES NOTIFICATIONS */}
+  {/* ================================================= */}
+
+  {notificationsOuvertes && (
+    <div
+      className="reseaux-overlay"
+      onClick={() => setNotificationsOuvertes(false)}
+    >
+      <div
+        className="reseaux-popup notifications-popup"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Notifications"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="reseaux-close"
+          onClick={() => setNotificationsOuvertes(false)}
+          title="Fermer"
+        >
+          ✕
+        </button>
+
+        <p className="label">
+          LA TRIBU DES OBUS
+        </p>
+
+        <h2 className="reseaux-title">
+          Notifications
+        </h2>
+
+        <p className="reseaux-subtitle">
+          Tes derniers événements
+        </p>
+
+        {erreurNotifications && (
+          <p role="alert" className="notifications-erreur">
+            {erreurNotifications}
+          </p>
+        )}
+
+        {chargementNotifications ? (
+          <p>Chargement des notifications...</p>
+        ) : notifications.length === 0 ? (
+          <p>Aucune notification récente.</p>
+        ) : (
+          <div className="notifications-liste">
+            {notifications.map((notification) => (
+              <div
+                key={notification.id}
+                className={
+                  notification.lu
+                    ? "notifications-item"
+                    : "notifications-item notifications-item-nonlue"
+                }
+              >
+                <strong className="notifications-type">
+                  {notification.type_notification.replaceAll("_", " ")}
+                </strong>
+
+                <p>{notification.message}</p>
+
+                <span className="notifications-date">
+                  {new Date(notification.created_at)
+                    .toLocaleString("fr-FR", {
+                      dateStyle: "short",
+                      timeStyle: "short",
+                    })}
+                </span>
+
+                {!notification.lu && (
+                  <button
+                    type="button"
+                    className="notifications-marquer-lue"
+                    disabled={notificationEnCours === notification.id}
+                    onClick={() =>
+                      marquerNotificationLue(notification.id)
+                    }
+                  >
+                    {notificationEnCours === notification.id
+                      ? "Enregistrement..."
+                      : "Marquer comme lu"}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )}
 
       {/* ================================================= */}
       {/* MENU DU JEU */}
