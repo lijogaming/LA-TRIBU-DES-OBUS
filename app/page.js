@@ -2044,6 +2044,30 @@ className="card profil-principal-card"
             Voir les meilleurs membres
           </p>
         </div>
+            
+        {/* ================================================= */}
+        {/* GRADES */}
+        {/* ================================================= */}
+
+        <div
+          className="card menu-card"
+          onClick={() => {
+            window.location.href = "/grades";
+          }}
+        >
+          <div className="menu-icon">
+            🎖️
+          </div>
+
+          <h2>
+            Grades
+          </h2>
+
+          <p>
+            Progression et déblocages
+          </p>
+        </div>
+
       </div>
 
             {/* ================================================= */}
