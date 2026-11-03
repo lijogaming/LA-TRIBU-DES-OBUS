@@ -3997,3 +3997,127 @@ h1 {
   }
 
 }
+
+/* ===================================================== */
+/* NOTIFICATIONS - BOUTON DU PROFIL */
+/* ===================================================== */
+
+.profil-principal-card .notifications-bouton-profil {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+
+  width: 42px;
+  height: 42px;
+
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 2px solid rgba(233, 189, 88, 0.65);
+  border-radius: 10px;
+
+  background: #222;
+  color: white;
+
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* INDICATEUR ROUGE */
+
+.notifications-alerte {
+  position: absolute;
+  top: -7px;
+  right: -8px;
+
+  width: 19px;
+  height: auto;
+
+  pointer-events: none;
+}
+
+/* ===================================================== */
+/* NOTIFICATIONS - FENÊTRE */
+/* ===================================================== */
+
+.notifications-popup {
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.notifications-liste {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  max-height: 55vh;
+  margin-top: 18px;
+  overflow-y: auto;
+}
+
+/* CHAQUE NOTIFICATION */
+
+.notifications-item {
+  padding: 14px;
+  border: 1px solid #393939;
+  border-radius: 11px;
+  background: #121212;
+}
+
+.notifications-item-nonlue {
+  border-color: rgba(233, 189, 88, 0.75);
+  background: #1c1a15;
+}
+
+.notifications-type {
+  display: block;
+  color: #e9bd58;
+  font-size: 13px;
+  text-transform: capitalize;
+}
+
+.notifications-item p {
+  margin: 8px 0;
+  color: #ddd;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notifications-date {
+  display: block;
+  color: #888;
+  font-size: 12px;
+}
+
+/* MARQUER COMME LU */
+
+.notifications-marquer-lue {
+  margin-top: 12px;
+  padding: 9px 12px;
+
+  border: 0;
+  border-radius: 8px;
+
+  background: #e9bd58;
+  color: #111;
+
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.notifications-marquer-lue:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.notifications-erreur {
+  color: #ff7777;
+  font-size: 13px;
+}
