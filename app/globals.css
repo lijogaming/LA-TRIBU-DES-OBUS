@@ -4152,3 +4152,104 @@ h1 {
     flex-basis: calc((100% - 16px) / 2);
   }
 }
+
+/* ===================================================== */
+/* PAGE GRADES */
+/* ===================================================== */
+
+.grades-retour {
+  display: inline-block;
+  margin-bottom: 25px;
+  color: #e9bd58;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.grades-retour:hover {
+  text-decoration: underline;
+}
+
+.grades-liste {
+  width: 100%;
+  max-width: 850px;
+  margin: 30px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grades-entete,
+.grades-ligne.card {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1.5fr);
+  align-items: center;
+  gap: 20px;
+  text-align: left;
+}
+
+.grades-entete {
+  padding: 0 20px;
+  color: #e9bd58;
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.grades-ligne.card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 20px;
+}
+
+.grades-identite h2 {
+  margin: 0 0 8px;
+  color: #e9bd58;
+  font-size: 21px;
+}
+
+.grades-identite span {
+  color: #999;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.grades-ligne .grades-deblocage {
+  margin: 0;
+  color: #ddd;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ===================================================== */
+/* PAGE GRADES SUR TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+  .grades-entete,
+  .grades-ligne.card {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(0, 1.3fr);
+    gap: 12px;
+  }
+
+  .grades-ligne.card {
+    padding: 15px 12px;
+  }
+
+  .grades-identite h2 {
+    font-size: 16px;
+  }
+
+  .grades-identite span,
+  .grades-ligne .grades-deblocage {
+    font-size: 12px;
+  }
+
+  .grades-entete {
+    padding: 0 12px;
+    font-size: 11px;
+  }
+}
