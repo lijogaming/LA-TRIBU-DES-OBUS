@@ -17,7 +17,7 @@ const grades = [
     nom: "Adgent",
     condition: "3 lives depuis Soldat",
     deblocage:
-      "Possibilité de devenir employé d'une entreprise (fonctionnalité à venir).",
+      "Possibilité de devenir employé d'une entreprise.",
   },
   {
     nom: "Adgent Lijo",
@@ -28,7 +28,7 @@ const grades = [
     nom: "Colonel",
     condition: "10 lives depuis Soldat",
     deblocage:
-      "Possibilité de créer une entreprise pour 1 000 Obus (fonctionnalité à venir).",
+      "Possibilité de créer une entreprise pour 1 000 Obus.",
   },
   {
     nom: "Colonel en Chef",
