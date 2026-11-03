@@ -2064,7 +2064,7 @@ className="card profil-principal-card"
           </h2>
 
           <p>
-            Progression et déblocages
+            Progression et récompenses
           </p>
         </div>
 
