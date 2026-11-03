@@ -4121,3 +4121,34 @@ h1 {
   color: #ff7777;
   font-size: 13px;
 }
+
+/* ===================================================== */
+/* MENU - 3 CASES EN HAUT, 2 CENTRÉES EN BAS */
+/* ===================================================== */
+
+.menu-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 24px;
+}
+
+.menu-grid > .menu-card {
+  width: auto;
+  flex: 0 0 calc((100% - 48px) / 3);
+}
+
+/* ===================================================== */
+/* MENU SUR TÉLÉPHONE */
+/* ===================================================== */
+
+@media (max-width: 700px) {
+  .menu-grid {
+    gap: 16px;
+  }
+
+  .menu-grid > .menu-card {
+    flex-basis: calc((100% - 16px) / 2);
+  }
+}
