@@ -9,7 +9,7 @@ const grades = [
   },
   {
     nom: "Soldat",
-    condition: "Abonnement à la chaîne + like du live",
+    condition: "Abonne toi à la chaîne + like le live en cours",
     deblocage:
       "Possibilité de gagner 100 Obus par live en participant au chat. Accès aux virements d'Obus entre joueurs éligibles.",
   },
