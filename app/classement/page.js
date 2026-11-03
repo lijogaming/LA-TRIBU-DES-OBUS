@@ -129,14 +129,19 @@ export default function ClassementPage() {
           .trim()
           .toLowerCase();
 
-      let liste =
-        joueurs.filter(
-          (joueur) =>
-            !terme ||
-            joueur.pseudo
-              ?.toLowerCase()
-              .includes(terme)
-        );
+      
+let liste =
+  joueurs.filter(
+    (joueur) =>
+      joueur.grade !== "Civil" &&
+      (
+        !terme ||
+        joueur.pseudo
+          ?.toLowerCase()
+          .includes(terme)
+      )
+  );
+
 
       liste =
         [...liste];
