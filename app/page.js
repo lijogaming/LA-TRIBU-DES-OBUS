@@ -128,9 +128,26 @@ async function chargerClassementPublic() {
   }
 
 
-  setClassementPublic(
-    data || []
-  );
+  
+const sansCivils = (data || []).filter(
+  (membre) => membre.grade !== "Civil"
+);
+
+const classementSansCivils = sansCivils.map(
+  (membre) => ({
+    ...membre,
+    rang:
+      1 +
+      sansCivils.filter(
+        (autre) =>
+          autre.classement === membre.classement &&
+          Number(autre.rang) < Number(membre.rang)
+      ).length,
+  })
+);
+
+setClassementPublic(classementSansCivils);
+
 
 
   setChargementClassementPublic(
