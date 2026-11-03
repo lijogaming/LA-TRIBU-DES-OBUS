@@ -88,8 +88,8 @@ export default function GradesPage() {
 
       <div className="grades-liste">
         <div className="grades-entete">
-          <strong>GRADE</strong>
-          <strong>DÉBLOCAGES</strong>
+          <strong>GRADED</strong>
+          <strong>RÉCOMPENSES</strong>
         </div>
 
         {grades.map((grade) => (
