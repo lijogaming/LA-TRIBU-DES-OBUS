@@ -1,6 +1,4 @@
 import "./globals.css";
-import ControleAcces from "./ControleAcces";
-
 export const metadata = {
   title: "La Tribu des Obus",
   description:
