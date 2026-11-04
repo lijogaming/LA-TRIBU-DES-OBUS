@@ -43,7 +43,7 @@ const grades = [
   {
     nom: "Amiral",
     condition: "30 lives depuis Soldat",
-    deblocage: "Récompenses à définir.",
+    deblocage: "Possibilité de créer un immeuble (mise à jour a venir)",
   },
   {
     nom: "Général",
@@ -58,7 +58,7 @@ const grades = [
   {
     nom: "Sergent Chef",
     condition: "70 lives depuis Soldat",
-    deblocage: "Grade maximum atteint.",
+    deblocage: "Grade maximum atteint. Possibilité de créer une ville (mise à jour a venir)",
   },
   {
     nom: "Officier général",
