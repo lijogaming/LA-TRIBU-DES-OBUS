@@ -425,8 +425,10 @@ setClassementPublic(classementSansCivils);
           provider: "google",
 
           options: {
-            redirectTo:
-              "https://latribudesobus.com/auth/callback",
+            
+redirectTo:
+  `${window.location.origin}/auth/callback`,
+
 
             scopes:
               "https://www.googleapis.com/auth/youtube.readonly",
