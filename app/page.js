@@ -1944,7 +1944,7 @@ className="card profil-principal-card"
       {/* ADMIN + JOUEURS */}
       {/* ================================================= */}
       
-                  Envoyer des Obus
+<div className="menu-grid">
         
         {joueur.grade !== "Civil" && (
           <>
