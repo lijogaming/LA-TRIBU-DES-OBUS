@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import NotificationsAdmin from "./NotificationsAdmin";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -462,6 +463,7 @@ async function modifierTotalLives(
       <p className="subtitle">
         Gestion de La Tribu des Obus
       </p>
+<NotificationsAdmin supabase={supabase} />
 
       {/* ============================= */}
       {/* RECHERCHE */}
