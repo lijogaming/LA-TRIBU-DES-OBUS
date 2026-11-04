@@ -7,11 +7,9 @@ export const metadata = {
     "Grades, Obus et communauté de La Tribu des Obus",
 };
 
-export default function RootLayout(
-<ControleAcces>
-  {children}
-</ControleAcces>
-) {
+
+export default function RootLayout({ children }) {
+
   return (
     <html lang="fr">
       <body>
@@ -20,7 +18,10 @@ export default function RootLayout(
         {/* CONTENU DU SITE */}
         {/* ================================================= */}
 
-        {children}
+        
+<ControleAcces>
+  {children}
+</ControleAcces>
 
 
         {/* ================================================= */}
