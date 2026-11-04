@@ -84,7 +84,7 @@ export default function GradesPage() {
         className="card"
         style={{
           position: "relative",
-          paddingTop: "70px",
+          paddingTop: "30px",
           marginTop: "30px",
           marginBottom: "25px",
         }}
@@ -131,11 +131,6 @@ export default function GradesPage() {
             />
           </svg>
         </button>
-
-        <p className="label">
-          RETOUR
-        </p>
-
         <h2>
           Retour au profil
         </h2>
