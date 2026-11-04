@@ -84,7 +84,7 @@ export default function GradesPage() {
         className="card"
         style={{
           position: "relative",
-          paddingTop: "30px",
+          paddingTop: "70px",
           marginTop: "30px",
           marginBottom: "25px",
         }}
