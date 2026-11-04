@@ -1911,13 +1911,27 @@ className="card profil-principal-card"
 
                 <p>{notification.message}</p>
 
-                <span className="notifications-date">
-                  {new Date(notification.created_at)
-                    .toLocaleString("fr-FR", {
-                      dateStyle: "short",
-                      timeStyle: "short",
-                    })}
-                </span>
+                
+<span className="notifications-date">
+  Le{" "}
+  {new Date(notification.created_at)
+    .toLocaleDateString("fr-FR", {
+      timeZone: "Europe/Paris",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })}
+  {" à "}
+  {new Date(notification.created_at)
+    .toLocaleTimeString("fr-FR", {
+      timeZone: "Europe/Paris",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
+    .replace(":", "h")}
+</span>
+
 
                 {!notification.lu && (
                   <button
