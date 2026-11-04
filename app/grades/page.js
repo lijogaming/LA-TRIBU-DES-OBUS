@@ -1,3 +1,6 @@
+
+"use client";
+
 const grades = [
   {
     nom: "Civil",
