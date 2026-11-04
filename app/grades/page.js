@@ -71,10 +71,6 @@ const grades = [
 export default function GradesPage() {
   return (
     <main className="container grades-page">
-      <Link href="/" className="grades-retour">
-        ← Retour au profil
-      </Link>
-
       <div className="logo">
         🎖️
       </div>
@@ -84,7 +80,70 @@ export default function GradesPage() {
       <p className="subtitle">
         Voici les grades déblocables en venant mettre un message dans un des lives de Lijo.
       </p>
+      <div
+        className="card"
+        style={{
+          position: "relative",
+          paddingTop: "70px",
+          marginTop: "30px",
+          marginBottom: "25px",
+        }}
+      >
+        <button
+          onClick={() => {
+            window.location.href = "/";
+          }}
+          title="Retour"
+          style={{
+            position: "absolute",
+            top: "15px",
+            right: "15px",
+            width: "42px",
+            height: "42px",
+            padding: "0",
+            fontSize: "28px",
+            fontWeight: "900",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg
+            width="26"
+            height="26"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19 12H5"
+              stroke="currentColor"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+            />
 
+            <path
+              d="M11 6L5 12L11 18"
+              stroke="currentColor"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+
+        <p className="label">
+          RETOUR
+        </p>
+
+        <h2>
+          Retour au profil
+        </h2>
+
+        <p>
+          Revenir à l&apos;accueil de La Tribu des Obus.
+        </p>
+      </div>
       <div className="grades-liste">
         <div className="grades-entete">
           <strong>GRADES</strong>
