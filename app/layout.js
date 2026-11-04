@@ -18,10 +18,7 @@ export default function RootLayout({ children }) {
         {/* CONTENU DU SITE */}
         {/* ================================================= */}
 
-        
-<ControleAcces>
   {children}
-</ControleAcces>
 
 
         {/* ================================================= */}
