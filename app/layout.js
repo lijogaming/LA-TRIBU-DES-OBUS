@@ -1,4 +1,5 @@
 import "./globals.css";
+import ControleAcces from "./ControleAcces";
 
 export const metadata = {
   title: "La Tribu des Obus",
@@ -6,7 +7,11 @@ export const metadata = {
     "Grades, Obus et communauté de La Tribu des Obus",
 };
 
-export default function RootLayout({ children }) {
+export default function RootLayout(
+<ControleAcces>
+  {children}
+</ControleAcces>
+) {
   return (
     <html lang="fr">
       <body>
