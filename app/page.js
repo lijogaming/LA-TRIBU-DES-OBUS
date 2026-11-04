@@ -1944,7 +1944,10 @@ className="card profil-principal-card"
       {/* ADMIN + JOUEURS */}
       {/* ================================================= */}
       
-      <div className="menu-grid">
+                  Envoyer des Obus
+        
+        {joueur.grade !== "Civil" && (
+          <>
       
         {/* ================================================= */}
         {/* INVENTAIRE */}
@@ -2020,6 +2023,9 @@ className="card profil-principal-card"
           </p>
         </div>
       
+          </>
+        )}
+
       
         {/* ================================================= */}
         {/* CLASSEMENT */}
