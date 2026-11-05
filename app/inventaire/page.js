@@ -409,8 +409,13 @@ const [message, setMessage] =
 
 
     setCibles(
-      listeCibles || []
-    );
+  (listeCibles || []).filter(
+    (joueurCible) =>
+      String(joueurCible.grade || "")
+        .trim()
+        .toLowerCase() !== "civil"
+  )
+);
   }
 
 
