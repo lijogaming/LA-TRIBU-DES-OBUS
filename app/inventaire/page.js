@@ -408,8 +408,13 @@ const [message, setMessage] =
     }
 
 
-    setCibles(
-      listeCibles || []
+        setCibles(
+      (listeCibles || []).filter(
+        (joueurCible) =>
+          String(joueurCible.grade || "")
+            .trim()
+            .toLowerCase() !== "civil"
+      )
     );
   }
 
