@@ -249,7 +249,10 @@ if (identifiants.length === 0) {
       setMessage("❌ Ajoute une justification avant de refuser.");
       return;
     }
-    const bloquer = Boolean(blocages[candidature.id]);
+    const bloquer = Boolean(
+  blocages[candidature.id] &&
+  blocagesPossibles[candidature.candidat_id]
+);
     demanderAction(
       "refuser_candidature_entreprise",
       {
@@ -552,28 +555,101 @@ if (identifiants.length === 0) {
                           rows={2}
                           style={{ ...champStyle, resize: "vertical" }}
                         />
-                        <label
-                          style={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            gap: "10px",
-                            margin: "12px 0",
-                            fontSize: "14px",
-                          }}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={Boolean(blocages[candidature.id])}
-                            onChange={(e) =>
-                              setBlocages((ancien) => ({
-                                ...ancien,
-                                [candidature.id]: e.target.checked,
-                              }))
-                            }
-                          />
-                          Bloquer pendant 4 jours (possible seulement à partir
-                          de la deuxième candidature, selon les règles DEV).
-                        </label>
+                        
+{blocagesPossibles[candidature.candidat_id] && (
+  <label
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "15px",
+      margin: "18px 0",
+      padding: "16px",
+      background: blocages[candidature.id]
+        ? "rgba(229, 189, 104, 0.12)"
+        : "#1c1c1c",
+      border: blocages[candidature.id]
+        ? "2px solid #e5bd68"
+        : "1px solid #444",
+      borderRadius: "14px",
+      cursor: "pointer",
+      transition: "all 0.2s ease",
+    }}
+  >
+    <input
+      type="checkbox"
+      checked={Boolean(blocages[candidature.id])}
+      onChange={(e) =>
+        setBlocages((ancien) => ({
+          ...ancien,
+          [candidature.id]: e.target.checked,
+        }))
+      }
+      style={{
+        position: "absolute",
+        opacity: 0,
+        width: "1px",
+        height: "1px",
+      }}
+    />
+
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "12px",
+        flex: 1,
+      }}
+    >
+      <span style={{ fontSize: "24px" }}>
+        ❗
+      </span>
+
+      <strong
+        style={{
+          fontSize: "14px",
+          color: "#e5bd68",
+          textAlign: "left",
+        }}
+      >
+        Bloquer ce candidat pendant 4 jours
+      </strong>
+    </div>
+
+    <span
+      aria-hidden="true"
+      style={{
+        width: "48px",
+        height: "26px",
+        borderRadius: "30px",
+        background: blocages[candidature.id]
+          ? "#e5bd68"
+          : "#444",
+        position: "relative",
+        flexShrink: 0,
+        transition: "background 0.2s ease",
+      }}
+    >
+      <span
+        style={{
+          position: "absolute",
+          top: "4px",
+          left: blocages[candidature.id]
+            ? "26px"
+            : "4px",
+          width: "18px",
+          height: "18px",
+          borderRadius: "50%",
+          background: blocages[candidature.id]
+            ? "#111"
+            : "#ddd",
+          transition: "left 0.2s ease",
+        }}
+      />
+    </span>
+  </label>
+)}
+
                         <button
                           type="button"
                           disabled={enCours}
