@@ -1,0 +1,652 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+// Même configuration Supabase que dans app/virement/page.js.
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+);
+
+const GRADES_PATRON = [
+  "Colonel",
+  "Colonel en Chef",
+  "Vice Amiral",
+  "Amiral",
+  "Général",
+  "Sergent",
+  "Sergent Chef",
+];
+
+const champStyle = {
+  width: "100%",
+  padding: "13px",
+  borderRadius: "10px",
+  background: "#111",
+  color: "white",
+  border: "1px solid #444",
+  boxSizing: "border-box",
+  font: "inherit",
+};
+
+const carteStyle = { marginTop: "20px" };
+const ligneStyle = {
+  padding: "16px",
+  background: "#111",
+  border: "1px solid #333",
+  borderRadius: "12px",
+  marginTop: "12px",
+};
+
+function afficherObus(valeur) {
+  return Number(valeur || 0).toLocaleString("fr-FR");
+}
+
+export default function MesEntreprisesPage() {
+  const [chargement, setChargement] = useState(true);
+  const [enCours, setEnCours] = useState(false);
+  const [joueur, setJoueur] = useState(null);
+  const [entreprise, setEntreprise] = useState(null);
+  const [employes, setEmployes] = useState([]);
+  const [candidatures, setCandidatures] = useState([]);
+  const [pseudos, setPseudos] = useState({});
+  const [nom, setNom] = useState("");
+  const [message, setMessage] = useState("");
+  const [raisons, setRaisons] = useState({});
+  const [blocages, setBlocages] = useState({});
+  const [propositions, setPropositions] = useState({});
+  const [messagesPropositions, setMessagesPropositions] = useState({});
+  const [confirmation, setConfirmation] = useState(null);
+
+  useEffect(() => {
+    chargerDonnees();
+  }, []);
+
+  async function chargerDonnees() {
+    setChargement(true);
+
+    try {
+      const { data: session, error: erreurSession } =
+        await supabase.auth.getUser();
+
+      if (erreurSession) throw erreurSession;
+      if (!session.user) {
+        window.location.href = "/";
+        return;
+      }
+
+      const { data: profil, error: erreurProfil } = await supabase
+        .from("joueurs")
+        .select("id, auth_user_id, pseudo, grade, officier_general, obus")
+        .eq("auth_user_id", session.user.id)
+        .maybeSingle();
+
+      if (erreurProfil) throw erreurProfil;
+      setJoueur(profil || null);
+
+      if (!profil) {
+        setEntreprise(null);
+        setEmployes([]);
+        setCandidatures([]);
+        return;
+      }
+
+      const { data: societe, error: erreurSociete } = await supabase
+        .from("entreprises")
+        .select("id, nom, patron_id, categorie, created_at")
+        .eq("patron_id", profil.id)
+        .maybeSingle();
+
+      if (erreurSociete) throw erreurSociete;
+      setEntreprise(societe || null);
+
+      if (!societe) {
+        setEmployes([]);
+        setCandidatures([]);
+        setPseudos({});
+        return;
+      }
+
+      const [reponseEmployes, reponseCandidatures] = await Promise.all([
+        supabase
+          .from("entreprises_employes")
+          .select("id, employe_id, salaire, date_embauche")
+          .eq("entreprise_id", societe.id)
+          .is("date_fin", null)
+          .order("date_embauche", { ascending: true }),
+        supabase
+          .from("entreprises_candidatures")
+          .select(
+            "id, candidat_id, salaire_demande, motivation, statut, " +
+              "salaire_contre_proposition, reponse_patron, created_at"
+          )
+          .eq("entreprise_id", societe.id)
+          .in("statut", ["en_attente", "contre_proposition"])
+          .order("created_at", { ascending: false }),
+      ]);
+
+      if (reponseEmployes.error) throw reponseEmployes.error;
+      if (reponseCandidatures.error) throw reponseCandidatures.error;
+
+      const listeEmployes = reponseEmployes.data || [];
+      const listeCandidatures = reponseCandidatures.data || [];
+      setEmployes(listeEmployes);
+      setCandidatures(listeCandidatures);
+
+      const identifiants = [
+        ...new Set([
+          ...listeEmployes.map((element) => element.employe_id),
+          ...listeCandidatures.map((element) => element.candidat_id),
+        ]),
+      ].filter(Boolean);
+
+      if (identifiants.length === 0) {
+        setPseudos({});
+      } else {
+        const { data: noms, error: erreurNoms } = await supabase
+          .from("joueurs")
+          .select("id, pseudo")
+          .in("id", identifiants);
+
+        if (erreurNoms) {
+          // La page reste utilisable même si la lecture des pseudos
+          // est restreinte par les politiques RLS de DEV.
+          setPseudos({});
+        } else {
+          setPseudos(
+            Object.fromEntries((noms || []).map((j) => [j.id, j.pseudo]))
+          );
+        }
+      }
+    } catch (erreur) {
+      setMessage("❌ Chargement impossible : " + erreur.message);
+    } finally {
+      setChargement(false);
+    }
+  }
+
+  function nomJoueur(id) {
+    return pseudos[id] || `Joueur ${String(id || "").slice(0, 8)}`;
+  }
+
+  function demanderAction(rpc, parametres, titre, description, succes) {
+    if (enCours) return;
+    setMessage("");
+    setConfirmation({ rpc, parametres, titre, description, succes });
+  }
+
+  async function confirmerAction() {
+    if (!confirmation || enCours) return;
+
+    const action = confirmation;
+    setConfirmation(null);
+    setEnCours(true);
+    setMessage("");
+
+    try {
+      const { error } = await supabase.rpc(action.rpc, action.parametres);
+      if (error) throw error;
+      await chargerDonnees();
+      setMessage("✅ " + action.succes);
+    } catch (erreur) {
+      setMessage("❌ " + erreur.message);
+    } finally {
+      setEnCours(false);
+    }
+  }
+
+  function demanderCreation(e) {
+    e.preventDefault();
+    const valeur = nom.trim();
+    const longueur = Array.from(valeur).length;
+
+    if (longueur < 3 || longueur > 30) {
+      setMessage("❌ Le nom doit comporter entre 3 et 30 caractères.");
+      return;
+    }
+    if (!joueur || Number(joueur.obus) < 1000) {
+      setMessage("❌ Il faut au moins 1 000 Obus.");
+      return;
+    }
+
+    demanderAction(
+      "creer_entreprise",
+      { p_nom: valeur },
+      "CONFIRMER LA CRÉATION",
+      `Créer « ${valeur} » pour 1 000 Obus ? Cette dépense est définitive.`,
+      "Entreprise créée avec succès !"
+    );
+  }
+
+  function accepter(candidature) {
+    if (employes.length >= 5) return;
+    demanderAction(
+      "accepter_candidature_entreprise",
+      { p_candidature_id: candidature.id },
+      "CONFIRMER LE RECRUTEMENT",
+      `Embaucher ${nomJoueur(candidature.candidat_id)} pour ` +
+        `${candidature.salaire_demande} Obus par live ?`,
+      "Candidature acceptée."
+    );
+  }
+
+  function refuser(candidature) {
+    const justification = (raisons[candidature.id] || "").trim();
+    if (!justification) {
+      setMessage("❌ Ajoute une justification avant de refuser.");
+      return;
+    }
+    const bloquer = Boolean(blocages[candidature.id]);
+    demanderAction(
+      "refuser_candidature_entreprise",
+      {
+        p_candidature_id: candidature.id,
+        p_justification: justification,
+        p_bloquer: bloquer,
+      },
+      "CONFIRMER LE REFUS",
+      `Refuser la candidature de ${nomJoueur(candidature.candidat_id)}` +
+        (bloquer ? " et demander son blocage pendant 4 jours ?" : " ?"),
+      "Candidature refusée."
+    );
+  }
+
+  function contreProposition(candidature) {
+    const salaire = Number(propositions[candidature.id]);
+    if (!Number.isInteger(salaire) || salaire < 100 || salaire > 500) {
+      setMessage("❌ Le salaire proposé doit être compris entre 100 et 500 Obus.");
+      return;
+    }
+    if (salaire === candidature.salaire_demande) {
+      setMessage("❌ La contre-proposition doit différer du salaire demandé.");
+      return;
+    }
+    demanderAction(
+      "proposer_salaire_entreprise",
+      {
+        p_candidature_id: candidature.id,
+        p_salaire_propose: salaire,
+        p_message: (messagesPropositions[candidature.id] || "").trim() || null,
+      },
+      "CONFIRMER LA CONTRE-PROPOSITION",
+      `Proposer ${salaire} Obus par live à ` +
+        `${nomJoueur(candidature.candidat_id)} ?`,
+      "Contre-proposition envoyée."
+    );
+  }
+
+  function licencier(emploi) {
+    demanderAction(
+      "licencier_employe_entreprise_cible",
+      { p_entreprise_id: entreprise.id, p_employe_id: emploi.employe_id },
+      "CONFIRMER LE LICENCIEMENT",
+      `Licencier ${nomJoueur(emploi.employe_id)} ? ` +
+        "Son contrat prendra fin immédiatement.",
+      "Employé licencié."
+    );
+  }
+
+  const patronAutorise = Boolean(
+    joueur &&
+      (joueur.officier_general || GRADES_PATRON.includes(joueur.grade))
+  );
+  const gainPatron = employes.reduce(
+    (total, employe) => total + (500 - Number(employe.salaire)),
+    0
+  );
+
+  return (
+    <main className="container">
+      <div className="logo">🏢</div>
+      <h1>MES ENTREPRISES</h1>
+      <p className="subtitle">Création et gestion de ton entreprise</p>
+
+      <div className="card" style={{ position: "relative", paddingTop: "70px" }}>
+        <button
+          type="button"
+          onClick={() => (window.location.href = "/")}
+          title="Retour à l'accueil"
+          aria-label="Retour à l'accueil"
+          style={{
+            position: "absolute",
+            top: "15px",
+            left: "15px",
+            width: "42px",
+            height: "42px",
+            padding: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M19 12H5 M11 6L5 12L11 18"
+              stroke="currentColor"
+              strokeWidth="3.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+
+        <p className="label">TON SOLDE</p>
+        <h2>💰 {joueur ? afficherObus(joueur.obus) : "—"} Obus</h2>
+        <p style={{ color: "#aaa", marginBottom: 0 }}>
+          {joueur ? `Grade : ${joueur.grade}` : "Connexion au profil..."}
+        </p>
+      </div>
+
+      {message && (
+        <div
+          className="card"
+          role="status"
+          style={{ ...carteStyle, overflowWrap: "anywhere" }}
+        >
+          {message}
+        </div>
+      )}
+
+      {chargement ? (
+        <div className="card" style={carteStyle}>
+          <p>Chargement...</p>
+        </div>
+      ) : !joueur ? (
+        <div className="card" style={carteStyle}>
+          <p>Profil joueur introuvable.</p>
+        </div>
+      ) : !entreprise ? (
+        <div className="card" style={carteStyle}>
+          <h2>🏗️ CRÉER MON ENTREPRISE</h2>
+          <p>Une entreprise par patron, dans la catégorie Armurerie.</p>
+          <p>
+            <strong>Grade minimum :</strong> Colonel ou Officier général
+          </p>
+          <p>
+            <strong>Coût :</strong> 1 000 Obus
+          </p>
+          <p>
+            <strong>Capacité :</strong> 5 employés maximum
+          </p>
+
+          {!patronAutorise ? (
+            <p style={{ color: "#f5b5b5" }}>
+              Tu n'as pas encore le grade nécessaire pour créer une entreprise.
+            </p>
+          ) : Number(joueur.obus) < 1000 ? (
+            <p style={{ color: "#f5b5b5" }}>
+              Il te manque {afficherObus(1000 - Number(joueur.obus))} Obus.
+            </p>
+          ) : (
+            <form onSubmit={demanderCreation}>
+              <p className="label">NOM DE L'ENTREPRISE</p>
+              <input
+                type="text"
+                value={nom}
+                onChange={(e) => setNom(e.target.value)}
+                minLength={3}
+                maxLength={30}
+                required
+                placeholder="Nom de ton entreprise..."
+                style={champStyle}
+              />
+              <p style={{ color: "#aaa", fontSize: "13px" }}>
+                {Array.from(nom).length}/30 caractères
+              </p>
+              <button type="submit" disabled={enCours}>
+                💣 CRÉER POUR 1 000 OBUS
+              </button>
+            </form>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="card" style={carteStyle}>
+            <p className="label">TON ENTREPRISE</p>
+            <h2 style={{ overflowWrap: "anywhere" }}>🏢 {entreprise.nom}</h2>
+            <p>Catégorie : {entreprise.categorie}</p>
+            <p>
+              <strong>Employés :</strong> {employes.length}/5
+            </p>
+            <p>
+              <strong>Gain théorique du patron, s'il est présent :</strong>{" "}
+              +{afficherObus(gainPatron)} Obus par live
+            </p>
+            <p style={{ color: "#aaa", fontSize: "13px" }}>
+              Chaque poste génère 500 Obus bruts. Le patron reçoit 500 moins
+              le salaire du poste s'il est présent. Le salarié est payé
+              uniquement si lui et le patron sont présents dans le chat.
+            </p>
+          </div>
+
+          <div className="card" style={carteStyle}>
+            <h2>👥 EMPLOYÉS ({employes.length}/5)</h2>
+            {employes.length === 0 ? (
+              <p>Aucun employé pour le moment.</p>
+            ) : (
+              employes.map((emploi) => (
+                <div key={emploi.id} style={ligneStyle}>
+                  <h3 style={{ overflowWrap: "anywhere" }}>
+                    {nomJoueur(emploi.employe_id)}
+                  </h3>
+                  <p>Salaire : {afficherObus(emploi.salaire)} Obus / live</p>
+                  <p>
+                    Gain patron : +{afficherObus(500 - emploi.salaire)} Obus
+                    / live si présent
+                  </p>
+                  <button
+                    type="button"
+                    disabled={enCours}
+                    onClick={() => licencier(emploi)}
+                    style={{ background: "#a52a2a", color: "white" }}
+                  >
+                    LICENCIER CET EMPLOYÉ
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+
+          <div className="card" style={carteStyle}>
+            <h2>📨 CANDIDATURES ({candidatures.length})</h2>
+            {employes.length >= 5 && (
+              <p style={{ color: "#e5bd68" }}>
+                Les 5 postes sont occupés. Tu peux consulter les candidatures,
+                mais tu dois libérer un poste pour recruter.
+              </p>
+            )}
+            {candidatures.length === 0 ? (
+              <p>Aucune candidature en attente.</p>
+            ) : (
+              candidatures.map((candidature) => (
+                <div key={candidature.id} style={ligneStyle}>
+                  <h3 style={{ overflowWrap: "anywhere" }}>
+                    {nomJoueur(candidature.candidat_id)}
+                  </h3>
+                  <p>
+                    <strong>Salaire demandé :</strong>{" "}
+                    {afficherObus(candidature.salaire_demande)} Obus / live
+                  </p>
+                  <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+                    <strong>Motivation :</strong> {candidature.motivation || "—"}
+                  </p>
+
+                  {candidature.statut === "contre_proposition" ? (
+                    <p style={{ color: "#e5bd68" }}>
+                      Contre-proposition de {candidature.salaire_contre_proposition}{" "}
+                      Obus envoyée. En attente de la réponse du candidat.
+                    </p>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        disabled={enCours || employes.length >= 5}
+                        onClick={() => accepter(candidature)}
+                      >
+                        ✅ ACCEPTER LA CANDIDATURE
+                      </button>
+
+                      <div style={{ marginTop: "16px" }}>
+                        <p className="label">AUTRE PROPOSITION DE SALAIRE</p>
+                        <input
+                          type="number"
+                          min="100"
+                          max="500"
+                          step="1"
+                          placeholder="Salaire entre 100 et 500 Obus"
+                          value={propositions[candidature.id] || ""}
+                          onChange={(e) =>
+                            setPropositions((ancien) => ({
+                              ...ancien,
+                              [candidature.id]: e.target.value,
+                            }))
+                          }
+                          style={champStyle}
+                        />
+                        <textarea
+                          placeholder="Message facultatif au candidat..."
+                          value={messagesPropositions[candidature.id] || ""}
+                          onChange={(e) =>
+                            setMessagesPropositions((ancien) => ({
+                              ...ancien,
+                              [candidature.id]: e.target.value,
+                            }))
+                          }
+                          rows={2}
+                          style={{ ...champStyle, marginTop: "10px", resize: "vertical" }}
+                        />
+                        <button
+                          type="button"
+                          disabled={enCours}
+                          onClick={() => contreProposition(candidature)}
+                          style={{ marginTop: "10px" }}
+                        >
+                          🤝 ENVOYER LA CONTRE-PROPOSITION
+                        </button>
+                      </div>
+
+                      <div style={{ marginTop: "20px" }}>
+                        <p className="label">REFUSER LA CANDIDATURE</p>
+                        <textarea
+                          placeholder="Justification obligatoire..."
+                          value={raisons[candidature.id] || ""}
+                          onChange={(e) =>
+                            setRaisons((ancien) => ({
+                              ...ancien,
+                              [candidature.id]: e.target.value,
+                            }))
+                          }
+                          rows={2}
+                          style={{ ...champStyle, resize: "vertical" }}
+                        />
+                        <label
+                          style={{
+                            display: "flex",
+                            alignItems: "flex-start",
+                            gap: "10px",
+                            margin: "12px 0",
+                            fontSize: "14px",
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={Boolean(blocages[candidature.id])}
+                            onChange={(e) =>
+                              setBlocages((ancien) => ({
+                                ...ancien,
+                                [candidature.id]: e.target.checked,
+                              }))
+                            }
+                          />
+                          Bloquer pendant 4 jours (possible seulement à partir
+                          de la deuxième candidature, selon les règles DEV).
+                        </label>
+                        <button
+                          type="button"
+                          disabled={enCours}
+                          onClick={() => refuser(candidature)}
+                          style={{ background: "#a52a2a", color: "white" }}
+                        >
+                          ❌ REFUSER LA CANDIDATURE
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </>
+      )}
+
+      {confirmation && (
+        <div
+          role="presentation"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99999,
+            background: "rgba(0, 0, 0, 0.85)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={confirmation.titre}
+            style={{
+              width: "100%",
+              maxWidth: "440px",
+              maxHeight: "calc(100dvh - 32px)",
+              overflowY: "auto",
+              padding: "24px 18px",
+              boxSizing: "border-box",
+              background: "#171717",
+              border: "3px solid #3b82f6",
+              borderRadius: "22px",
+              color: "white",
+              textAlign: "center",
+              boxShadow: "0 15px 60px rgba(0,0,0,0.8)",
+            }}
+          >
+            <h2 style={{ color: "#e5bd68" }}>{confirmation.titre}</h2>
+            <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+              {confirmation.description}
+            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "10px",
+                marginTop: "20px",
+              }}
+            >
+              <button
+                type="button"
+                disabled={enCours}
+                onClick={() => setConfirmation(null)}
+                style={{ background: "#333", color: "white" }}
+              >
+                ANNULER
+              </button>
+              <button
+                type="button"
+                disabled={enCours}
+                onClick={confirmerAction}
+                style={{ background: "#e5bd68", color: "#111" }}
+              >
+                CONFIRMER
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
