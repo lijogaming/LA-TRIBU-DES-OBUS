@@ -16,6 +16,7 @@ export default function VirementPage() {
   const [message, setMessage] = useState("");
   const [chargement, setChargement] = useState(true);
   const [envoi, setEnvoi] = useState(false);
+  const [confirmationOuverte, setConfirmationOuverte] = useState(false);
 
   useEffect(() => {
     initialiser();
@@ -94,20 +95,16 @@ export default function VirementPage() {
       return;
     }
 
-    const joueurChoisi =
-      joueursDon.find(
-        (j) =>
-          j.id === destinataire
-      );
-
-    const confirmation =
-      window.confirm(
-        `Envoyer ${valeur} Obus à ${joueurChoisi?.pseudo} ?`
-      );
-
-    if (!confirmation) {
+        if (envoi) {
       return;
     }
+
+    if (!confirmationOuverte) {
+      setConfirmationOuverte(true);
+      return;
+    }
+
+    setConfirmationOuverte(false);
 
     setEnvoi(true);
 
@@ -363,6 +360,228 @@ export default function VirementPage() {
           </p>
         )}
       </div>
+                {confirmationOuverte && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99999,
+            background: "rgba(0, 0, 0, 0.85)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "16px",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Confirmation du virement"
+            style={{
+              width: "100%",
+              maxWidth: "440px",
+              maxHeight: "calc(100dvh - 32px)",
+              overflowY: "auto",
+              boxSizing: "border-box",
+              background: "#171717",
+              border: "3px solid #3b82f6",
+              borderRadius: "22px",
+              padding: "24px 18px",
+              color: "white",
+              boxShadow: "0 15px 60px rgba(0,0,0,0.8)",
+            }}
+          >
+            <h2
+              style={{
+                textAlign: "center",
+                color: "#e5bd68",
+                fontSize: "23px",
+                margin: "0 0 12px",
+              }}
+            >
+              💰 CONFIRMER LE VIREMENT
+            </h2>
+
+            <p
+              style={{
+                textAlign: "center",
+                color: "#bbb",
+                marginBottom: "24px",
+                fontSize: "14px",
+              }}
+            >
+              Vérifie les informations avant de
+              confirmer ton virement.
+            </p>
+
+            <div
+              style={{
+                background: "#0c0c0c",
+                border: "1px solid #444",
+                borderRadius: "16px",
+                padding: "18px 12px",
+                marginBottom: "14px",
+                textAlign: "center",
+              }}
+            >
+              <p
+                style={{
+                  color: "#e5bd68",
+                  fontWeight: "bold",
+                  letterSpacing: "2px",
+                  fontSize: "13px",
+                  margin: "0 0 12px",
+                }}
+              >
+                DESTINATAIRE
+              </p>
+
+              <div
+                style={{
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: "19px",
+                  overflowWrap: "anywhere",
+                }}
+              >
+                {joueursDon.find(
+                  (j) => j.id === destinataire
+                )?.pseudo || "Membre sélectionné"}
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "#0c0c0c",
+                border: "1px solid #3b82f6",
+                borderRadius: "16px",
+                padding: "20px 12px",
+                marginBottom: "14px",
+                textAlign: "center",
+              }}
+            >
+              <p
+                style={{
+                  color: "#e5bd68",
+                  fontWeight: "bold",
+                  letterSpacing: "2px",
+                  fontSize: "13px",
+                  margin: "0 0 12px",
+                }}
+              >
+                MONTANT DU VIREMENT
+              </p>
+
+              <div
+                style={{
+                  fontSize: "30px",
+                  fontWeight: "bold",
+                  color: "#3b82f6",
+                }}
+              >
+                💰 {Number(montant).toLocaleString("fr-FR")} Obus
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "#0c0c0c",
+                border: "1px solid #444",
+                borderRadius: "16px",
+                padding: "18px",
+                marginBottom: "24px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "12px",
+                  marginBottom: "14px",
+                  fontSize: "14px",
+                }}
+              >
+                <span style={{ color: "#aaa" }}>
+                  Solde actuel
+                </span>
+
+                <strong>
+                  {Number(joueur.obus).toLocaleString("fr-FR")} Obus
+                </strong>
+              </div>
+
+              <div
+                style={{
+                  borderTop: "1px solid #333",
+                  paddingTop: "14px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  gap: "12px",
+                  fontSize: "14px",
+                }}
+              >
+                <span style={{ color: "#aaa" }}>
+                  Solde après virement
+                </span>
+
+                <strong style={{ color: "#e5bd68" }}>
+                  {(
+                    Number(joueur.obus) - Number(montant)
+                  ).toLocaleString("fr-FR")} Obus
+                </strong>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "10px",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setConfirmationOuverte(false)}
+                disabled={envoi}
+                style={{
+                  width: "100%",
+                  padding: "15px 8px",
+                  background: "#333",
+                  color: "white",
+                  border: "1px solid #555",
+                  borderRadius: "12px",
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                ANNULER
+              </button>
+
+              <button
+                type="button"
+                onClick={donnerObus}
+                disabled={envoi}
+                style={{
+                  width: "100%",
+                  padding: "15px 8px",
+                  background: "#e5bd68",
+                  color: "#111",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
+              >
+                {envoi ? "ENVOI..." : "CONFIRMER"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
