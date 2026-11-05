@@ -580,9 +580,9 @@ export default function MesEntreprisesPage() {
         </>
       )}
 
+     
       {confirmation && (
         <div
-          role="presentation"
           style={{
             position: "fixed",
             inset: 0,
@@ -605,41 +605,179 @@ export default function MesEntreprisesPage() {
               maxWidth: "440px",
               maxHeight: "calc(100dvh - 32px)",
               overflowY: "auto",
-              padding: "24px 18px",
               boxSizing: "border-box",
               background: "#171717",
               border: "3px solid #3b82f6",
               borderRadius: "22px",
+              padding: "28px 18px",
               color: "white",
-              textAlign: "center",
               boxShadow: "0 15px 60px rgba(0,0,0,0.8)",
             }}
           >
-            <h2 style={{ color: "#e5bd68" }}>{confirmation.titre}</h2>
-            <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
-              {confirmation.description}
+            <h2
+              style={{
+                textAlign: "center",
+                color: "#e5bd68",
+                fontSize: "23px",
+                fontWeight: "bold",
+                lineHeight: "1.3",
+                margin: "0 0 12px",
+              }}
+            >
+              💣 {confirmation.titre}
+            </h2>
+
+            <p
+              style={{
+                textAlign: "center",
+                color: "#bbb",
+                margin: "0 0 24px",
+                fontSize: "14px",
+                lineHeight: "1.6",
+              }}
+            >
+              Vérifie les informations avant de confirmer.
             </p>
+
+            {confirmation.rpc === "creer_entreprise" ? (
+              <>
+                <div
+                  style={{
+                    background: "#0c0c0c",
+                    border: "1px solid #444",
+                    borderRadius: "16px",
+                    padding: "18px 12px",
+                    marginBottom: "14px",
+                    textAlign: "center",
+                  }}
+                >
+                  <p
+                    style={{
+                      color: "#e5bd68",
+                      fontWeight: "bold",
+                      letterSpacing: "2px",
+                      fontSize: "13px",
+                      margin: "0 0 12px",
+                    }}
+                  >
+                    NOM DE L'ENTREPRISE
+                  </p>
+
+                  <div
+                    style={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "19px",
+                      overflowWrap: "anywhere",
+                    }}
+                  >
+                    {confirmation.parametres.p_nom}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    background: "#0c0c0c",
+                    border: "1px solid #3b82f6",
+                    borderRadius: "16px",
+                    padding: "20px 12px",
+                    marginBottom: "14px",
+                    textAlign: "center",
+                  }}
+                >
+                  <p
+                    style={{
+                      color: "#e5bd68",
+                      fontWeight: "bold",
+                      letterSpacing: "2px",
+                      fontSize: "13px",
+                      margin: "0 0 12px",
+                    }}
+                  >
+                    COÛT DE CRÉATION
+                  </p>
+
+                  <div
+                    style={{
+                      fontSize: "30px",
+                      fontWeight: "bold",
+                      color: "#3b82f6",
+                    }}
+                  >
+                    💰 1 000 Obus
+                  </div>
+                </div>
+
+                <p
+                  style={{
+                    color: "#ff7777",
+                    textAlign: "center",
+                    fontSize: "13px",
+                    margin: "0 0 24px",
+                  }}
+                >
+                  Attention : cette dépense est définitive.
+                </p>
+              </>
+            ) : (
+              <div
+                style={{
+                  background: "#0c0c0c",
+                  border: "1px solid #444",
+                  borderRadius: "16px",
+                  padding: "20px 16px",
+                  marginBottom: "24px",
+                  textAlign: "center",
+                  lineHeight: "1.6",
+                  overflowWrap: "anywhere",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {confirmation.description}
+              </div>
+            )}
+
             <div
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "10px",
-                marginTop: "20px",
               }}
             >
               <button
                 type="button"
-                disabled={enCours}
                 onClick={() => setConfirmation(null)}
-                style={{ background: "#333", color: "white" }}
+                disabled={enCours}
+                style={{
+                  width: "100%",
+                  padding: "15px 8px",
+                  background: "#333",
+                  color: "white",
+                  border: "1px solid #555",
+                  borderRadius: "12px",
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
               >
                 ANNULER
               </button>
+
               <button
                 type="button"
-                disabled={enCours}
                 onClick={confirmerAction}
-                style={{ background: "#e5bd68", color: "#111" }}
+                disabled={enCours}
+                style={{
+                  width: "100%",
+                  padding: "15px 8px",
+                  background: "#e5bd68",
+                  color: "#111",
+                  border: "none",
+                  borderRadius: "12px",
+                  fontSize: "15px",
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                }}
               >
                 CONFIRMER
               </button>
@@ -647,6 +785,7 @@ export default function MesEntreprisesPage() {
           </div>
         </div>
       )}
+
     </main>
   );
 }
