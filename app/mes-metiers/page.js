@@ -226,6 +226,44 @@ export default function MesMetiersPage() {
     );
   }
 
+function nouvelleContreProposition(candidature) {
+  const salaire = Number(
+    saisies[candidature.id]?.nouveauSalaire
+  );
+
+  if (
+    !Number.isInteger(salaire) ||
+    salaire < 100 ||
+    salaire > 500
+  ) {
+    setMessage(
+      "❌ Propose un salaire entier entre 100 et 500 Obus."
+    );
+    return;
+  }
+
+  if (
+    salaire ===
+    Number(candidature.salaire_contre_proposition)
+  ) {
+    setMessage(
+      "❌ Le nouveau salaire doit être différent de celui du patron."
+    );
+    return;
+  }
+
+  demanderAction(
+    "contre_proposer_salaire_candidat",
+    {
+      p_candidature_id: candidature.id,
+      p_salaire_propose: salaire,
+    },
+    "CONFIRMER LA CONTRE-PROPOSITION",
+    `Proposer ${obus(salaire)} Obus par live à ${nomEntreprise(candidature.entreprise_id)} ?`,
+    "Nouvelle contre-proposition envoyée au patron."
+  );
+}
+
   function demissionner(emploi) {
     demanderAction(
       "demissionner_entreprise",
