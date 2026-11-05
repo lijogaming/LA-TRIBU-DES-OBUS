@@ -51,6 +51,7 @@ export default function MesEntreprisesPage() {
   const [employes, setEmployes] = useState([]);
   const [candidatures, setCandidatures] = useState([]);
   const [pseudos, setPseudos] = useState({});
+  const [blocagesPossibles, setBlocagesPossibles] = useState({});
   const [nom, setNom] = useState("");
   const [message, setMessage] = useState("");
   const [raisons, setRaisons] = useState({});
@@ -141,24 +142,35 @@ export default function MesEntreprisesPage() {
         ]),
       ].filter(Boolean);
 
-      if (identifiants.length === 0) {
-        setPseudos({});
-      } else {
-        const { data: noms, error: erreurNoms } = await supabase
-          .from("joueurs")
-          .select("id, pseudo")
-          .in("id", identifiants);
+      
+if (identifiants.length === 0) {
+  setPseudos({});
+  setBlocagesPossibles({});
+} else {
+  const { data: infos, error: erreurInfos } =
+    await supabase.rpc(
+      "infos_membres_entreprise",
+      { p_entreprise_id: societe.id }
+    );
 
-        if (erreurNoms) {
-          // La page reste utilisable même si la lecture des pseudos
-          // est restreinte par les politiques RLS de DEV.
-          setPseudos({});
-        } else {
-          setPseudos(
-            Object.fromEntries((noms || []).map((j) => [j.id, j.pseudo]))
-          );
-        }
-      }
+  if (erreurInfos) throw erreurInfos;
+
+  setPseudos(
+    Object.fromEntries(
+      (infos || []).map((j) => [j.joueur_id, j.pseudo])
+    )
+  );
+
+  setBlocagesPossibles(
+    Object.fromEntries(
+      (infos || []).map((j) => [
+        j.joueur_id,
+        j.blocage_possible,
+      ])
+    )
+  );
+}
+
     } catch (erreur) {
       setMessage("❌ Chargement impossible : " + erreur.message);
     } finally {
