@@ -405,6 +405,43 @@ function nouvelleContreProposition(candidature) {
                         ACCEPTER
                       </button>
                     </div>
+                          
+<div style={{ marginTop: "16px" }}>
+  <p className="label">
+    TA NOUVELLE PROPOSITION (100 À 500 OBUS)
+  </p>
+
+  <input
+    type="number"
+    min="100"
+    max="500"
+    step="1"
+    placeholder="Ex. : 300"
+    value={
+      saisies[candidature.id]?.nouveauSalaire ?? ""
+    }
+    onChange={(e) =>
+      modifierSaisie(
+        candidature.id,
+        "nouveauSalaire",
+        e.target.value
+      )
+    }
+    style={champStyle}
+  />
+
+  <button
+    type="button"
+    disabled={enCours}
+    onClick={() =>
+      nouvelleContreProposition(candidature)
+    }
+    style={{ marginTop: "10px" }}
+  >
+    🤝 FAIRE UNE CONTRE-PROPOSITION
+  </button>
+</div>
+
                   </div>
                 )}
               </div>
