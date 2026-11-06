@@ -70,6 +70,7 @@ export default function MesMetiersPage() {
   const [saisies, setSaisies] = useState({});
   const [recherche, setRecherche] = useState("");
   const [message, setMessage] = useState("");
+  const [erreursContreProposition, setErreursContreProposition] = useState({});
   const [confirmation, setConfirmation] = useState(null);
 
   useEffect(() => {
@@ -156,6 +157,11 @@ export default function MesMetiersPage() {
       ...ancien,
       [id]: { ...ancien[id], [champ]: valeur },
     }));
+    if (champ === "nouveauSalaire" || champ === "argumentCandidat") {
+      setErreursContreProposition((ancien) =>
+        ancien[id] ? { ...ancien, [id]: "" } : ancien
+      );
+    }
   }
 
   function demanderAction(rpc, parametres, titre, description, succes, apres) {
@@ -233,41 +239,40 @@ export default function MesMetiersPage() {
 
 
 function nouvelleContreProposition(candidature) {
-  const salaire = Number(
-    saisies[candidature.id]?.nouveauSalaire
-  );
-
+  const valeurSaisie = String(
+    saisies[candidature.id]?.nouveauSalaire ?? ""
+  ).trim();
+  const salaire = Number(valeurSaisie);
   const argument = String(
     saisies[candidature.id]?.argumentCandidat || ""
   ).trim();
 
+  let erreur = "";
   if (
+    !valeurSaisie ||
     !Number.isInteger(salaire) ||
     salaire < 100 ||
     salaire > 500
   ) {
-    setMessage(
-      "❌ Propose un salaire entier entre 100 et 500 Obus."
-    );
+    erreur = "❌ Saisis un salaire entier entre 100 et 500 Obus.";
+  } else if (salaire === Number(candidature.salaire_contre_proposition)) {
+    erreur = "❌ Le nouveau salaire doit être différent de celui du patron.";
+  } else if (argument.length > 500) {
+    erreur = "❌ Ton argument ne peut pas dépasser 500 caractères.";
+  }
+
+  if (erreur) {
+    setErreursContreProposition((ancien) => ({
+      ...ancien,
+      [candidature.id]: erreur,
+    }));
     return;
   }
 
-  if (
-    salaire ===
-    Number(candidature.salaire_contre_proposition)
-  ) {
-    setMessage(
-      "❌ Le nouveau salaire doit être différent de celui du patron."
-    );
-    return;
-  }
-
-  if (argument.length > 500) {
-    setMessage(
-      "❌ Ton argument ne peut pas dépasser 500 caractères."
-    );
-    return;
-  }
+  setErreursContreProposition((ancien) => ({
+    ...ancien,
+    [candidature.id]: "",
+  }));
 
   demanderAction(
     "contre_proposer_salaire_candidat_avec_argument",
@@ -282,7 +287,6 @@ function nouvelleContreProposition(candidature) {
     "Nouvelle contre-proposition envoyée au patron."
   );
 }
-
 
   function demissionner(emploi) {
     demanderAction(
@@ -405,7 +409,7 @@ function nouvelleContreProposition(candidature) {
                 {candidature.statut === "contre_proposition" && (
                   <div style={{
                     marginTop: "14px", padding: "16px", background: "#0c0c0c",
-                    border: "1px solid #3b82f6", borderRadius: "12px",
+                    border: "1px solid #e5bd68", borderRadius: "12px",
                   }}>
                     <p className="label">CONTRE-PROPOSITION DU PATRON</p>
                     <h3 style={{ color: "#e5bd68" }}>
@@ -493,6 +497,20 @@ function nouvelleContreProposition(candidature) {
     }/500 caractères
   </p>
 </div>
+
+{erreursContreProposition[candidature.id] && (
+  <p
+    role="alert"
+    style={{
+      color: "#ff8888",
+      textAlign: "left",
+      margin: "12px 0 0",
+      overflowWrap: "anywhere",
+    }}
+  >
+    {erreursContreProposition[candidature.id]}
+  </p>
+)}
 
 <button
   type="button"
@@ -614,7 +632,7 @@ function nouvelleContreProposition(candidature) {
             style={{
               width: "100%", maxWidth: "440px", maxHeight: "calc(100dvh - 32px)",
               overflowY: "auto", boxSizing: "border-box", background: "#171717",
-              border: "3px solid #3b82f6", borderRadius: "22px",
+              border: "3px solid #e5bd68", borderRadius: "22px",
               padding: "24px 18px", color: "white",
               boxShadow: "0 15px 60px rgba(0,0,0,0.8)",
             }}>
