@@ -481,7 +481,7 @@ function nouvelleContreProposition(candidature) {
 
   <p
     style={{
-      color: "#888",
+      color: "#111",
       fontSize: "12px",
       textAlign: "right",
       margin: "5px 0 0",
