@@ -226,10 +226,15 @@ export default function MesMetiersPage() {
     );
   }
 
+
 function nouvelleContreProposition(candidature) {
   const salaire = Number(
     saisies[candidature.id]?.nouveauSalaire
   );
+
+  const argument = String(
+    saisies[candidature.id]?.argumentCandidat || ""
+  ).trim();
 
   if (
     !Number.isInteger(salaire) ||
@@ -252,17 +257,27 @@ function nouvelleContreProposition(candidature) {
     return;
   }
 
+  if (argument.length > 500) {
+    setMessage(
+      "❌ Ton argument ne peut pas dépasser 500 caractères."
+    );
+    return;
+  }
+
   demanderAction(
-    "contre_proposer_salaire_candidat",
+    "contre_proposer_salaire_candidat_avec_argument",
     {
       p_candidature_id: candidature.id,
       p_salaire_propose: salaire,
+      p_argument: argument,
     },
     "CONFIRMER LA CONTRE-PROPOSITION",
-    `Proposer ${obus(salaire)} Obus par live à ${nomEntreprise(candidature.entreprise_id)} ?`,
+    `Proposer ${obus(salaire)} Obus par live à ${nomEntreprise(candidature.entreprise_id)} ?` +
+      (argument ? `\n\nArgument : ${argument}` : ""),
     "Nouvelle contre-proposition envoyée au patron."
   );
 }
+
 
   function demissionner(emploi) {
     demanderAction(
@@ -438,6 +453,46 @@ function nouvelleContreProposition(candidature) {
     }
     style={{ marginTop: "10px" }}
   >
+
+<div style={{ marginTop: "12px" }}>
+  <p className="label">
+    ARGUMENT POUR MA CONTRE-PROPOSITION
+  </p>
+
+  <textarea
+    placeholder="Explique pourquoi tu proposes ce salaire..."
+    maxLength={500}
+    rows={3}
+    value={
+      saisies[candidature.id]?.argumentCandidat ?? ""
+    }
+    onChange={(e) =>
+      modifierSaisie(
+        candidature.id,
+        "argumentCandidat",
+        e.target.value
+      )
+    }
+    style={{
+      ...champStyle,
+      resize: "vertical",
+    }}
+  />
+
+  <p
+    style={{
+      color: "#888",
+      fontSize: "12px",
+      textAlign: "right",
+      margin: "5px 0 0",
+    }}
+  >
+    {
+      (saisies[candidature.id]?.argumentCandidat || "").length
+    }/500 caractères
+  </p>
+</div>
+
     🤝 FAIRE UNE CONTRE-PROPOSITION
   </button>
 </div>
