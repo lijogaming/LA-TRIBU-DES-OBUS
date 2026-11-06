@@ -772,7 +772,6 @@ if (identifiants.length === 0) {
           />
 
           <hr style={{ border: 0, borderTop: "1px solid #6b2929", margin: "30px 0 22px" }} />
-          <h2 style={{ color: "#ff8585" }}>SUPPRIMER MON ENTREPRISE</h2>
           <button
             type="button"
             disabled={enCours}
