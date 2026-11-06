@@ -420,9 +420,9 @@ if (identifiants.length === 0) {
       ) : !entreprise ? (
         <div className="card" style={carteStyle}>
           <h2>🏗️ CRÉER MON ENTREPRISE</h2>
-          <p>Une entreprise par patron, dans la catégorie Armurerie.</p>
+          <p>Entreprise catégorie : Armurerie</p>
           <p>
-            <strong>Grade minimum :</strong> Colonel ou Officier général
+            <strong>Grade minimum :</strong> Colonel
           </p>
           <p>
             <strong>Coût :</strong> 1 000 Obus
