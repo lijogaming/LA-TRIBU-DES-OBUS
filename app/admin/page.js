@@ -37,6 +37,7 @@ export default function AdminPage() {
   const [montants, setMontants] = useState({});
   const [nombresLives, setNombresLives] = useState({});
   const [nombresTotalLives, setNombresTotalLives] = useState({});
+  const [fichesOuvertes, setFichesOuvertes] = useState({});
 
   useEffect(() => {
     verifierAdmin();
@@ -339,16 +340,6 @@ async function modifierTotalLives(
 }
 
   // =====================================================
-  // DÉCONNEXION
-  // =====================================================
-
-  async function deconnexion() {
-    await supabase.auth.signOut();
-
-    window.location.href = "/";
-  }
-
-  // =====================================================
   // RECHERCHE
   // =====================================================
 
@@ -463,7 +454,6 @@ async function modifierTotalLives(
       <p className="subtitle">
         Gestion de La Tribu des Obus
       </p>
-<NotificationsAdmin supabase={supabase} />
 
       {/* ============================= */}
       {/* RECHERCHE */}
@@ -516,48 +506,6 @@ async function modifierTotalLives(
       />
     </svg>
   </button>
-<button
-  onClick={deconnexion}
-  title="Se déconnecter"
-  style={{
-    position: "absolute",
-    top: "15px",
-    right: "15px",
-    width: "42px",
-    height: "42px",
-    padding: "0",
-    background: "#c62828",
-    border: "2px solid #ff5252",
-    color: "white",
-    borderRadius: "10px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    cursor: "pointer",
-  }}
->
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M12 3V12"
-      stroke="currentColor"
-      strokeWidth="2.8"
-      strokeLinecap="round"
-    />
-
-    <path
-      d="M7.1 5.8C4.6 7.4 3 10.1 3 13C3 18 7 22 12 22C17 22 21 18 21 13C21 10.1 19.4 7.4 16.9 5.8"
-      stroke="currentColor"
-      strokeWidth="2.8"
-      strokeLinecap="round"
-    />
-  </svg>
-</button>
   <p className="label">
     RECHERCHER UN JOUEUR
   </p>
@@ -593,6 +541,8 @@ async function modifierTotalLives(
         )}
       </div>
 
+      <NotificationsAdmin supabase={supabase} joueurs={joueurs} />
+
       {/* ============================= */}
       {/* LISTE DES JOUEURS */}
       {/* ============================= */}
@@ -618,7 +568,7 @@ async function modifierTotalLives(
               key={joueur.id}
               style={{
                 marginBottom:
-                  "20px",
+                  "12px",
               }}
             >
               <p className="label">
@@ -629,6 +579,29 @@ async function modifierTotalLives(
                 {joueur.pseudo}
               </h2>
 
+              <button
+                type="button"
+                aria-expanded={Boolean(fichesOuvertes[joueur.id])}
+                onClick={() =>
+                  setFichesOuvertes((ancien) => ({
+                    ...ancien,
+                    [joueur.id]: !ancien[joueur.id],
+                  }))
+                }
+                style={{
+                  marginTop: "8px",
+                  background: "#222",
+                  border: "1px solid #e5bd68",
+                  color: "#e5bd68",
+                  borderRadius: "10px",
+                  padding: "11px 16px",
+                }}
+              >
+                {fichesOuvertes[joueur.id] ? "− D'INFOS" : "+ D'INFOS"}
+              </button>
+
+              {fichesOuvertes[joueur.id] && (
+                <div style={{ marginTop: "18px" }}>
               {/* ============================= */}
               {/* INFORMATIONS DU JOUEUR */}
               {/* ============================= */}
@@ -912,6 +885,8 @@ async function modifierTotalLives(
 >
   Modifier les lives total
 </button>
+                </div>
+              )}
 
             </div>
           )
