@@ -64,6 +64,8 @@ export default function MesEntreprisesPage() {
   const [propositions, setPropositions] = useState({});
   const [messagesPropositions, setMessagesPropositions] = useState({});
   const [confirmation, setConfirmation] = useState(null);
+  const [renommageOuvert, setRenommageOuvert] = useState(false);
+  const [nouveauNom, setNouveauNom] = useState("");
 
   useEffect(() => {
     chargerDonnees();
@@ -223,10 +225,13 @@ if (identifiants.length === 0) {
       const { error } = await supabase.rpc(action.rpc, action.parametres);
       if (error) throw error;
       await chargerDonnees();
+      if (action.rpc === "renommer_entreprise") {
+        setRenommageOuvert(false);
+      }
       setMessage("✅ " + action.succes);
     } catch (erreur) {
       const nomDejaPris =
-        action.rpc === "creer_entreprise" &&
+        ["creer_entreprise", "renommer_entreprise"].includes(action.rpc) &&
         /entreprises_nom_normalise_unique|nom d.{0,30}(déjà|deja|exist)|duplicate key.{0,50}nom/i.test(
           String(erreur.message || "")
         );
@@ -260,6 +265,35 @@ if (identifiants.length === 0) {
       "CONFIRMER LA CRÉATION",
       `Créer « ${valeur} » pour 1 000 Obus ? Cette dépense est définitive.`,
       "Entreprise créée avec succès !"
+    );
+  }
+
+  function demanderRenommage(e) {
+    e.preventDefault();
+    if (!entreprise || enCours) return;
+
+    const valeur = nouveauNom.trim();
+    const longueur = Array.from(valeur).length;
+
+    if (longueur < 3 || longueur > 30) {
+      setMessage("❌ Le nom doit comporter entre 3 et 30 caractères.");
+      return;
+    }
+    if (valeur === entreprise.nom) {
+      setMessage("❌ Le nouveau nom est identique au nom actuel.");
+      return;
+    }
+    if (!joueur || Number(joueur.obus) < 400) {
+      setMessage("❌ Il faut au moins 400 Obus pour renommer ton entreprise.");
+      return;
+    }
+
+    demanderAction(
+      "renommer_entreprise",
+      { p_entreprise_id: entreprise.id, p_nom: valeur },
+      "CONFIRMER LE RENOMMAGE",
+      `Renommer « ${entreprise.nom} » en « ${valeur} » pour 400 Obus ? Cette dépense est définitive.`,
+      "Entreprise renommée avec succès ! 400 Obus ont été débités."
     );
   }
 
@@ -467,7 +501,46 @@ if (identifiants.length === 0) {
           )}
         </div>
       ) : (
-        <div className="card" style={carteStyle}>
+        <div className="card" style={{ ...carteStyle, position: "relative", paddingTop: "70px" }}>
+          <button
+            type="button"
+            title="Modifier le nom de mon entreprise (400 Obus)"
+            aria-label="Modifier le nom de mon entreprise pour 400 Obus"
+            onClick={() => {
+              setNouveauNom(entreprise.nom);
+              setMessage("");
+              setRenommageOuvert(true);
+            }}
+            disabled={enCours}
+            style={{
+              position: "absolute",
+              top: "15px",
+              right: "15px",
+              width: "42px",
+              height: "42px",
+              padding: 0,
+              margin: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "#e9bd58",
+              color: "#111",
+              borderRadius: "10px",
+              border: "1px solid #b9913d",
+              cursor: "pointer",
+            }}
+          >
+            <svg width="23" height="23" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 20h9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path
+                d="M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4L16.5 3.5Z"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
           <p className="label">TON ENTREPRISE N°1</p>
           <h2 style={{ overflowWrap: "anywhere" }}>🏢 {entreprise.nom}</h2>
           <p>Catégorie : {entreprise.categorie}</p>
@@ -792,6 +865,94 @@ if (identifiants.length === 0) {
       )}
 
      
+      {renommageOuvert && entreprise && (
+        <div
+          role="presentation"
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 99998,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(0,0,0,0.85)",
+            padding: "16px",
+            boxSizing: "border-box",
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Modifier le nom de mon entreprise"
+            style={{
+              width: "100%",
+              maxWidth: "440px",
+              maxHeight: "calc(100dvh - 32px)",
+              overflowY: "auto",
+              background: "#171717",
+              color: "white",
+              border: "3px solid #e9bd58",
+              borderRadius: "20px",
+              padding: "25px 18px",
+              boxSizing: "border-box",
+              boxShadow: "0 15px 60px rgba(0,0,0,0.8)",
+              textAlign: "left",
+            }}
+          >
+            <h2 style={{ textAlign: "center", color: "#e9bd58", fontSize: "22px" }}>
+              ✏️ MODIFIER LE NOM
+            </h2>
+            <p style={{ textAlign: "center", color: "#bbb", fontSize: "14px" }}>
+              Coût du renommage : <strong style={{ color: "#e9bd58" }}>400 Obus</strong>
+            </p>
+            <form onSubmit={demanderRenommage}>
+              <label htmlFor="nouveau-nom-entreprise" className="label">
+                NOUVEAU NOM DE L'ENTREPRISE
+              </label>
+              <input
+                id="nouveau-nom-entreprise"
+                type="text"
+                value={nouveauNom}
+                onChange={(e) => setNouveauNom(e.target.value)}
+                minLength={3}
+                maxLength={30}
+                required
+                disabled={enCours}
+                style={{ ...champStyle, marginTop: "12px" }}
+              />
+              <p style={{ fontSize: "13px", color: "#aaa" }}>
+                {Array.from(nouveauNom).length}/30 caractères
+              </p>
+              {message && (
+                <p role="status" style={{ color: "#ff9999", overflowWrap: "anywhere" }}>
+                  {message}
+                </p>
+              )}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRenommageOuvert(false);
+                    setMessage("");
+                  }}
+                  disabled={enCours}
+                  style={{ margin: 0, padding: "14px 8px", background: "#333", color: "white" }}
+                >
+                  ANNULER
+                </button>
+                <button
+                  type="submit"
+                  disabled={enCours}
+                  style={{ margin: 0, padding: "14px 8px" }}
+                >
+                  CONTINUER
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {confirmation && (
         <div
           style={{
