@@ -123,6 +123,7 @@ export default function ClassementEntreprises({ supabase, recherche, tri }) {
     <div style={{ marginTop: "20px" }}>
       <p style={{ color: "#aaa", fontSize: "13px", textAlign: "center" }}>
         Chaque entreprise compte son patron et ses employés actifs.
+        <br />
         Les Obus et les lives correspondent aux sommes actuelles de leurs comptes.
       </p>
 
