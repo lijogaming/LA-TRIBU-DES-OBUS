@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import NotificationsRubrique from "../components/NotificationsRubrique";
+import HistoriqueCandidatures from "../components/HistoriqueCandidatures";
 
 // Même configuration Supabase que dans app/virement/page.js.
 const supabase = createClient(
@@ -51,6 +52,7 @@ export default function MesEntreprisesPage() {
   const [entreprise, setEntreprise] = useState(null);
   const [employes, setEmployes] = useState([]);
   const [candidatures, setCandidatures] = useState([]);
+  const [historiqueCandidatures, setHistoriqueCandidatures] = useState([]);
   const [pseudos, setPseudos] = useState({});
   const [blocagesPossibles, setBlocagesPossibles] = useState({});
   const [nom, setNom] = useState("");
@@ -91,6 +93,7 @@ export default function MesEntreprisesPage() {
         setEntreprise(null);
         setEmployes([]);
         setCandidatures([]);
+        setHistoriqueCandidatures([]);
         return;
       }
 
@@ -106,6 +109,7 @@ export default function MesEntreprisesPage() {
       if (!societe) {
         setEmployes([]);
         setCandidatures([]);
+        setHistoriqueCandidatures([]);
         setPseudos({});
         return;
       }
@@ -121,9 +125,8 @@ export default function MesEntreprisesPage() {
           .from("entreprises_candidatures")
           .select(
             "id, candidat_id, salaire_demande, motivation, statut, " +
-            "salaire_contre_proposition, reponse_patron, argument_candidat, created_at"          )
+            "salaire_contre_proposition, reponse_patron, argument_candidat, blocage_jusquau, created_at"          )
           .eq("entreprise_id", societe.id)
-          .in("statut", ["en_attente", "contre_proposition"])
           .order("created_at", { ascending: false }),
       ]);
 
@@ -133,7 +136,12 @@ export default function MesEntreprisesPage() {
       const listeEmployes = reponseEmployes.data || [];
       const listeCandidatures = reponseCandidatures.data || [];
       setEmployes(listeEmployes);
-      setCandidatures(listeCandidatures);
+      setCandidatures(
+        listeCandidatures.filter((item) =>
+          ["en_attente", "contre_proposition"].includes(item.statut)
+        )
+      );
+      setHistoriqueCandidatures(listeCandidatures);
 
       const identifiants = [
         ...new Set([
@@ -465,7 +473,7 @@ if (identifiants.length === 0) {
           </div>
 
           <div className="card" style={carteStyle}>
-            <h2>📨 CANDIDATURES ({candidatures.length})</h2>
+            <h2>📨 CANDIDATURES EN COURS ({candidatures.length})</h2>
             {employes.length >= 5 && (
               <p style={{ color: "#e5bd68" }}>
                 Les 5 postes sont occupés. Tu peux consulter les candidatures,
@@ -686,6 +694,15 @@ if (identifiants.length === 0) {
               ))
             )}
           </div>
+          <HistoriqueCandidatures
+            supabase={supabase}
+            candidatures={historiqueCandidatures}
+            mode="patron"
+            entrepriseId={entreprise.id}
+            joueurId={joueur.id}
+            nomEntreprise={() => entreprise.nom}
+            nomJoueur={nomJoueur}
+          />
         </>
       )}
 
