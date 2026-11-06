@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import ClassementEntreprises from "../components/ClassementEntreprises";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -39,6 +40,8 @@ export default function ClassementPage() {
 ] = useState(null);
   const [classement, setClassement] =
     useState("obus");
+  const [typeClassement, setTypeClassement] = useState("joueurs");
+  const [classementEntreprise, setClassementEntreprise] = useState("obus");
 
   // =====================================================
   // CHARGEMENT
@@ -129,14 +132,19 @@ export default function ClassementPage() {
           .trim()
           .toLowerCase();
 
-      let liste =
-        joueurs.filter(
-          (joueur) =>
-            !terme ||
-            joueur.pseudo
-              ?.toLowerCase()
-              .includes(terme)
-        );
+      
+let liste =
+  joueurs.filter(
+    (joueur) =>
+      joueur.grade !== "Civil" &&
+      (
+        !terme ||
+        joueur.pseudo
+          ?.toLowerCase()
+          .includes(terme)
+      )
+  );
+
 
       liste =
         [...liste];
@@ -374,8 +382,40 @@ export default function ClassementPage() {
 </svg>
   </button>
 
+  <div style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    gap: "10px",
+    marginBottom: "22px",
+  }}>
+    <button
+      type="button"
+      aria-pressed={typeClassement === "joueurs"}
+      onClick={() => {
+        setTypeClassement("joueurs");
+        setRecherche("");
+      }}
+      style={{ opacity: typeClassement === "joueurs" ? 1 : 0.55 }}
+    >
+      👤 Classement Joueurs
+    </button>
+    <button
+      type="button"
+      aria-pressed={typeClassement === "entreprises"}
+      onClick={() => {
+        setTypeClassement("entreprises");
+        setRecherche("");
+      }}
+      style={{ opacity: typeClassement === "entreprises" ? 1 : 0.55 }}
+    >
+      🏢 Classement Entreprises
+    </button>
+  </div>
+
   <p className="label">
-    FILTRER LE CLASSEMENT
+    {typeClassement === "joueurs"
+      ? "FILTRER LE CLASSEMENT JOUEURS"
+      : "FILTRER LE CLASSEMENT ENTREPRISES"}
   </p>
 
         <input
@@ -386,7 +426,7 @@ export default function ClassementPage() {
               e.target.value
             )
           }
-          placeholder="🔎 Rechercher un membre..."
+          placeholder={typeClassement === "joueurs" ? "🔎 Rechercher un membre..." : "🔎 Rechercher une entreprise..."}
           style={{
             width: "100%",
             padding: "14px",
@@ -402,6 +442,7 @@ export default function ClassementPage() {
           }}
         />
 
+        {typeClassement === "joueurs" ? (
         <div
           style={{
             display: "grid",
@@ -461,6 +502,29 @@ export default function ClassementPage() {
             🎖️ Grade
           </button>
         </div>
+        ) : (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: "10px",
+          }}>
+            <button type="button"
+              onClick={() => setClassementEntreprise("obus")}
+              style={{ opacity: classementEntreprise === "obus" ? 1 : 0.55 }}>
+              💰 Obus
+            </button>
+            <button type="button"
+              onClick={() => setClassementEntreprise("membres")}
+              style={{ opacity: classementEntreprise === "membres" ? 1 : 0.55 }}>
+              👥 Membres
+            </button>
+            <button type="button"
+              onClick={() => setClassementEntreprise("lives")}
+              style={{ opacity: classementEntreprise === "lives" ? 1 : 0.55 }}>
+              📊 Lives total
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ================================================= */}
@@ -485,6 +549,7 @@ export default function ClassementPage() {
 {/* CLASSEMENT */}
 {/* ================================================= */}
 
+{typeClassement === "joueurs" ? (
 <div
   style={{
     marginTop: "20px",
@@ -607,7 +672,13 @@ export default function ClassementPage() {
     }
   )}
 </div>
-
+) : (
+  <ClassementEntreprises
+    supabase={supabase}
+    recherche={recherche}
+    tri={classementEntreprise}
+  />
+)}
 
 {/* ================================================= */}
 {/* PROFIL JOUEUR */}
@@ -626,21 +697,54 @@ export default function ClassementPage() {
 
     <div
       className="card profil-classement-card"
+      style={{ paddingTop: "72px" }}
       onClick={(e) =>
         e.stopPropagation()
       }
     >
 
       <button
-        className="profil-classement-fermer"
+        type="button"
         onClick={() =>
           setJoueurSelectionne(
             null
           )
         }
-        title="Fermer"
+        title="Retour"
+        aria-label="Retour au classement"
+        style={{
+          position: "absolute",
+          top: "15px",
+          left: "15px",
+          width: "42px",
+          height: "42px",
+          margin: 0,
+          padding: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#e9bd58",
+          border: 0,
+          borderRadius: "10px",
+          color: "#111",
+          cursor: "pointer",
+        }}
       >
-        ✕
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M19 12H5"
+            stroke="currentColor"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M11 6L5 12L11 18"
+            stroke="currentColor"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
 
 

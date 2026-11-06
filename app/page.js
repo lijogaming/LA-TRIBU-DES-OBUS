@@ -51,6 +51,31 @@ const [reseauxOuverts, setReseauxOuverts] =
   useState(false);
 
   // =====================================================
+  // NOTIFICATIONS
+  // =====================================================
+
+  const [notifications, setNotifications] =
+    useState([]);
+
+  const [notificationsOuvertes, setNotificationsOuvertes] =
+    useState(false);
+
+  const [chargementNotifications, setChargementNotifications] =
+    useState(false);
+
+  const [erreurNotifications, setErreurNotifications] =
+    useState("");
+
+  const [notificationEnCours, setNotificationEnCours] =
+    useState(null);
+
+  // Indicateurs des enveloppes Entreprises et Métiers sur les cartes d'accueil.
+  const [alertesProfessionnelles, setAlertesProfessionnelles] = useState({
+    entreprises: false,
+    metiers: false,
+  });
+  
+  // =====================================================
 // CLASSEMENT PUBLIC
 // =====================================================
 
@@ -109,9 +134,26 @@ async function chargerClassementPublic() {
   }
 
 
-  setClassementPublic(
-    data || []
-  );
+  
+const sansCivils = (data || []).filter(
+  (membre) => membre.grade !== "Civil"
+);
+
+const classementSansCivils = sansCivils.map(
+  (membre) => ({
+    ...membre,
+    rang:
+      1 +
+      sansCivils.filter(
+        (autre) =>
+          autre.classement === membre.classement &&
+          Number(autre.rang) < Number(membre.rang)
+      ).length,
+  })
+);
+
+setClassementPublic(classementSansCivils);
+
 
 
   setChargementClassementPublic(
@@ -253,6 +295,164 @@ async function chargerClassementPublic() {
   }, [user]);
 
   // =====================================================
+  // CHARGER LES NOTIFICATIONS
+  // =====================================================
+
+  useEffect(() => {
+    if (!joueur?.id) {
+      setNotifications([]);
+      setChargementNotifications(false);
+      return;
+    }
+
+    let actif = true;
+    setChargementNotifications(true);
+
+    async function chargerNotifications() {
+      const depuis = new Date(
+        Date.now() - 14 * 24 * 60 * 60 * 1000
+      ).toISOString();
+
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("id, type_notification, message, lu, created_at")
+        .eq("joueur_id", joueur.id)
+        // Notifications professionnelles réservées aux enveloppes Entreprises et Métiers.
+        .not("type_notification", "in", "(bilan_entreprise,salaire_entreprise)")
+        .not("type_notification", "like", "patron_entreprise_%")
+        .not("type_notification", "like", "metier_entreprise_%")
+        .gte("created_at", depuis)
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (!actif) return;
+
+      setChargementNotifications(false);
+
+      if (error) {
+        console.error("Erreur notifications :", error);
+        setErreurNotifications(
+          "Impossible de charger les notifications."
+        );
+        return;
+      }
+
+      setNotifications(data || []);
+      setErreurNotifications("");
+    }
+
+    chargerNotifications();
+
+    const intervalle = setInterval(
+      chargerNotifications,
+      60000
+    );
+
+    return () => {
+      actif = false;
+      clearInterval(intervalle);
+    };
+  }, [joueur?.id]);
+
+  // =====================================================
+  // NOTIFICATIONS NON LUES DES ENVELOPPES PROFESSIONNELLES
+  // =====================================================
+
+  useEffect(() => {
+    if (!joueur?.id || joueur.grade === "Civil") {
+      setAlertesProfessionnelles({ entreprises: false, metiers: false });
+      return;
+    }
+
+    let actif = true;
+
+    async function chargerAlertesProfessionnelles() {
+      const depuis = new Date(
+        Date.now() - 14 * 24 * 60 * 60 * 1000
+      ).toISOString();
+
+      // Reprendre exactement les types affichés dans chaque enveloppe.
+      const types = {
+        entreprises: "type_notification.eq.bilan_entreprise,type_notification.like.patron_entreprise_%",
+        metiers: "type_notification.eq.salaire_entreprise,type_notification.like.metier_entreprise_%",
+      };
+
+      const [entreprises, metiers] = await Promise.all([
+        supabase
+          .from("notifications")
+          .select("id")
+          .eq("joueur_id", joueur.id)
+          .eq("lu", false)
+          .or(types.entreprises)
+          .gte("created_at", depuis)
+          .limit(1),
+        supabase
+          .from("notifications")
+          .select("id")
+          .eq("joueur_id", joueur.id)
+          .eq("lu", false)
+          .or(types.metiers)
+          .gte("created_at", depuis)
+          .limit(1),
+      ]);
+
+      if (!actif) return;
+
+      if (entreprises.error || metiers.error) {
+        console.error(
+          "Erreur indicateurs de notifications professionnelles :",
+          entreprises.error || metiers.error
+        );
+        return;
+      }
+
+      setAlertesProfessionnelles({
+        entreprises: (entreprises.data || []).length > 0,
+        metiers: (metiers.data || []).length > 0,
+      });
+    }
+
+    chargerAlertesProfessionnelles();
+    const intervalle = setInterval(chargerAlertesProfessionnelles, 60000);
+
+    return () => {
+      actif = false;
+      clearInterval(intervalle);
+    };
+  }, [joueur?.id, joueur?.grade]);
+
+  // =====================================================
+  // MARQUER UNE NOTIFICATION COMME LUE
+  // =====================================================
+
+  async function marquerNotificationLue(id) {
+    setNotificationEnCours(id);
+
+    const { error } = await supabase.rpc(
+      "marquer_notification_lue",
+      { p_notification_id: id }
+    );
+
+    if (error) {
+      console.error("Erreur lecture notification :", error);
+      setErreurNotifications(
+        "Impossible de marquer cette notification comme lue."
+      );
+    } else {
+      setNotifications((anciennes) =>
+        anciennes.map((notification) =>
+          notification.id === id
+            ? { ...notification, lu: true }
+            : notification
+        )
+      );
+      setErreurNotifications("");
+    }
+
+    setNotificationEnCours(null);
+  }
+
+  // =====================================================
   // CHARGER LES JOUEURS POUR LES DONS
   // =====================================================
 
@@ -302,8 +502,10 @@ async function chargerClassementPublic() {
           provider: "google",
 
           options: {
-            redirectTo:
-              "https://latribudesobus.com/auth/callback",
+            
+redirectTo:
+  `${window.location.origin}/auth/callback`,
+
 
             scopes:
               "https://www.googleapis.com/auth/youtube.readonly",
@@ -1527,11 +1729,59 @@ if (!user) {
       {/* ================================================= */}
 
       <div
-className="card profil-principal-card"  style={{
+className="card profil-principal-card"  
+  style={{
     position: "relative",
     paddingTop: "70px",
   }}
 >
+  
+  {/* ================================================= */}
+  {/* ENVELOPPE DES NOTIFICATIONS */}
+  {/* ================================================= */}
+
+  <button
+    type="button"
+    className="notifications-bouton-profil"
+    onClick={() => setNotificationsOuvertes(true)}
+    title="Ouvrir les notifications"
+    aria-label="Ouvrir les notifications"
+  >
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <rect
+        x="3"
+        y="5"
+        width="18"
+        height="14"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M4 7 L12 13 L20 7"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+    </svg>
+
+    {notifications.some((notification) => !notification.lu) && (
+      <Image
+        src="/alerte-notification.png"
+        alt=""
+        width={19}
+        height={22}
+        className="notifications-alerte"
+      />
+    )}
+  </button>
+
   <button
   onClick={deconnexion}
   title="Se déconnecter"
@@ -1674,12 +1924,123 @@ className="card profil-principal-card"  style={{
         )}
       </div>
 
+  {/* ================================================= */}
+  {/* FENÊTRE DES NOTIFICATIONS */}
+  {/* ================================================= */}
+
+  {notificationsOuvertes && (
+    <div
+      className="reseaux-overlay"
+      onClick={() => setNotificationsOuvertes(false)}
+    >
+      <div
+        className="reseaux-popup notifications-popup"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Notifications"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          className="reseaux-close"
+          onClick={() => setNotificationsOuvertes(false)}
+          title="Fermer"
+        >
+          ✕
+        </button>
+
+        <p className="label">
+          LA TRIBU DES OBUS
+        </p>
+
+        <h2 className="reseaux-title">
+          Notifications
+        </h2>
+
+        <p className="reseaux-subtitle">
+          Tes derniers événements
+        </p>
+
+        {erreurNotifications && (
+          <p role="alert" className="notifications-erreur">
+            {erreurNotifications}
+          </p>
+        )}
+
+        {chargementNotifications ? (
+          <p>Chargement des notifications...</p>
+        ) : notifications.length === 0 ? (
+          <p>Aucune notification récente.</p>
+        ) : (
+          <div className="notifications-liste">
+            {notifications.map((notification) => (
+              <div
+                key={notification.id}
+                className={
+                  notification.lu
+                    ? "notifications-item"
+                    : "notifications-item notifications-item-nonlue"
+                }
+              >
+                <strong className="notifications-type">
+                  {notification.type_notification.replaceAll("_", " ")}
+                </strong>
+
+                <p>{notification.message}</p>
+
+                
+<span className="notifications-date">
+  Le{" "}
+  {new Date(notification.created_at)
+    .toLocaleDateString("fr-FR", {
+      timeZone: "Europe/Paris",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    })}
+  {" à "}
+  {new Date(notification.created_at)
+    .toLocaleTimeString("fr-FR", {
+      timeZone: "Europe/Paris",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    })
+    .replace(":", "h")}
+</span>
+
+
+                {!notification.lu && (
+                  <button
+                    type="button"
+                    className="notifications-marquer-lue"
+                    disabled={notificationEnCours === notification.id}
+                    onClick={() =>
+                      marquerNotificationLue(notification.id)
+                    }
+                  >
+                    {notificationEnCours === notification.id
+                      ? "Enregistrement..."
+                      : "Marquer comme lu"}
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )}
+
       {/* ================================================= */}
       {/* MENU DU JEU */}
       {/* ADMIN + JOUEURS */}
       {/* ================================================= */}
       
-      <div className="menu-grid">
+<div className="menu-grid">
+        
+        {joueur.grade !== "Civil" && (
+          <>
       
         {/* ================================================= */}
         {/* INVENTAIRE */}
@@ -1755,6 +2116,77 @@ className="card profil-principal-card"  style={{
           </p>
         </div>
       
+        {/* ================================================= */}
+        {/* MES ENTREPRISES */}
+        {/* ================================================= */}
+
+        <div
+          className="card menu-card"
+          style={{ position: "relative" }}
+          onClick={() => {
+            window.location.href =
+              "/mes-entreprises";
+          }}
+        >
+          {alertesProfessionnelles.entreprises && (
+            <Image
+              src="/alerte-notification.png"
+              alt=""
+              width={19}
+              height={22}
+              className="notifications-alerte"
+            />
+          )}
+          <div className="menu-icon">
+            🏢
+          </div>
+
+          <h2>
+            Mes Entreprises
+          </h2>
+
+          <p>
+            Créer et gérer ton entreprise
+          </p>
+        </div>
+
+        {/* ================================================= */}
+        {/* MES MÉTIERS */}
+        {/* ================================================= */}
+
+        <div
+          className="card menu-card"
+          style={{ position: "relative" }}
+          onClick={() => {
+            window.location.href =
+              "/mes-metiers";
+          }}
+        >
+          {alertesProfessionnelles.metiers && (
+            <Image
+              src="/alerte-notification.png"
+              alt=""
+              width={19}
+              height={22}
+              className="notifications-alerte"
+            />
+          )}
+          <div className="menu-icon">
+            💼
+          </div>
+
+          <h2>
+            Mes Métiers
+          </h2>
+
+          <p>
+            Postuler et gérer tes métiers
+          </p>
+        </div>
+
+          </>
+        )}
+
       
         {/* ================================================= */}
         {/* CLASSEMENT */}
@@ -1779,6 +2211,30 @@ className="card profil-principal-card"  style={{
             Voir les meilleurs membres
           </p>
         </div>
+            
+        {/* ================================================= */}
+        {/* GRADES */}
+        {/* ================================================= */}
+
+        <div
+          className="card menu-card"
+          onClick={() => {
+            window.location.href = "/grades";
+          }}
+        >
+          <div className="menu-icon">
+            🎖️
+          </div>
+
+          <h2>
+            Grades
+          </h2>
+
+          <p>
+            Progression et récompenses
+          </p>
+        </div>
+
       </div>
 
             {/* ================================================= */}
