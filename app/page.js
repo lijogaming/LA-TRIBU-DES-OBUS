@@ -68,6 +68,12 @@ const [reseauxOuverts, setReseauxOuverts] =
 
   const [notificationEnCours, setNotificationEnCours] =
     useState(null);
+
+  // Indicateurs des enveloppes Entreprises et Métiers sur les cartes d'accueil.
+  const [alertesProfessionnelles, setAlertesProfessionnelles] = useState({
+    entreprises: false,
+    metiers: false,
+  });
   
   // =====================================================
 // CLASSEMENT PUBLIC
@@ -347,6 +353,73 @@ setClassementPublic(classementSansCivils);
       clearInterval(intervalle);
     };
   }, [joueur?.id]);
+
+  // =====================================================
+  // NOTIFICATIONS NON LUES DES ENVELOPPES PROFESSIONNELLES
+  // =====================================================
+
+  useEffect(() => {
+    if (!joueur?.id || joueur.grade === "Civil") {
+      setAlertesProfessionnelles({ entreprises: false, metiers: false });
+      return;
+    }
+
+    let actif = true;
+
+    async function chargerAlertesProfessionnelles() {
+      const depuis = new Date(
+        Date.now() - 14 * 24 * 60 * 60 * 1000
+      ).toISOString();
+
+      // Reprendre exactement les types affichés dans chaque enveloppe.
+      const types = {
+        entreprises: "type_notification.eq.bilan_entreprise,type_notification.like.patron_entreprise_%",
+        metiers: "type_notification.eq.salaire_entreprise,type_notification.like.metier_entreprise_%",
+      };
+
+      const [entreprises, metiers] = await Promise.all([
+        supabase
+          .from("notifications")
+          .select("id")
+          .eq("joueur_id", joueur.id)
+          .eq("lu", false)
+          .or(types.entreprises)
+          .gte("created_at", depuis)
+          .limit(1),
+        supabase
+          .from("notifications")
+          .select("id")
+          .eq("joueur_id", joueur.id)
+          .eq("lu", false)
+          .or(types.metiers)
+          .gte("created_at", depuis)
+          .limit(1),
+      ]);
+
+      if (!actif) return;
+
+      if (entreprises.error || metiers.error) {
+        console.error(
+          "Erreur indicateurs de notifications professionnelles :",
+          entreprises.error || metiers.error
+        );
+        return;
+      }
+
+      setAlertesProfessionnelles({
+        entreprises: (entreprises.data || []).length > 0,
+        metiers: (metiers.data || []).length > 0,
+      });
+    }
+
+    chargerAlertesProfessionnelles();
+    const intervalle = setInterval(chargerAlertesProfessionnelles, 60000);
+
+    return () => {
+      actif = false;
+      clearInterval(intervalle);
+    };
+  }, [joueur?.id, joueur?.grade]);
 
   // =====================================================
   // MARQUER UNE NOTIFICATION COMME LUE
@@ -2049,11 +2122,21 @@ className="card profil-principal-card"
 
         <div
           className="card menu-card"
+          style={{ position: "relative" }}
           onClick={() => {
             window.location.href =
               "/mes-entreprises";
           }}
         >
+          {alertesProfessionnelles.entreprises && (
+            <Image
+              src="/alerte-notification.png"
+              alt=""
+              width={19}
+              height={22}
+              className="notifications-alerte"
+            />
+          )}
           <div className="menu-icon">
             🏢
           </div>
@@ -2073,11 +2156,21 @@ className="card profil-principal-card"
 
         <div
           className="card menu-card"
+          style={{ position: "relative" }}
           onClick={() => {
             window.location.href =
               "/mes-metiers";
           }}
         >
+          {alertesProfessionnelles.metiers && (
+            <Image
+              src="/alerte-notification.png"
+              alt=""
+              width={19}
+              height={22}
+              className="notifications-alerte"
+            />
+          )}
           <div className="menu-icon">
             💼
           </div>
