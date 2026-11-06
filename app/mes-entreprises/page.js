@@ -50,6 +50,7 @@ export default function MesEntreprisesPage() {
   const [enCours, setEnCours] = useState(false);
   const [joueur, setJoueur] = useState(null);
   const [entreprise, setEntreprise] = useState(null);
+  const [statistiquesEntreprise, setStatistiquesEntreprise] = useState(null);
   const [employes, setEmployes] = useState([]);
   const [candidatures, setCandidatures] = useState([]);
   const [candidaturesOuvertes, setCandidaturesOuvertes] = useState(false);
@@ -70,6 +71,7 @@ export default function MesEntreprisesPage() {
 
   async function chargerDonnees() {
     setChargement(true);
+    setStatistiquesEntreprise(null);
 
     try {
       const { data: session, error: erreurSession } =
@@ -115,7 +117,7 @@ export default function MesEntreprisesPage() {
         return;
       }
 
-      const [reponseEmployes, reponseCandidatures] = await Promise.all([
+      const [reponseEmployes, reponseCandidatures, reponseClassement] = await Promise.all([
         supabase
           .from("entreprises_employes")
           .select("id, employe_id, salaire, date_embauche")
@@ -129,10 +131,22 @@ export default function MesEntreprisesPage() {
             "salaire_contre_proposition, reponse_patron, argument_candidat, blocage_jusquau, created_at"          )
           .eq("entreprise_id", societe.id)
           .order("created_at", { ascending: false }),
+        supabase.rpc("lister_classement_entreprises"),
       ]);
 
       if (reponseEmployes.error) throw reponseEmployes.error;
       if (reponseCandidatures.error) throw reponseCandidatures.error;
+
+      if (reponseClassement.error) {
+        console.error("Impossible de charger les statistiques de l'entreprise :", reponseClassement.error);
+        setStatistiquesEntreprise(null);
+      } else {
+        setStatistiquesEntreprise(
+          (reponseClassement.data || []).find(
+            (ligne) => ligne.entreprise_id === societe.id
+          ) || null
+        );
+      }
 
       const listeEmployes = reponseEmployes.data || [];
       const listeCandidatures = reponseCandidatures.data || [];
@@ -351,11 +365,29 @@ if (identifiants.length === 0) {
           </svg>
         </button>
 
-        <p className="label">TON SOLDE</p>
-        <h2>💰 {joueur ? afficherObus(joueur.obus) : "—"} Obus</h2>
-        <p style={{ color: "#aaa", marginBottom: 0 }}>
-          {joueur ? `Grade : ${joueur.grade}` : "Connexion au profil..."}
-        </p>
+        {entreprise ? (
+          <>
+            <p className="label">OBUS DE L'ENTREPRISE</p>
+            <h2>💰 {statistiquesEntreprise ? afficherObus(statistiquesEntreprise.total_obus) : "—"} Obus</h2>
+            <p className="label" style={{ marginTop: "18px" }}>
+              LIVES TOTAL DE L'ENTREPRISE
+            </p>
+            <h2 style={{ marginBottom: 0 }}>
+              📊 {statistiquesEntreprise ? afficherObus(statistiquesEntreprise.total_lives) : "—"} lives
+            </h2>
+            <p style={{ color: "#aaa", fontSize: "13px", marginBottom: 0 }}>
+              Totaux du patron et des employés actifs.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="label">TON SOLDE</p>
+            <h2>💰 {joueur ? afficherObus(joueur.obus) : "—"} Obus</h2>
+            <p style={{ color: "#aaa", marginBottom: 0 }}>
+              {joueur ? `Grade : ${joueur.grade}` : "Connexion au profil..."}
+            </p>
+          </>
+        )}
       </div>
 
       {message && (
