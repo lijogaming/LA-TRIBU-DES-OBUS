@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import NotificationsRubrique from "../components/NotificationsRubrique";
 
 // Même connexion que app/virement/page.js et app/mes-entreprises/page.js.
 const supabase = createClient(
@@ -300,6 +301,7 @@ function nouvelleContreProposition(candidature) {
       <p className="subtitle">Recherche d'emploi et suivi de tes candidatures</p>
 
       <div className="card" style={{ position: "relative", paddingTop: "70px" }}>
+        <NotificationsRubrique supabase={supabase} joueurId={joueur?.id} rubrique="metiers" />
         <button
           type="button"
           onClick={() => { window.location.href = "/"; }}
