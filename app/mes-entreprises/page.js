@@ -102,7 +102,7 @@ export default function MesEntreprisesPage() {
 
       const { data: societe, error: erreurSociete } = await supabase
         .from("entreprises")
-        .select("id, nom, patron_id, categorie, created_at")
+        .select("id, nom, patron_id, categorie, bonus_base_live, created_at")
         .eq("patron_id", profil.id)
         .maybeSingle();
 
@@ -430,6 +430,11 @@ if (identifiants.length === 0) {
           <p>
             <strong>Capacité :</strong> 5 employés maximum
           </p>
+          <p>
+            <strong>Rentabilité de base :</strong> entre +50 et +200 Obus par live,
+            tirée au hasard une seule fois à la création. Le patron doit être présent
+            au live pour recevoir ce bonus, même sans employé.
+          </p>
 
           {!patronAutorise ? (
             <p style={{ color: "#f5b5b5" }}>
@@ -466,10 +471,15 @@ if (identifiants.length === 0) {
           <p className="label">TON ENTREPRISE N°1</p>
           <h2 style={{ overflowWrap: "anywhere" }}>🏢 {entreprise.nom}</h2>
           <p>Catégorie : {entreprise.categorie}</p>
+          <p>
+            <strong>Rentabilité de base :</strong> +{afficherObus(entreprise.bonus_base_live)} Obus / live
+            si tu es présent, même sans employé.
+          </p>
           <p style={{ color: "#aaa", fontSize: "14px" }}>
             Chaque employé te fait gagner 500 Obus par live lorsque tu es présent.
             Il faut retirer de ces 500 Obus son salaire, compris entre 100 et 500 Obus.
-            Exemple : pour un salaire de 100 Obus, tu gagnes 400 Obus.
+            Exemple : pour un salaire de 100 Obus, tu gagnes 400 Obus,
+            en plus de ta rentabilité de base.
           </p>
 
           <hr style={{ border: 0, borderTop: "1px solid #444", margin: "24px 0" }} />
