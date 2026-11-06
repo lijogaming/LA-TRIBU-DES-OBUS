@@ -20,6 +20,7 @@ export default function EntreprisesAdmin({ supabase }) {
   const [enCours, setEnCours] = useState(false);
   const [entreprises, setEntreprises] = useState([]);
   const [entrepriseId, setEntrepriseId] = useState("");
+  const [recherche, setRecherche] = useState("");
   const [nom, setNom] = useState("");
   const [salaires, setSalaires] = useState({});
   const [message, setMessage] = useState("");
@@ -27,6 +28,12 @@ export default function EntreprisesAdmin({ supabase }) {
   const [confirmation, setConfirmation] = useState(null);
 
   const entreprise = entreprises.find((e) => e.id === entrepriseId) || null;
+  const termeRecherche = recherche.trim().toLocaleLowerCase("fr");
+  const entreprisesFiltrees = entreprises.filter((e) =>
+    !termeRecherche ||
+    String(e.nom || "").toLocaleLowerCase("fr").includes(termeRecherche) ||
+    String(e.patron_pseudo || "").toLocaleLowerCase("fr").includes(termeRecherche)
+  );
   const boutonStyle = { width: "100%", marginTop: "12px", padding: "13px" };
   const rougeStyle = { ...boutonStyle, background: "#9d2929", color: "white" };
 
@@ -200,21 +207,52 @@ export default function EntreprisesAdmin({ supabase }) {
       {ouvert && (
         <div style={{ marginTop: "20px" }}>
           <label style={{ display: "block", textAlign: "left" }}>
-            <span className="label">SÉLECTIONNER UNE ENTREPRISE</span>
-            <select
-              value={entrepriseId}
-              onChange={(e) => selectionnerEntreprise(e.target.value)}
+            <span className="label">RECHERCHER UNE ENTREPRISE</span>
+            <input
+              type="text"
+              value={recherche}
+              onChange={(e) => setRecherche(e.target.value)}
+              placeholder="Nom de l'entreprise ou pseudo du patron..."
               disabled={enCours || chargement}
-              style={{ ...styleChamp, marginTop: "8px" }}
-            >
-              <option value="">Choisir une entreprise...</option>
-              {entreprises.map((e) => (
-                <option key={e.id} value={e.id}>
-                  {e.nom} — {e.patron_pseudo}
-                </option>
-              ))}
-            </select>
+              style={{ ...styleChamp, marginTop: "12px", padding: "14px" }}
+            />
           </label>
+
+          <div
+            aria-label="Liste des entreprises, défilement à la molette"
+            style={{
+              marginTop: "20px", maxHeight: "242px",
+              overflowY: "auto", overscrollBehavior: "contain", paddingRight: "6px",
+            }}
+          >
+            {!chargement && entreprisesFiltrees.length === 0 && (
+              <p>{entreprises.length === 0 ? "Aucune entreprise." : "Aucune entreprise trouvée."}</p>
+            )}
+            {entreprisesFiltrees.map((e) => (
+              <button
+                key={e.id}
+                type="button"
+                disabled={enCours || chargement}
+                aria-label={"Gérer l'entreprise " + e.nom}
+                onClick={() => selectionnerEntreprise(e.id)}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between",
+                  gap: "10px", width: "100%", margin: "0 0 10px", padding: "16px 18px",
+                  border: entrepriseId === e.id ? "2px solid #e5bd68" : "1px solid #444",
+                  borderRadius: "11px", background: "#191919", color: "#e5bd68",
+                  textAlign: "left", fontSize: "18px", cursor: "pointer",
+                }}
+              >
+                <span style={{ overflowWrap: "anywhere" }}>
+                  <strong>{e.nom}</strong>
+                  <span style={{ display: "block", color: "#aaa", fontSize: "13px" }}>
+                    {e.patron_pseudo}
+                  </span>
+                </span>
+                <span aria-hidden="true" style={{ fontSize: "23px" }}>›</span>
+              </button>
+            ))}
+          </div>
 
           <button
             type="button"
@@ -233,8 +271,6 @@ export default function EntreprisesAdmin({ supabase }) {
               {message}
             </p>
           )}
-
-          {!chargement && entreprises.length === 0 && <p>Aucune entreprise à gérer.</p>}
 
           {entreprise && (
             <div style={{ marginTop: "22px", textAlign: "left" }}>
