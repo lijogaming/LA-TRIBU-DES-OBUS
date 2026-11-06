@@ -631,21 +631,54 @@ let liste =
 
     <div
       className="card profil-classement-card"
+      style={{ paddingTop: "72px" }}
       onClick={(e) =>
         e.stopPropagation()
       }
     >
 
       <button
-        className="profil-classement-fermer"
+        type="button"
         onClick={() =>
           setJoueurSelectionne(
             null
           )
         }
-        title="Fermer"
+        title="Retour"
+        aria-label="Retour au classement"
+        style={{
+          position: "absolute",
+          top: "15px",
+          left: "15px",
+          width: "42px",
+          height: "42px",
+          margin: 0,
+          padding: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#e9bd58",
+          border: 0,
+          borderRadius: "10px",
+          color: "#111",
+          cursor: "pointer",
+        }}
       >
-        ✕
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M19 12H5"
+            stroke="currentColor"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M11 6L5 12L11 18"
+            stroke="currentColor"
+            strokeWidth="3.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </button>
 
 
