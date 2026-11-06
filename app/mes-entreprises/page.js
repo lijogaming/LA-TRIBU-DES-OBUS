@@ -431,9 +431,9 @@ if (identifiants.length === 0) {
             <strong>Capacité :</strong> 5 employés maximum
           </p>
           <p>
-            <strong>Rentabilité de base :</strong> entre +50 et +200 Obus par live,
-            tirée au hasard une seule fois à la création. Le patron doit être présent
-            au live pour recevoir ce bonus, même sans employé.
+            <strong>Rentabilité de base :</strong> tirage aléatoire parmi +25, +50, +75,
+            +100, +125, +150, +175 ou +200 Obus par live. Cette valeur reste fixe.
+            Le patron doit être présent au live pour recevoir ce bonus, même sans employé.
           </p>
 
           {!patronAutorise ? (
@@ -770,6 +770,25 @@ if (identifiants.length === 0) {
             nomJoueur={nomJoueur}
             integre
           />
+
+          <hr style={{ border: 0, borderTop: "1px solid #6b2929", margin: "30px 0 22px" }} />
+          <h2 style={{ color: "#ff8585" }}>SUPPRIMER MON ENTREPRISE</h2>
+          <button
+            type="button"
+            disabled={enCours}
+            onClick={() =>
+              demanderAction(
+                "supprimer_entreprise",
+                { p_entreprise_id: entreprise.id },
+                "SUPPRIMER DÉFINITIVEMENT L'ENTREPRISE",
+                "Attention : si vous supprimez cette entreprise, tous vos employés seront virés. Les 1 000 Obus dépensés pour sa création ne vous seront pas remboursés. Vous pourrez créer une nouvelle entreprise pour 1 000 Obus et obtenir une nouvelle rentabilité aléatoire.",
+                "Entreprise supprimée. Vous pouvez en créer une nouvelle pour 1 000 Obus."
+              )
+            }
+            style={{ background: "#a52a2a", color: "white", width: "100%" }}
+          >
+            🗑️ SUPPRIMER MON ENTREPRISE
+          </button>
         </div>
       )}
 
@@ -800,7 +819,9 @@ if (identifiants.length === 0) {
               overflowY: "auto",
               boxSizing: "border-box",
               background: "#171717",
-              border: "3px solid #3b82f6",
+              border: confirmation.rpc === "supprimer_entreprise"
+                ? "3px solid #b91c1c"
+                : "3px solid #3b82f6",
               borderRadius: "22px",
               padding: "28px 18px",
               color: "white",
@@ -817,7 +838,7 @@ if (identifiants.length === 0) {
                 margin: "0 0 12px",
               }}
             >
-              💣 {confirmation.titre}
+              {confirmation.rpc === "supprimer_entreprise" ? "⚠️" : "💣"} {confirmation.titre}
             </h2>
 
             <p
@@ -963,8 +984,8 @@ if (identifiants.length === 0) {
                 style={{
                   width: "100%",
                   padding: "15px 8px",
-                  background: "#e5bd68",
-                  color: "#111",
+                  background: confirmation.rpc === "supprimer_entreprise" ? "#b91c1c" : "#e5bd68",
+                  color: confirmation.rpc === "supprimer_entreprise" ? "white" : "#111",
                   border: "none",
                   borderRadius: "12px",
                   fontSize: "15px",
@@ -972,7 +993,7 @@ if (identifiants.length === 0) {
                   cursor: "pointer",
                 }}
               >
-                CONFIRMER
+                {confirmation.rpc === "supprimer_entreprise" ? "SUPPRIMER" : "CONFIRMER"}
               </button>
             </div>
           </div>
