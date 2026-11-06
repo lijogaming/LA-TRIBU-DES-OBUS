@@ -120,8 +120,7 @@ export default function MesEntreprisesPage() {
           .from("entreprises_candidatures")
           .select(
             "id, candidat_id, salaire_demande, motivation, statut, " +
-              "salaire_contre_proposition, reponse_patron, created_at"
-          )
+            "salaire_contre_proposition, reponse_patron, argument_candidat, created_at"          )
           .eq("entreprise_id", societe.id)
           .in("statut", ["en_attente", "contre_proposition"])
           .order("created_at", { ascending: false }),
@@ -486,6 +485,26 @@ if (identifiants.length === 0) {
                   <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
                     <strong>Motivation :</strong> {candidature.motivation || "—"}
                   </p>
+
+{candidature.argument_candidat && (
+  <p
+    style={{
+      whiteSpace: "pre-wrap",
+      overflowWrap: "anywhere",
+      padding: "14px",
+      background: "#1c1c1c",
+      border: "1px solid #e5bd68",
+      borderRadius: "10px",
+      textAlign: "left",
+    }}
+  >
+    <strong style={{ color: "#e5bd68" }}>
+      🤝 Dernier argument du candidat :
+    </strong>
+    {" "}
+    {candidature.argument_candidat}
+  </p>
+)}
 
                   {candidature.statut === "contre_proposition" ? (
                     <p style={{ color: "#e5bd68" }}>
