@@ -164,6 +164,11 @@ export default function EntreprisesAdmin({ supabase }) {
         setSalaires({});
       } else if (action.parametres.p_action === "renommer") {
         setNom(action.parametres.p_nom);
+      } else if (action.parametres.p_action === "salaire") {
+        setSalaires((ancien) => ({
+          ...ancien,
+          [action.parametres.p_employe_id]: String(action.parametres.p_salaire),
+        }));
       }
 
       await chargerEntreprises();
