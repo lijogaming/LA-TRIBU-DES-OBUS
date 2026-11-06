@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import ClassementEntreprises from "../components/ClassementEntreprises";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -39,6 +40,8 @@ export default function ClassementPage() {
 ] = useState(null);
   const [classement, setClassement] =
     useState("obus");
+  const [typeClassement, setTypeClassement] = useState("joueurs");
+  const [classementEntreprise, setClassementEntreprise] = useState("obus");
 
   // =====================================================
   // CHARGEMENT
@@ -379,8 +382,40 @@ let liste =
 </svg>
   </button>
 
+  <div style={{
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    gap: "10px",
+    marginBottom: "22px",
+  }}>
+    <button
+      type="button"
+      aria-pressed={typeClassement === "joueurs"}
+      onClick={() => {
+        setTypeClassement("joueurs");
+        setRecherche("");
+      }}
+      style={{ opacity: typeClassement === "joueurs" ? 1 : 0.55 }}
+    >
+      👤 Classement Joueurs
+    </button>
+    <button
+      type="button"
+      aria-pressed={typeClassement === "entreprises"}
+      onClick={() => {
+        setTypeClassement("entreprises");
+        setRecherche("");
+      }}
+      style={{ opacity: typeClassement === "entreprises" ? 1 : 0.55 }}
+    >
+      🏢 Classement Entreprises
+    </button>
+  </div>
+
   <p className="label">
-    FILTRER LE CLASSEMENT
+    {typeClassement === "joueurs"
+      ? "FILTRER LE CLASSEMENT JOUEURS"
+      : "FILTRER LE CLASSEMENT ENTREPRISES"}
   </p>
 
         <input
@@ -391,7 +426,7 @@ let liste =
               e.target.value
             )
           }
-          placeholder="🔎 Rechercher un membre..."
+          placeholder={typeClassement === "joueurs" ? "🔎 Rechercher un membre..." : "🔎 Rechercher une entreprise..."}
           style={{
             width: "100%",
             padding: "14px",
@@ -407,6 +442,7 @@ let liste =
           }}
         />
 
+        {typeClassement === "joueurs" ? (
         <div
           style={{
             display: "grid",
@@ -466,6 +502,29 @@ let liste =
             🎖️ Grade
           </button>
         </div>
+        ) : (
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: "10px",
+          }}>
+            <button type="button"
+              onClick={() => setClassementEntreprise("obus")}
+              style={{ opacity: classementEntreprise === "obus" ? 1 : 0.55 }}>
+              💰 Obus
+            </button>
+            <button type="button"
+              onClick={() => setClassementEntreprise("membres")}
+              style={{ opacity: classementEntreprise === "membres" ? 1 : 0.55 }}>
+              👥 Membres
+            </button>
+            <button type="button"
+              onClick={() => setClassementEntreprise("lives")}
+              style={{ opacity: classementEntreprise === "lives" ? 1 : 0.55 }}>
+              📊 Lives total
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ================================================= */}
@@ -490,6 +549,7 @@ let liste =
 {/* CLASSEMENT */}
 {/* ================================================= */}
 
+{typeClassement === "joueurs" ? (
 <div
   style={{
     marginTop: "20px",
@@ -612,7 +672,13 @@ let liste =
     }
   )}
 </div>
-
+) : (
+  <ClassementEntreprises
+    supabase={supabase}
+    recherche={recherche}
+    tri={classementEntreprise}
+  />
+)}
 
 {/* ================================================= */}
 {/* PROFIL JOUEUR */}
