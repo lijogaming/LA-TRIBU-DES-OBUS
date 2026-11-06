@@ -445,17 +445,12 @@ function nouvelleContreProposition(candidature) {
     style={champStyle}
   />
 
-  <button
-    type="button"
-    disabled={enCours}
-    onClick={() =>
-      nouvelleContreProposition(candidature)
-    }
-    style={{ marginTop: "10px" }}
-  >
-
+  
 <div style={{ marginTop: "12px" }}>
-  <p className="label" style={{ color: "#111" }}>
+  <p
+    className="label"
+    style={{ color: "#e5bd68" }}
+  >
     ARGUMENT POUR MA CONTRE-PROPOSITION
   </p>
 
@@ -481,7 +476,7 @@ function nouvelleContreProposition(candidature) {
 
   <p
     style={{
-      color: "#111",
+      color: "#aaa",
       fontSize: "12px",
       textAlign: "right",
       margin: "5px 0 0",
@@ -493,8 +488,17 @@ function nouvelleContreProposition(candidature) {
   </p>
 </div>
 
-    🤝 FAIRE UNE CONTRE-PROPOSITION
-  </button>
+<button
+  type="button"
+  disabled={enCours}
+  onClick={() =>
+    nouvelleContreProposition(candidature)
+  }
+  style={{ marginTop: "12px" }}
+>
+  🤝 FAIRE UNE CONTRE-PROPOSITION
+</button>
+
 </div>
 
                   </div>
