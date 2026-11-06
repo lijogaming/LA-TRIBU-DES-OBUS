@@ -144,16 +144,23 @@ export default function NotificationsRubrique({ supabase, joueurId, rubrique }) 
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                background: "#222",
-                border: "1px solid rgba(233, 189, 88, 0.65)",
+                background: "#e9bd58",
+                border: "0",
                 borderRadius: "10px",
-                color: "white",
+                color: "#111",
+                fontWeight: "bold",
                 cursor: "pointer",
               }}
             >
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path
-                  d="M19 12H5 M11 6L5 12L11 18"
+                  d="M19 12H5"
+                  stroke="currentColor"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M11 6L5 12L11 18"
                   stroke="currentColor"
                   strokeWidth="3.5"
                   strokeLinecap="round"
