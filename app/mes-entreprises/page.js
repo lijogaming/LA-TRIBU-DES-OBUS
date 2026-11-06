@@ -102,7 +102,7 @@ export default function MesEntreprisesPage() {
 
       const { data: societe, error: erreurSociete } = await supabase
         .from("entreprises")
-        .select("id, nom, patron_id, categorie, created_at")
+        .select("id, nom, patron_id, categorie, bonus_base_live, created_at")
         .eq("patron_id", profil.id)
         .maybeSingle();
 
@@ -420,15 +420,20 @@ if (identifiants.length === 0) {
       ) : !entreprise ? (
         <div className="card" style={carteStyle}>
           <h2>🏗️ CRÉER MON ENTREPRISE</h2>
-          <p>Une entreprise par patron, dans la catégorie Armurerie.</p>
+          <p>Entreprise catégorie : Armurerie</p>
           <p>
-            <strong>Grade minimum :</strong> Colonel ou Officier général
+            <strong>Grade minimum :</strong> Colonel
           </p>
           <p>
             <strong>Coût :</strong> 1 000 Obus
           </p>
           <p>
             <strong>Capacité :</strong> 5 employés maximum
+          </p>
+          <p>
+            <strong>Rentabilité de base :</strong> tirage aléatoire parmi +25, +50, +75,
+            +100, +125, +150, +175 ou +200 Obus par live. Cette valeur reste fixe.
+            Le patron doit être présent au live pour recevoir ce bonus, même sans employé.
           </p>
 
           {!patronAutorise ? (
@@ -466,10 +471,15 @@ if (identifiants.length === 0) {
           <p className="label">TON ENTREPRISE N°1</p>
           <h2 style={{ overflowWrap: "anywhere" }}>🏢 {entreprise.nom}</h2>
           <p>Catégorie : {entreprise.categorie}</p>
+          <p>
+            <strong>Rentabilité de base :</strong> +{afficherObus(entreprise.bonus_base_live)} Obus / live
+            si tu es présent, même sans employé.
+          </p>
           <p style={{ color: "#aaa", fontSize: "14px" }}>
             Chaque employé te fait gagner 500 Obus par live lorsque tu es présent.
             Il faut retirer de ces 500 Obus son salaire, compris entre 100 et 500 Obus.
-            Exemple : pour un salaire de 100 Obus, tu gagnes 400 Obus.
+            Exemple : pour un salaire de 100 Obus, tu gagnes 400 Obus,
+            en plus de ta rentabilité de base.
           </p>
 
           <hr style={{ border: 0, borderTop: "1px solid #444", margin: "24px 0" }} />
@@ -760,6 +770,24 @@ if (identifiants.length === 0) {
             nomJoueur={nomJoueur}
             integre
           />
+
+          <hr style={{ border: 0, borderTop: "1px solid #444", margin: "30px 0 22px" }} />
+          <button
+            type="button"
+            disabled={enCours}
+            onClick={() =>
+              demanderAction(
+                "supprimer_entreprise",
+                { p_entreprise_id: entreprise.id },
+                "SUPPRIMER DÉFINITIVEMENT L'ENTREPRISE",
+                "Attention : si vous supprimez cette entreprise, tous vos employés seront virés. Les 1 000 Obus dépensés pour sa création ne vous seront pas remboursés. Vous pourrez créer une nouvelle entreprise pour 1 000 Obus et obtenir une nouvelle rentabilité aléatoire.",
+                "Entreprise supprimée. Vous pouvez en créer une nouvelle pour 1 000 Obus."
+              )
+            }
+            style={{ background: "#a52a2a", color: "white", width: "100%" }}
+          >
+            🗑️ SUPPRIMER MON ENTREPRISE
+          </button>
         </div>
       )}
 
@@ -790,7 +818,9 @@ if (identifiants.length === 0) {
               overflowY: "auto",
               boxSizing: "border-box",
               background: "#171717",
-              border: "3px solid #3b82f6",
+              border: confirmation.rpc === "supprimer_entreprise"
+                ? "3px solid #b91c1c"
+                : "3px solid #3b82f6",
               borderRadius: "22px",
               padding: "28px 18px",
               color: "white",
@@ -807,7 +837,7 @@ if (identifiants.length === 0) {
                 margin: "0 0 12px",
               }}
             >
-              💣 {confirmation.titre}
+              {confirmation.rpc === "supprimer_entreprise" ? "⚠️" : "💣"} {confirmation.titre}
             </h2>
 
             <p
@@ -953,8 +983,8 @@ if (identifiants.length === 0) {
                 style={{
                   width: "100%",
                   padding: "15px 8px",
-                  background: "#e5bd68",
-                  color: "#111",
+                  background: confirmation.rpc === "supprimer_entreprise" ? "#b91c1c" : "#e5bd68",
+                  color: confirmation.rpc === "supprimer_entreprise" ? "white" : "#111",
                   border: "none",
                   borderRadius: "12px",
                   fontSize: "15px",
@@ -962,7 +992,7 @@ if (identifiants.length === 0) {
                   cursor: "pointer",
                 }}
               >
-                CONFIRMER
+                {confirmation.rpc === "supprimer_entreprise" ? "SUPPRIMER" : "CONFIRMER"}
               </button>
             </div>
           </div>
