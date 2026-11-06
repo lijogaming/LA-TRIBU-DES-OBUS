@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import NotificationsAdmin from "./NotificationsAdmin";
+import EntreprisesAdmin from "./EntreprisesAdmin";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -890,6 +891,7 @@ async function modifierTotalLives(
 </div>
 
 <NotificationsAdmin supabase={supabase} joueurs={joueurs} />
+<EntreprisesAdmin supabase={supabase} />
 
       {/* FICHE ADMINISTRATEUR : navigation identique à une fiche de classement. */}
       {joueurSelectionne && (
