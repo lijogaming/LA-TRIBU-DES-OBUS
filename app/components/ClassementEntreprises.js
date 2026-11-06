@@ -28,7 +28,7 @@ export default function ClassementEntreprises({ supabase, recherche, tri }) {
       setErreur("");
 
       const { data, error } = await supabase.rpc(
-        "lister_classement_entreprises"
+        "lister_classement_entreprises_visible"
       );
 
       if (!actif) return;
