@@ -2039,6 +2039,54 @@ className="card profil-principal-card"
           </p>
         </div>
       
+        {/* ================================================= */}
+        {/* MES ENTREPRISES */}
+        {/* ================================================= */}
+
+        <div
+          className="card menu-card"
+          onClick={() => {
+            window.location.href =
+              "/mes-entreprises";
+          }}
+        >
+          <div className="menu-icon">
+            🏢
+          </div>
+
+          <h2>
+            Mes Entreprises
+          </h2>
+
+          <p>
+            Créer et gérer ton entreprise
+          </p>
+        </div>
+
+        {/* ================================================= */}
+        {/* MES MÉTIERS */}
+        {/* ================================================= */}
+
+        <div
+          className="card menu-card"
+          onClick={() => {
+            window.location.href =
+              "/mes-metiers";
+          }}
+        >
+          <div className="menu-icon">
+            💼
+          </div>
+
+          <h2>
+            Mes Métiers
+          </h2>
+
+          <p>
+            Postuler et gérer tes métiers
+          </p>
+        </div>
+
           </>
         )}
 
