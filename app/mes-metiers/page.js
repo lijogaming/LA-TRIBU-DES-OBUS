@@ -197,6 +197,10 @@ export default function MesMetiersPage() {
 
   function postuler(e, entreprise) {
     e.preventDefault();
+    if (emplois.length >= 2) {
+      setMessage("❌ Tu peux avoir au maximum 2 emplois actifs, toutes entreprises confondues.");
+      return;
+    }
     const saisie = saisies[entreprise.id] || {};
     const salaire = Number(saisie.salaire);
     const motivation = String(saisie.motivation || "").trim();
@@ -225,6 +229,10 @@ export default function MesMetiersPage() {
   }
 
   function repondre(candidature, accepter) {
+    if (accepter && emplois.length >= 2) {
+      setMessage("❌ Tu as déjà 2 emplois actifs. Tu ne peux pas en accepter un troisième.");
+      return;
+    }
     const salaire = candidature.salaire_contre_proposition;
     demanderAction(
       "repondre_contre_proposition_entreprise",
@@ -349,7 +357,11 @@ function nouvelleContreProposition(candidature) {
       ) : (
         <>
           <div className="card" style={{ marginTop: "20px" }}>
-            <h2>👷 MES EMPLOIS ({emplois.length})</h2>
+            <h2>👷 MES EMPLOIS ({emplois.length}/2)</h2>
+            <p style={{ color: "#aaa", fontSize: "14px" }}>
+              Maximum 2 emplois actifs, même si les entreprises appartiennent au même patron.
+              Tes entreprises personnelles ne comptent pas comme des emplois.
+            </p>
             {emplois.length === 0 ? (
               <p>Tu n'as aucun contrat actif pour le moment.</p>
             ) : emplois.map((emploi) => {
@@ -572,7 +584,7 @@ function nouvelleContreProposition(candidature) {
               const finBlocage = sesBlocages.length ? Math.max(...sesBlocages) : 0;
               const bloque = Number.isFinite(finBlocage) && finBlocage > Date.now();
               const estPatron = entreprise.patron_id === joueur.id;
-              const peutPostuler = gradeAutorise && !actif && !enAttente && !bloque && !estPatron;
+              const peutPostuler = gradeAutorise && emplois.length < 2 && !actif && !enAttente && !bloque && !estPatron;
               const saisie = saisies[entreprise.id] || {};
 
               return (
@@ -590,6 +602,10 @@ function nouvelleContreProposition(candidature) {
                   ) : bloque ? (
                     <p style={{ color: "#ff8888" }}>
                       Candidatures bloquées jusqu'au {dateFR(finBlocage)}.
+                    </p>
+                  ) : emplois.length >= 2 ? (
+                    <p style={{ color: "#e5bd68" }}>
+                      Tu as atteint la limite de 2 emplois actifs. Tu ne peux pas postuler ici pour le moment.
                     </p>
                   ) : !gradeAutorise ? (
                     <p>Grade Adgent minimum requis pour postuler.</p>
