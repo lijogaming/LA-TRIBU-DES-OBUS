@@ -6,7 +6,10 @@ import Image from "next/image";
 // Une enveloppe par rubrique : le patron reçoit son bilan dans Mes Entreprises,
 // l'employé reçoit son salaire dans Mes Métiers.
 export default function NotificationsRubrique({ supabase, joueurId, rubrique }) {
-  const type = rubrique === "entreprises" ? "bilan_entreprise" : "salaire_entreprise";
+  // Types financiers existants + futurs événements de recrutement/négociation.
+  const filtresTypes = rubrique === "entreprises"
+    ? "type_notification.eq.bilan_entreprise,type_notification.like.patron_entreprise_%"
+    : "type_notification.eq.salaire_entreprise,type_notification.like.metier_entreprise_%";
   const titre = rubrique === "entreprises" ? "Notifications de mon entreprise" : "Notifications de mes métiers";
 
   const [ouvert, setOuvert] = useState(false);
@@ -29,7 +32,7 @@ export default function NotificationsRubrique({ supabase, joueurId, rubrique }) 
         .from("notifications")
         .select("id, type_notification, message, lu, created_at")
         .eq("joueur_id", joueurId)
-        .eq("type_notification", type)
+        .or(filtresTypes)
         .gte("created_at", depuis)
         .order("created_at", { ascending: false })
         .limit(100);
@@ -50,7 +53,7 @@ export default function NotificationsRubrique({ supabase, joueurId, rubrique }) 
       actif = false;
       clearInterval(intervalle);
     };
-  }, [joueurId, supabase, type]);
+  }, [joueurId, supabase, filtresTypes]);
 
   async function marquerLue(id) {
     setEnCours(id);
