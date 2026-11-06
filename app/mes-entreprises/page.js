@@ -314,11 +314,6 @@ if (identifiants.length === 0) {
     joueur &&
       (joueur.officier_general || GRADES_PATRON.includes(joueur.grade))
   );
-  const gainPatron = employes.reduce(
-    (total, employe) => total + (500 - Number(employe.salaire)),
-    0
-  );
-
   return (
     <main className="container">
       <div className="logo">🏢</div>
@@ -425,27 +420,18 @@ if (identifiants.length === 0) {
           )}
         </div>
       ) : (
-        <>
-          <div className="card" style={carteStyle}>
-            <p className="label">TON ENTREPRISE</p>
-            <h2 style={{ overflowWrap: "anywhere" }}>🏢 {entreprise.nom}</h2>
-            <p>Catégorie : {entreprise.categorie}</p>
-            <p>
-              <strong>Employés :</strong> {employes.length}/5
-            </p>
-            <p>
-              <strong>Gain théorique du patron, s'il est présent :</strong>{" "}
-              +{afficherObus(gainPatron)} Obus par live
-            </p>
-            <p style={{ color: "#aaa", fontSize: "13px" }}>
-              Chaque poste génère 500 Obus bruts. Le patron reçoit 500 moins
-              le salaire du poste s'il est présent. Le salarié est payé
-              uniquement si lui et le patron sont présents dans le chat.
-            </p>
-          </div>
+        <div className="card" style={carteStyle}>
+          <p className="label">TON ENTREPRISE N°1</p>
+          <h2 style={{ overflowWrap: "anywhere" }}>🏢 {entreprise.nom}</h2>
+          <p>Catégorie : {entreprise.categorie}</p>
+          <p style={{ color: "#aaa", fontSize: "14px" }}>
+            Chaque employé te fait gagner 500 Obus par live lorsque tu es présent.
+            Il faut retirer de ces 500 Obus son salaire, compris entre 100 et 500 Obus.
+            Exemple : pour un salaire de 100 Obus, tu gagnes 400 Obus.
+          </p>
 
-          <div className="card" style={carteStyle}>
-            <h2>👥 EMPLOYÉS ({employes.length}/5)</h2>
+          <hr style={{ border: 0, borderTop: "1px solid #444", margin: "24px 0" }} />
+          <h2>👥 EMPLOYÉS ({employes.length}/5)</h2>
             {employes.length === 0 ? (
               <p>Aucun employé pour le moment.</p>
             ) : (
@@ -470,10 +456,8 @@ if (identifiants.length === 0) {
                 </div>
               ))
             )}
-          </div>
-
-          <div className="card" style={carteStyle}>
-            <h2>📨 CANDIDATURES EN COURS ({candidatures.length})</h2>
+          <hr style={{ border: 0, borderTop: "1px solid #444", margin: "24px 0" }} />
+          <h2>📨 CANDIDATURES EN COURS ({candidatures.length})</h2>
             {employes.length >= 5 && (
               <p style={{ color: "#e5bd68" }}>
                 Les 5 postes sont occupés. Tu peux consulter les candidatures,
@@ -693,7 +677,7 @@ if (identifiants.length === 0) {
                 </div>
               ))
             )}
-          </div>
+          <hr style={{ border: 0, borderTop: "1px solid #444", margin: "24px 0" }} />
           <HistoriqueCandidatures
             supabase={supabase}
             candidatures={historiqueCandidatures}
@@ -702,8 +686,9 @@ if (identifiants.length === 0) {
             joueurId={joueur.id}
             nomEntreprise={() => entreprise.nom}
             nomJoueur={nomJoueur}
+            integre
           />
-        </>
+        </div>
       )}
 
      
