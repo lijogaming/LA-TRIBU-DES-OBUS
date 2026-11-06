@@ -506,9 +506,23 @@ async function modifierTotalLives(
       />
     </svg>
   </button>
-  <p className="label">
-    RECHERCHER UN JOUEUR
-  </p>
+  <details>
+    <summary
+      style={{
+        cursor: "pointer",
+        color: "#e5bd68",
+        fontSize: "16px",
+        fontWeight: "bold",
+        textAlign: "left",
+        background: "#1c1c1c",
+        border: "1px solid #555",
+        borderRadius: "12px",
+        padding: "16px",
+      }}
+    >
+      🔎 RECHERCHER UN JOUEUR
+    </summary>
+    <div style={{ marginTop: "18px" }}>
 
         <input
           value={recherche}
@@ -539,9 +553,6 @@ async function modifierTotalLives(
             {message}
           </p>
         )}
-      </div>
-
-      <NotificationsAdmin supabase={supabase} joueurs={joueurs} />
 
       {/* ============================= */}
       {/* LISTE DES JOUEURS */}
@@ -549,7 +560,7 @@ async function modifierTotalLives(
 
       <div
         style={{
-          marginTop: "30px",
+          marginTop: "20px",
         }}
       >
         {joueursFiltres.length ===
@@ -566,39 +577,73 @@ async function modifierTotalLives(
             <div
               className="card"
               key={joueur.id}
+              role={fichesOuvertes[joueur.id] ? undefined : "button"}
+              tabIndex={fichesOuvertes[joueur.id] ? undefined : 0}
+              aria-expanded={Boolean(fichesOuvertes[joueur.id])}
+              aria-label={fichesOuvertes[joueur.id] ? undefined : `Afficher le profil de ${joueur.pseudo}`}
+              onClick={() => {
+                if (!fichesOuvertes[joueur.id]) {
+                  setFichesOuvertes({ [joueur.id]: true });
+                }
+              }}
+              onKeyDown={(event) => {
+                if (
+                  !fichesOuvertes[joueur.id] &&
+                  (event.key === "Enter" || event.key === " ")
+                ) {
+                  event.preventDefault();
+                  setFichesOuvertes({ [joueur.id]: true });
+                }
+              }}
               style={{
-                marginBottom:
-                  "12px",
+                marginBottom: "12px",
+                padding: "20px",
+                boxShadow: "none",
+                cursor: fichesOuvertes[joueur.id] ? "default" : "pointer",
+                border: fichesOuvertes[joueur.id]
+                  ? "1px solid #e5bd68"
+                  : "1px solid #444",
               }}
             >
-              <p className="label">
-                JOUEUR
-              </p>
-
-              <h2>
-                {joueur.pseudo}
-              </h2>
-
-              <button
-                type="button"
-                aria-expanded={Boolean(fichesOuvertes[joueur.id])}
-                onClick={() =>
-                  setFichesOuvertes((ancien) => ({
-                    ...ancien,
-                    [joueur.id]: !ancien[joueur.id],
-                  }))
-                }
+              <div
                 style={{
-                  marginTop: "8px",
-                  background: "#222",
-                  border: "1px solid #e5bd68",
-                  color: "#e5bd68",
-                  borderRadius: "10px",
-                  padding: "11px 16px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "12px",
                 }}
               >
-                {fichesOuvertes[joueur.id] ? "− D'INFOS" : "+ D'INFOS"}
-              </button>
+                <h2 style={{ margin: 0, fontSize: "22px", overflowWrap: "anywhere" }}>
+                  {joueur.pseudo}
+                </h2>
+                {!fichesOuvertes[joueur.id] && (
+                  <span aria-hidden="true" style={{ color: "#e5bd68", fontSize: "24px" }}>
+                    ▾
+                  </span>
+                )}
+              </div>
+
+              {fichesOuvertes[joueur.id] && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFichesOuvertes((ancien) => ({
+                      ...ancien,
+                      [joueur.id]: false,
+                    }))
+                  }
+                  style={{
+                    marginTop: "14px",
+                    background: "#222",
+                    border: "1px solid #e5bd68",
+                    color: "#e5bd68",
+                    borderRadius: "10px",
+                    padding: "11px 16px",
+                  }}
+                >
+                  − D'INFOS
+                </button>
+              )}
 
               {fichesOuvertes[joueur.id] && (
                 <div style={{ marginTop: "18px" }}>
@@ -892,6 +937,11 @@ async function modifierTotalLives(
           )
         )}
       </div>
+    </div>
+  </details>
+</div>
+
+<NotificationsAdmin supabase={supabase} joueurs={joueurs} />
     </main>
   );
 }
