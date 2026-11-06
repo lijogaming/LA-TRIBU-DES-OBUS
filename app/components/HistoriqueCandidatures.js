@@ -49,6 +49,7 @@ export default function HistoriqueCandidatures({
   joueurId,
   nomEntreprise,
   nomJoueur,
+  integre = false,
 }) {
   const [ouvert, setOuvert] = useState(false);
   const [evenements, setEvenements] = useState([]);
@@ -97,7 +98,7 @@ export default function HistoriqueCandidatures({
 
   if (!candidatures?.length) {
     return (
-      <div className="card" style={{ marginTop: "20px" }}>
+      <div className={integre ? undefined : "card"} style={{ marginTop: "20px" }}>
         <p className="label">HISTORIQUE DES CANDIDATURES</p>
         <p>Aucune candidature enregistrée.</p>
       </div>
@@ -112,7 +113,10 @@ export default function HistoriqueCandidatures({
   }
 
   return (
-    <div className="card" style={{ marginTop: "20px", textAlign: "left" }}>
+    <div
+      className={integre ? undefined : "card"}
+      style={{ marginTop: "20px", textAlign: "left" }}
+    >
       <button
         type="button"
         onClick={() => setOuvert((valeur) => !valeur)}
