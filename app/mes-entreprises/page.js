@@ -902,9 +902,35 @@ if (identifiants.length === 0) {
             <h2 style={{ textAlign: "center", color: "#e9bd58", fontSize: "22px" }}>
               ✏️ MODIFIER LE NOM
             </h2>
-            <p style={{ textAlign: "center", color: "#bbb", fontSize: "14px" }}>
-              Coût du renommage : <strong style={{ color: "#e9bd58" }}>400 Obus</strong>
-            </p>
+            <div
+              style={{
+                margin: "20px 0 24px",
+                padding: "20px 14px",
+                background: "#0c0c0c",
+                border: "1px solid #e9bd58",
+                borderRadius: "16px",
+                textAlign: "center",
+              }}
+            >
+              <p style={{
+                margin: "0 0 10px",
+                color: "#e9bd58",
+                fontSize: "13px",
+                fontWeight: "bold",
+                letterSpacing: "2px",
+              }}>
+                COÛT DU RENOMMAGE
+              </p>
+              <strong style={{
+                display: "block",
+                color: "#e9bd58",
+                fontSize: "30px",
+                fontWeight: "900",
+                lineHeight: "1.2",
+              }}>
+                💰 400 Obus
+              </strong>
+            </div>
             <form onSubmit={demanderRenommage}>
               <label htmlFor="nouveau-nom-entreprise" className="label">
                 NOUVEAU NOM DE L'ENTREPRISE
@@ -936,14 +962,36 @@ if (identifiants.length === 0) {
                     setMessage("");
                   }}
                   disabled={enCours}
-                  style={{ margin: 0, padding: "14px 8px", background: "#333", color: "white" }}
+                  style={{
+                    width: "100%",
+                    margin: 0,
+                    padding: "15px 8px",
+                    background: "#333",
+                    color: "white",
+                    border: "1px solid #555",
+                    borderRadius: "12px",
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
                 >
                   ANNULER
                 </button>
                 <button
                   type="submit"
                   disabled={enCours}
-                  style={{ margin: 0, padding: "14px 8px" }}
+                  style={{
+                    width: "100%",
+                    margin: 0,
+                    padding: "15px 8px",
+                    background: "#e5bd68",
+                    color: "#111",
+                    border: "none",
+                    borderRadius: "12px",
+                    fontSize: "15px",
+                    fontWeight: "bold",
+                    cursor: "pointer",
+                  }}
                 >
                   CONTINUER
                 </button>
@@ -981,6 +1029,8 @@ if (identifiants.length === 0) {
               background: "#171717",
               border: confirmation.rpc === "supprimer_entreprise"
                 ? "3px solid #b91c1c"
+                : confirmation.rpc === "renommer_entreprise"
+                ? "3px solid #e9bd58"
                 : "3px solid #3b82f6",
               borderRadius: "22px",
               padding: "28px 18px",
