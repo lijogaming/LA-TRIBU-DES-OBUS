@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
+import NotificationsRubrique from "../components/NotificationsRubrique";
 
 // Même configuration Supabase que dans app/virement/page.js.
 const supabase = createClient(
@@ -317,6 +318,7 @@ if (identifiants.length === 0) {
       <p className="subtitle">Création et gestion de ton entreprise</p>
 
       <div className="card" style={{ position: "relative", paddingTop: "70px" }}>
+        <NotificationsRubrique supabase={supabase} joueurId={joueur?.id} rubrique="entreprises" />
         <button
           type="button"
           onClick={() => (window.location.href = "/")}
