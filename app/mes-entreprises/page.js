@@ -225,7 +225,16 @@ if (identifiants.length === 0) {
       await chargerDonnees();
       setMessage("✅ " + action.succes);
     } catch (erreur) {
-      setMessage("❌ " + erreur.message);
+      const nomDejaPris =
+        action.rpc === "creer_entreprise" &&
+        /entreprises_nom_normalise_unique|nom d.{0,30}(déjà|deja|exist)|duplicate key.{0,50}nom/i.test(
+          String(erreur.message || "")
+        );
+      setMessage(
+        nomDejaPris
+          ? "❌ Ce nom d'entreprise est déjà utilisé. Choisis un autre nom."
+          : "❌ " + erreur.message
+      );
     } finally {
       setEnCours(false);
     }
