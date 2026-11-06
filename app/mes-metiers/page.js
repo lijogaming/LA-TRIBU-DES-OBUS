@@ -455,7 +455,7 @@ function nouvelleContreProposition(candidature) {
   >
 
 <div style={{ marginTop: "12px" }}>
-  <p className="label">
+  <p className="label" style={{ color: "#111" }}>
     ARGUMENT POUR MA CONTRE-PROPOSITION
   </p>
 
