@@ -121,6 +121,7 @@ export default function NotificationsRubrique({ supabase, joueurId, rubrique }) 
         <div className="reseaux-overlay" onClick={() => setOuvert(false)}>
           <div
             className="reseaux-popup notifications-popup"
+            style={{ paddingTop: "70px" }}
             role="dialog"
             aria-modal="true"
             aria-label={titre}
@@ -128,12 +129,37 @@ export default function NotificationsRubrique({ supabase, joueurId, rubrique }) 
           >
             <button
               type="button"
-              className="reseaux-close"
               onClick={() => setOuvert(false)}
-              title="Fermer"
-              aria-label="Fermer les notifications"
+              title="Retour"
+              aria-label="Retour à la page"
+              style={{
+                position: "absolute",
+                top: "15px",
+                left: "15px",
+                right: "auto",
+                width: "42px",
+                height: "42px",
+                margin: 0,
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "#222",
+                border: "1px solid rgba(233, 189, 88, 0.65)",
+                borderRadius: "10px",
+                color: "white",
+                cursor: "pointer",
+              }}
             >
-              ✕
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M19 12H5 M11 6L5 12L11 18"
+                  stroke="currentColor"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
             <p className="label">LA TRIBU DES OBUS</p>
             <h2 className="reseaux-title">{titre}</h2>
@@ -144,7 +170,16 @@ export default function NotificationsRubrique({ supabase, joueurId, rubrique }) 
             ) : notifications.length === 0 ? (
               <p>Aucune notification récente.</p>
             ) : (
-              <div className="notifications-liste">
+              <div
+                className="notifications-liste"
+                aria-label="Historique des notifications, défilement à la molette"
+                style={{
+                  maxHeight: "360px",
+                  overflowY: "auto",
+                  overscrollBehavior: "contain",
+                  paddingRight: "6px",
+                }}
+              >
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
