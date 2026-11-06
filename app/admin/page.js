@@ -506,23 +506,9 @@ async function modifierTotalLives(
       />
     </svg>
   </button>
-  <details>
-    <summary
-      style={{
-        cursor: "pointer",
-        color: "#e5bd68",
-        fontSize: "16px",
-        fontWeight: "bold",
-        textAlign: "left",
-        background: "#1c1c1c",
-        border: "1px solid #555",
-        borderRadius: "12px",
-        padding: "16px",
-      }}
-    >
-      🔎 RECHERCHER UN JOUEUR
-    </summary>
-    <div style={{ marginTop: "18px" }}>
+  <p className="label">
+    RECHERCHER UN JOUEUR
+  </p>
 
         <input
           value={recherche}
@@ -559,8 +545,13 @@ async function modifierTotalLives(
       {/* ============================= */}
 
       <div
+        aria-label="Liste des joueurs, défilement à la molette"
         style={{
           marginTop: "20px",
+          maxHeight: "242px",
+          overflowY: "auto",
+          overscrollBehavior: "contain",
+          paddingRight: "6px",
         }}
       >
         {joueursFiltres.length ===
@@ -937,8 +928,6 @@ async function modifierTotalLives(
           )
         )}
       </div>
-    </div>
-  </details>
 </div>
 
 <NotificationsAdmin supabase={supabase} joueurs={joueurs} />
