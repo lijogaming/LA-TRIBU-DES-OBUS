@@ -52,6 +52,7 @@ export default function MesEntreprisesPage() {
   const [entreprise, setEntreprise] = useState(null);
   const [employes, setEmployes] = useState([]);
   const [candidatures, setCandidatures] = useState([]);
+  const [candidaturesOuvertes, setCandidaturesOuvertes] = useState(false);
   const [historiqueCandidatures, setHistoriqueCandidatures] = useState([]);
   const [pseudos, setPseudos] = useState({});
   const [blocagesPossibles, setBlocagesPossibles] = useState({});
@@ -457,7 +458,35 @@ if (identifiants.length === 0) {
               ))
             )}
           <hr style={{ border: 0, borderTop: "1px solid #444", margin: "24px 0" }} />
-          <h2>📨 CANDIDATURES EN COURS ({candidatures.length})</h2>
+          <button
+            type="button"
+            onClick={() => setCandidaturesOuvertes((ouvertes) => !ouvertes)}
+            aria-expanded={candidaturesOuvertes}
+            style={{
+              width: "100%",
+              margin: 0,
+              padding: "15px",
+              background: "#222",
+              border: "1px solid #e5bd68",
+              borderRadius: "12px",
+              color: "#e5bd68",
+              textAlign: "left",
+            }}
+          >
+            {candidaturesOuvertes
+              ? `− Masquer les candidatures en cours (${candidatures.length})`
+              : `+ Consulter les candidatures en cours (${candidatures.length})`}
+          </button>
+          {candidaturesOuvertes && (
+            <div
+              style={{
+                marginTop: "16px",
+                maxHeight: "520px",
+                overflowY: "auto",
+                overscrollBehavior: "contain",
+                paddingRight: "6px",
+              }}
+            >
             {employes.length >= 5 && (
               <p style={{ color: "#e5bd68" }}>
                 Les 5 postes sont occupés. Tu peux consulter les candidatures,
@@ -677,6 +706,8 @@ if (identifiants.length === 0) {
                 </div>
               ))
             )}
+            </div>
+          )}
           <hr style={{ border: 0, borderTop: "1px solid #444", margin: "24px 0" }} />
           <HistoriqueCandidatures
             supabase={supabase}
