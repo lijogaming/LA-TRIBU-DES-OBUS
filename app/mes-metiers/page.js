@@ -351,7 +351,7 @@ function nouvelleContreProposition(candidature) {
                   <p><strong>Salaire :</strong> {obus(emploi.salaire)} Obus par live</p>
                   <p><strong>Embauché le :</strong> {dateFR(emploi.date_embauche)}</p>
                   <p style={{ color: "#aaa", fontSize: "14px" }}>
-                    Salaire versé si toi et le patron êtes présents dans le chat du live.
+                    Salaire versé si toi et le patron êtes présents dans le chat d'un live de lijo.
                   </p>
                   {peutDemissionner ? (
                     <button
