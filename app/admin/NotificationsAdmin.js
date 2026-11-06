@@ -1,310 +1,320 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
+import { rubriqueNotification } from "../notifications/categories";
 
 const TAILLE_PAGE = 20;
+const TAILLE_LOT = 50;
+const MAX_LOTS = 80;
 
-export default function NotificationsAdmin({ supabase }) {
-  const [notifications, setNotifications] = useState([]);
+const styleChamp = {
+  width: "100%",
+  minWidth: 0,
+  padding: "13px",
+  border: "1px solid #444",
+  borderRadius: "10px",
+  background: "#111",
+  color: "white",
+  boxSizing: "border-box",
+};
+
+export default function NotificationsAdmin({ supabase, joueurs = [] }) {
+  const [ouvert, setOuvert] = useState(false);
+  const [joueurId, setJoueurId] = useState("");
+  const [categorie, setCategorie] = useState("toutes");
   const [recherche, setRecherche] = useState("");
-  const [filtre, setFiltre] = useState("");
+  const [rechercheActive, setRechercheActive] = useState("");
   const [page, setPage] = useState(0);
   const [actualisation, setActualisation] = useState(0);
 
-  const [chargement, setChargement] = useState(true);
+  const [notifications, setNotifications] = useState([]);
+  const [chargement, setChargement] = useState(false);
   const [erreur, setErreur] = useState("");
-  const [encoreDisponible, setEncoreDisponible] =
-    useState(false);
-
-  // =====================================================
-  // CHARGER L'HISTORIQUE ADMIN
-  // =====================================================
+  const [encoreDisponible, setEncoreDisponible] = useState(false);
+  const [limiteAtteinte, setLimiteAtteinte] = useState(false);
 
   useEffect(() => {
-    let actif = true;
+    if (!ouvert) return;
 
-    async function chargerNotifications() {
+    let actif = true;
+    const selection = joueurs.find((joueur) => joueur.id === joueurId);
+    // La RPC existante sait chercher par pseudo OU par texte.
+    // Le filtrage exact du pseudo et de la catégorie se fait ensuite.
+    const rechercheServeur = selection
+      ? selection.pseudo
+      : rechercheActive;
+
+    async function charger() {
       setChargement(true);
       setErreur("");
+      setNotifications([]);
 
-      const { data, error } = await supabase.rpc(
-        "admin_lister_notifications",
-        {
-          p_limite: TAILLE_PAGE + 1,
-          p_decalage: page * TAILLE_PAGE,
-          p_recherche: filtre,
+      let decalage = 0;
+      let encoreSurServeur = true;
+      let nombreLots = 0;
+      const correspondances = [];
+      const besoin = (page + 1) * TAILLE_PAGE + 1;
+
+      while (
+        actif &&
+        encoreSurServeur &&
+        correspondances.length < besoin &&
+        nombreLots < MAX_LOTS
+      ) {
+        const { data, error } = await supabase.rpc("admin_lister_notifications", {
+          p_limite: TAILLE_LOT + 1,
+          p_decalage: decalage,
+          p_recherche: rechercheServeur,
+        });
+
+        if (!actif) return;
+        if (error) {
+          setErreur("Impossible de charger l'historique : " + error.message);
+          setChargement(false);
+          return;
         }
-      );
+
+        const resultat = data || [];
+        const lot = resultat.slice(0, TAILLE_LOT);
+        encoreSurServeur = resultat.length > TAILLE_LOT;
+        decalage += lot.length;
+        nombreLots += 1;
+
+        for (const notification of lot) {
+          if (
+            selection &&
+            String(notification.pseudo_joueur || "").toLocaleLowerCase("fr") !==
+              String(selection.pseudo || "").toLocaleLowerCase("fr")
+          ) {
+            continue;
+          }
+
+          if (
+            categorie !== "toutes" &&
+            rubriqueNotification(notification.type_notification) !== categorie
+          ) {
+            continue;
+          }
+
+          if (selection && rechercheActive) {
+            const texte = [
+              notification.message,
+              notification.type_notification,
+              notification.pseudo_joueur,
+            ].join(" ").toLocaleLowerCase("fr");
+
+            if (!texte.includes(rechercheActive.toLocaleLowerCase("fr"))) {
+              continue;
+            }
+          }
+
+          correspondances.push(notification);
+        }
+
+        if (!lot.length) encoreSurServeur = false;
+      }
 
       if (!actif) return;
 
-      setChargement(false);
-
-      if (error) {
-        setErreur(
-          "Impossible de charger l'historique : " +
-            error.message
-        );
-        return;
-      }
-
-      const resultat = data || [];
-
-      const nouvellesNotifications =
-        resultat.slice(0, TAILLE_PAGE);
-
-      setNotifications((anciennes) => {
-        if (page === 0) {
-          return nouvellesNotifications;
-        }
-
-        const identifiants = new Set(
-          anciennes.map((n) => n.notification_id)
-        );
-
-        return [
-          ...anciennes,
-          ...nouvellesNotifications.filter(
-            (n) => !identifiants.has(n.notification_id)
-          ),
-        ];
-      });
-
-      setEncoreDisponible(
-        resultat.length > TAILLE_PAGE
+      setNotifications(
+        correspondances.slice(page * TAILLE_PAGE, (page + 1) * TAILLE_PAGE)
       );
+      setEncoreDisponible(
+        correspondances.length > (page + 1) * TAILLE_PAGE || encoreSurServeur
+      );
+      setLimiteAtteinte(nombreLots >= MAX_LOTS && encoreSurServeur);
+      setChargement(false);
     }
 
-    chargerNotifications();
-
+    charger();
     return () => {
       actif = false;
     };
-  }, [supabase, page, filtre, actualisation]);
+  }, [supabase, ouvert, joueurId, categorie, page, rechercheActive, actualisation, joueurs]);
 
-  // =====================================================
-  // RECHERCHE
-  // =====================================================
-
-  function lancerRecherche(event) {
-    event.preventDefault();
-
-    setNotifications([]);
+  function rechercher(e) {
+    e.preventDefault();
     setPage(0);
-    setFiltre(recherche.trim());
-    setActualisation((ancienne) => ancienne + 1);
+    setRechercheActive(recherche.trim());
+    setActualisation((valeur) => valeur + 1);
   }
-
-  // =====================================================
-  // FORMAT DE DATE FRANÇAIS
-  // =====================================================
 
   function formaterDate(date) {
-    const valeur = new Date(date);
-
-    const jour = valeur.toLocaleDateString(
-      "fr-FR",
-      {
-        timeZone: "Europe/Paris",
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      }
-    );
-
-    const heure = valeur
-      .toLocaleTimeString("fr-FR", {
-        timeZone: "Europe/Paris",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      })
-      .replace(":", "h");
-
-    return `Le ${jour} à ${heure}`;
+    return new Date(date).toLocaleString("fr-FR", {
+      timeZone: "Europe/Paris",
+      dateStyle: "short",
+      timeStyle: "short",
+    });
   }
 
-  // =====================================================
-  // AFFICHAGE
-  // =====================================================
-
   return (
-    <div
-      className="card"
-      style={{
-        marginTop: "30px",
-        marginBottom: "30px",
-      }}
-    >
-      <p className="label">
-        HISTORIQUE DES NOTIFICATIONS
-      </p>
+    <div className="card" style={{ marginTop: "20px", marginBottom: "20px" }}>
+      <p className="label">HISTORIQUE DES NOTIFICATIONS</p>
 
-      <h2>
-        📬 Notifications des joueurs
-      </h2>
-
-      <p>
-        Retrouvez les notifications de tous les joueurs
-        sur les 30 derniers jours.
-      </p>
-
-      {/* ============================================= */}
-      {/* RECHERCHE */}
-      {/* ============================================= */}
-
-      <form
-        onSubmit={lancerRecherche}
+      <button
+        type="button"
+        onClick={() => setOuvert((valeur) => !valeur)}
+        aria-expanded={ouvert}
         style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "10px",
-          marginTop: "20px",
-          marginBottom: "20px",
+          width: "100%",
+          background: "#222",
+          border: "1px solid #e5bd68",
+          borderRadius: "12px",
+          color: "#e5bd68",
+          padding: "15px",
         }}
       >
-        <input
-          type="text"
-          value={recherche}
-          onChange={(event) =>
-            setRecherche(event.target.value)
-          }
-          placeholder="Pseudo, événement ou message..."
-          style={{
-            flex: "1 1 200px",
-            minWidth: 0,
-            padding: "14px",
-            borderRadius: "10px",
-            border: "1px solid #444",
-            background: "#111",
-            color: "white",
-          }}
-        />
+        {ouvert ? "− Masquer l'historique des notifications" : "+ Consulter l'historique des notifications"}
+      </button>
 
-        <button
-          type="submit"
-          disabled={chargement}
-        >
-          Rechercher
-        </button>
-      </form>
-
-      {/* ============================================= */}
-      {/* ERREUR */}
-      {/* ============================================= */}
-
-      {erreur && (
-        <p role="alert">
-          ❌ {erreur}
-        </p>
-      )}
-
-      {/* ============================================= */}
-      {/* AUCUN RÉSULTAT */}
-      {/* ============================================= */}
-
-      {!chargement &&
-        !erreur &&
-        notifications.length === 0 && (
-          <p>
-            Aucune notification trouvée.
+      {ouvert && (
+        <div style={{ marginTop: "20px" }}>
+          <p style={{ color: "#aaa", fontSize: "13px" }}>
+            Historique administrateur des 30 derniers jours. Choisis un joueur
+            et une rubrique pour consulter uniquement les notifications correspondantes.
           </p>
-        )}
 
-      {/* ============================================= */}
-      {/* LISTE DES NOTIFICATIONS */}
-      {/* ============================================= */}
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "12px",
-        }}
-      >
-        {notifications.map((notification) => (
           <div
-            key={notification.notification_id}
             style={{
-              padding: "16px",
-              borderRadius: "10px",
-              border: "1px solid #444",
-              background: "#151515",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 210px), 1fr))",
+              gap: "12px",
+              marginTop: "16px",
             }}
           >
-            <p
-              style={{
-                fontWeight: "bold",
-                marginBottom: "8px",
-              }}
-            >
-              👤 {notification.pseudo_joueur}
-            </p>
+            <label style={{ textAlign: "left", color: "#e5bd68", fontSize: "13px" }}>
+              JOUEUR
+              <select
+                aria-label="Filtrer par joueur"
+                value={joueurId}
+                onChange={(e) => {
+                  setJoueurId(e.target.value);
+                  setPage(0);
+                }}
+                style={{ ...styleChamp, marginTop: "8px" }}
+              >
+                <option value="">Tous les joueurs</option>
+                {joueurs.map((joueur) => (
+                  <option key={joueur.id} value={joueur.id}>
+                    {joueur.pseudo}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-            <p
-              className="label"
-              style={{
-                marginBottom: "8px",
-              }}
-            >
-              {notification.type_notification
-                .replaceAll("_", " ")
-                .toUpperCase()}
-            </p>
-
-            <p>
-              {notification.message}
-            </p>
-
-            <p
-              style={{
-                marginTop: "12px",
-                fontSize: "13px",
-                opacity: 0.7,
-              }}
-            >
-              {formaterDate(notification.created_at)}
-              {" — "}
-              {notification.lu ? "Lu" : "Non lu"}
-            </p>
+            <label style={{ textAlign: "left", color: "#e5bd68", fontSize: "13px" }}>
+              RUBRIQUE
+              <select
+                aria-label="Filtrer par rubrique"
+                value={categorie}
+                onChange={(e) => {
+                  setCategorie(e.target.value);
+                  setPage(0);
+                }}
+                style={{ ...styleChamp, marginTop: "8px" }}
+              >
+                <option value="toutes">Toutes les notifications</option>
+                <option value="profil">👤 Profil</option>
+                <option value="entreprises">🏢 Entreprises</option>
+                <option value="metiers">💼 Métiers</option>
+              </select>
+            </label>
           </div>
-        ))}
-      </div>
 
-      {/* ============================================= */}
-      {/* CHARGEMENT */}
-      {/* ============================================= */}
+          <form
+            onSubmit={rechercher}
+            style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "14px" }}
+          >
+            <input
+              type="search"
+              aria-label="Rechercher dans les notifications"
+              placeholder="Rechercher un événement ou un message..."
+              value={recherche}
+              onChange={(e) => setRecherche(e.target.value)}
+              style={{ ...styleChamp, flex: "1 1 220px", width: "auto" }}
+            />
+            <button type="submit" disabled={chargement}>Rechercher</button>
+          </form>
 
-      {chargement && (
-        <p
-          style={{
-            marginTop: "15px",
-          }}
-        >
-          Chargement des notifications...
-        </p>
-      )}
+          {erreur && <p role="alert" style={{ color: "#ff8888" }}>❌ {erreur}</p>}
 
-      {/* ============================================= */}
-      {/* AFFICHER PLUS */}
-      {/* ============================================= */}
-
-      {!chargement &&
-        !erreur &&
-        encoreDisponible && (
-          <button
-            type="button"
-            onClick={() =>
-              setPage((ancienne) => ancienne + 1)
-            }
+          <div
+            aria-label="Résultats de l'historique des notifications"
             style={{
-              marginTop: "20px",
+              marginTop: "16px",
+              maxHeight: "440px",
+              overflowY: "auto",
+              overscrollBehavior: "contain",
+              display: "flex",
+              flexDirection: "column",
+              gap: "10px",
+              paddingRight: "5px",
             }}
           >
-            Afficher plus de notifications
-          </button>
-        )}
+            {chargement ? (
+              <p>Recherche des notifications...</p>
+            ) : !erreur && notifications.length === 0 ? (
+              <p>Aucune notification trouvée pour ces filtres.</p>
+            ) : (
+              notifications.map((notification) => (
+                <div
+                  key={notification.notification_id}
+                  style={{
+                    border: "1px solid #444",
+                    background: "#151515",
+                    borderRadius: "10px",
+                    padding: "14px",
+                    textAlign: "left",
+                  }}
+                >
+                  <strong style={{ color: "#e5bd68" }}>
+                    👤 {notification.pseudo_joueur}
+                  </strong>
+                  <p className="label" style={{ margin: "9px 0" }}>
+                    {String(notification.type_notification || "").replaceAll("_", " ")}
+                  </p>
+                  <p style={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}>
+                    {notification.message}
+                  </p>
+                  <p style={{ color: "#999", fontSize: "12px", marginBottom: 0 }}>
+                    {formaterDate(notification.created_at)}
+                    {" — "}
+                    {notification.lu ? "Lu" : "Non lu"}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
+
+          {!erreur && !chargement && (
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "center", flexWrap: "wrap", marginTop: "15px" }}>
+              <button
+                type="button"
+                disabled={page === 0}
+                onClick={() => setPage((valeur) => Math.max(0, valeur - 1))}
+                style={{ background: "#333", color: "white" }}
+              >
+                Précédent
+              </button>
+              <span style={{ color: "#e5bd68" }}>Page {page + 1}</span>
+              <button
+                type="button"
+                disabled={!encoreDisponible}
+                onClick={() => setPage((valeur) => valeur + 1)}
+                style={{ background: "#333", color: "white" }}
+              >
+                Suivant
+              </button>
+            </div>
+          )}
+
+          {limiteAtteinte && !chargement && (
+            <p style={{ color: "#e5bd68", fontSize: "12px" }}>
+              Historique très volumineux : affine la recherche pour consulter les résultats plus anciens.
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
