@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@supabase/supabase-js";
 import NotificationsRubrique from "../components/NotificationsRubrique";
+import HistoriqueCandidatures from "../components/HistoriqueCandidatures";
 
 // Même connexion que app/virement/page.js et app/mes-entreprises/page.js.
 const supabase = createClient(
@@ -63,6 +64,9 @@ export default function MesMetiersPage() {
   const [entreprises, setEntreprises] = useState([]);
   const [emplois, setEmplois] = useState([]);
   const [candidatures, setCandidatures] = useState([]);
+  const candidaturesActives = candidatures.filter((item) =>
+    ["en_attente", "contre_proposition"].includes(item.statut)
+  );
   const [saisies, setSaisies] = useState({});
   const [recherche, setRecherche] = useState("");
   const [message, setMessage] = useState("");
@@ -114,7 +118,7 @@ export default function MesMetiersPage() {
             .from("entreprises_candidatures")
             .select(
               "id, entreprise_id, salaire_demande, motivation, statut, " +
-                "salaire_contre_proposition, reponse_patron, blocage_jusquau, created_at"
+                "salaire_contre_proposition, reponse_patron, argument_candidat, blocage_jusquau, created_at"
             )
             .eq("candidat_id", profil.id)
             .order("created_at", { ascending: false }),
@@ -374,10 +378,10 @@ function nouvelleContreProposition(candidature) {
           </div>
 
           <div className="card" style={{ marginTop: "20px" }}>
-            <h2>📨 MES CANDIDATURES</h2>
-            {candidatures.length === 0 ? (
-              <p>Tu n'as encore envoyé aucune candidature.</p>
-            ) : candidatures.map((candidature) => (
+            <h2>📨 MES CANDIDATURES EN COURS ({candidaturesActives.length})</h2>
+            {candidaturesActives.length === 0 ? (
+              <p>Aucune candidature en attente. Retrouve les anciennes dans l'historique ci-dessous.</p>
+            ) : candidaturesActives.map((candidature) => (
               <div key={candidature.id} style={blocStyle}>
                 <h3 style={{ overflowWrap: "anywhere" }}>
                   🏢 {nomEntreprise(candidature.entreprise_id)}
@@ -508,6 +512,15 @@ function nouvelleContreProposition(candidature) {
               </div>
             ))}
           </div>
+
+          <HistoriqueCandidatures
+            supabase={supabase}
+            candidatures={candidatures}
+            mode="metiers"
+            joueurId={joueur.id}
+            nomEntreprise={nomEntreprise}
+            nomJoueur={() => joueur.pseudo}
+          />
 
           <div className="card" style={{ marginTop: "20px" }}>
             <h2>🔎 RECHERCHER UNE ENTREPRISE</h2>
