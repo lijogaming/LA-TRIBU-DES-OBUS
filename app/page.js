@@ -311,8 +311,10 @@ setClassementPublic(classementSansCivils);
         .from("notifications")
         .select("id, type_notification, message, lu, created_at")
         .eq("joueur_id", joueur.id)
-        // Les bilans financiers ont leurs propres enveloppes sur les pages dédiées.
+        // Notifications professionnelles réservées aux enveloppes Entreprises et Métiers.
         .not("type_notification", "in", "(bilan_entreprise,salaire_entreprise)")
+        .not("type_notification", "like", "patron_entreprise_%")
+        .not("type_notification", "like", "metier_entreprise_%")
         .gte("created_at", depuis)
         .order("created_at", { ascending: false })
         .limit(100);
