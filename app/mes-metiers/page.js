@@ -69,6 +69,7 @@ export default function MesMetiersPage() {
   );
   const [saisies, setSaisies] = useState({});
   const [recherche, setRecherche] = useState("");
+  const [entrepriseSelectionneeId, setEntrepriseSelectionneeId] = useState(null);
   const [message, setMessage] = useState("");
   const [erreursContreProposition, setErreursContreProposition] = useState({});
   const [confirmation, setConfirmation] = useState(null);
@@ -309,6 +310,9 @@ function nouvelleContreProposition(candidature) {
   const entreprisesFiltrees = entreprises.filter((entreprise) =>
     entreprise.nom.toLocaleLowerCase("fr").includes(recherche.trim().toLocaleLowerCase("fr"))
   );
+  const entrepriseSelectionnee = entreprises.find(
+    (entreprise) => entreprise.id === entrepriseSelectionneeId
+  ) || null;
 
   return (
     <main className="container">
@@ -570,9 +574,114 @@ function nouvelleContreProposition(candidature) {
               {entreprisesFiltrees.length} entreprise(s) trouvée(s). Chaque entreprise peut recruter jusqu'à 5 employés.
             </p>
 
-            {entreprisesFiltrees.length === 0 ? (
-              <p>Aucune entreprise trouvée.</p>
-            ) : entreprisesFiltrees.map((entreprise) => {
+            <div
+              aria-label="Liste des entreprises, défilement à la molette"
+              style={{
+                marginTop: "20px",
+                maxHeight: "242px",
+                overflowY: "auto",
+                overscrollBehavior: "contain",
+                paddingRight: "6px",
+              }}
+            >
+              {entreprisesFiltrees.length === 0 ? (
+                <p>Aucune entreprise trouvée.</p>
+              ) : entreprisesFiltrees.map((entreprise) => (
+                <button
+                  type="button"
+                  key={entreprise.id}
+                  onClick={() => setEntrepriseSelectionneeId(entreprise.id)}
+                  aria-label={`Consulter l'entreprise ${entreprise.nom}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: "10px",
+                    width: "100%",
+                    margin: "0 0 10px",
+                    padding: "16px 18px",
+                    border: "1px solid #444",
+                    borderRadius: "11px",
+                    background: "#191919",
+                    color: "#e5bd68",
+                    textAlign: "left",
+                    fontSize: "18px",
+                    cursor: "pointer",
+                  }}
+                >
+                  <span style={{ overflowWrap: "anywhere" }}>{entreprise.nom}</span>
+                  <span aria-hidden="true" style={{ fontSize: "23px" }}>›</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {entrepriseSelectionnee && (
+            <div
+              role="presentation"
+              onClick={() => setEntrepriseSelectionneeId(null)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 9999,
+                padding: "20px",
+                background: "rgba(0, 0, 0, 0.88)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflowY: "auto",
+              }}
+            >
+              <div
+                className="card"
+                role="dialog"
+                aria-modal="true"
+                aria-label={`Entreprise : ${entrepriseSelectionnee.nom}`}
+                onClick={(event) => event.stopPropagation()}
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  maxWidth: "620px",
+                  maxHeight: "90vh",
+                  overflowY: "auto",
+                  padding: "72px 30px 30px",
+                  border: "3px solid rgba(233, 189, 88, 0.65)",
+                  background: "#171717",
+                  textAlign: "left",
+                  boxSizing: "border-box",
+                }}
+              >
+                <button
+                  type="button"
+                  aria-label="Retour à la recherche des entreprises"
+                  title="Retour"
+                  onClick={() => setEntrepriseSelectionneeId(null)}
+                  style={{
+                    position: "absolute",
+                    top: "15px",
+                    left: "15px",
+                    width: "42px",
+                    height: "42px",
+                    margin: 0,
+                    padding: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M19 12H5 M11 6L5 12L11 18"
+                  stroke="currentColor"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+                </button>
+                <p className="label">FICHE DE L'ENTREPRISE</p>
+                {message && <p role="status" style={{ overflowWrap: "anywhere" }}>{message}</p>}
+                {[entrepriseSelectionnee].map((entreprise) => {
               const actif = emplois.some((emploi) => emploi.entreprise_id === entreprise.id);
               const enAttente = candidatures.find(
                 (c) => c.entreprise_id === entreprise.id &&
@@ -633,7 +742,9 @@ function nouvelleContreProposition(candidature) {
                 </div>
               );
             })}
-          </div>
+              </div>
+            </div>
+          )}
         </>
       )}
 
