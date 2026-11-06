@@ -1048,7 +1048,7 @@ if (identifiants.length === 0) {
                 margin: "0 0 12px",
               }}
             >
-              {confirmation.rpc === "supprimer_entreprise" ? "⚠️" : "💣"} {confirmation.titre}
+              {confirmation.rpc === "supprimer_entreprise" ? "⚠️" : confirmation.rpc === "renommer_entreprise" ? "✏️" : "💣"} {confirmation.titre}
             </h2>
 
             <p
@@ -1140,6 +1140,103 @@ if (identifiants.length === 0) {
                     margin: "0 0 24px",
                   }}
                 >
+                  Attention : cette dépense est définitive.
+                </p>
+              </>
+            ) : confirmation.rpc === "renommer_entreprise" ? (
+              <>
+                <div
+                  style={{
+                    background: "#0c0c0c",
+                    border: "1px solid #444",
+                    borderRadius: "16px",
+                    padding: "18px 16px",
+                    marginBottom: "14px",
+                    textAlign: "center",
+                  }}
+                >
+                  <p style={{
+                    color: "#aaa",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    letterSpacing: "1.5px",
+                    margin: "0 0 8px",
+                  }}>
+                    NOM ACTUEL
+                  </p>
+                  <div style={{
+                    color: "#ddd",
+                    fontSize: "18px",
+                    fontWeight: "bold",
+                    overflowWrap: "anywhere",
+                  }}>
+                    {entreprise?.nom}
+                  </div>
+
+                  <div style={{
+                    color: "#e5bd68",
+                    fontSize: "25px",
+                    fontWeight: "bold",
+                    margin: "10px 0",
+                    lineHeight: "1",
+                  }}>
+                    ↓
+                  </div>
+
+                  <p style={{
+                    color: "#e5bd68",
+                    fontSize: "12px",
+                    fontWeight: "bold",
+                    letterSpacing: "1.5px",
+                    margin: "0 0 8px",
+                  }}>
+                    NOUVEAU NOM
+                  </p>
+                  <div style={{
+                    color: "white",
+                    fontSize: "21px",
+                    fontWeight: "900",
+                    overflowWrap: "anywhere",
+                  }}>
+                    {confirmation.parametres.p_nom}
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    background: "#0c0c0c",
+                    border: "1px solid #e5bd68",
+                    borderRadius: "16px",
+                    padding: "18px 12px",
+                    marginBottom: "14px",
+                    textAlign: "center",
+                  }}
+                >
+                  <p style={{
+                    color: "#e5bd68",
+                    fontSize: "13px",
+                    fontWeight: "bold",
+                    letterSpacing: "2px",
+                    margin: "0 0 10px",
+                  }}>
+                    COÛT DU RENOMMAGE
+                  </p>
+                  <div style={{
+                    color: "#e5bd68",
+                    fontSize: "30px",
+                    fontWeight: "900",
+                    lineHeight: "1.2",
+                  }}>
+                    💰 400 Obus
+                  </div>
+                </div>
+
+                <p style={{
+                  color: "#ff7777",
+                  textAlign: "center",
+                  fontSize: "13px",
+                  margin: "0 0 24px",
+                }}>
                   Attention : cette dépense est définitive.
                 </p>
               </>
