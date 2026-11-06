@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { rubriqueNotification } from "../notifications/categories";
 
-const TAILLE_PAGE = 20;
+const TAILLE_AFFICHAGE = 30;
 const TAILLE_LOT = 50;
 const MAX_LOTS = 80;
 
@@ -24,13 +24,14 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
   const [categorie, setCategorie] = useState("toutes");
   const [recherche, setRecherche] = useState("");
   const [rechercheActive, setRechercheActive] = useState("");
-  const [page, setPage] = useState(0);
+  const [dateDebut, setDateDebut] = useState("");
+  const [dateFin, setDateFin] = useState("");
+  const [affichageLimite, setAffichageLimite] = useState(TAILLE_AFFICHAGE);
   const [actualisation, setActualisation] = useState(0);
 
   const [notifications, setNotifications] = useState([]);
   const [chargement, setChargement] = useState(false);
   const [erreur, setErreur] = useState("");
-  const [encoreDisponible, setEncoreDisponible] = useState(false);
   const [limiteAtteinte, setLimiteAtteinte] = useState(false);
 
   useEffect(() => {
@@ -48,17 +49,29 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
       setChargement(true);
       setErreur("");
       setNotifications([]);
+      setAffichageLimite(TAILLE_AFFICHAGE);
+      setLimiteAtteinte(false);
+
+      if (dateDebut && dateFin && dateDebut > dateFin) {
+        setErreur("La date « Du » doit être antérieure ou égale à « Au ».");
+        setChargement(false);
+        return;
+      }
 
       let decalage = 0;
       let encoreSurServeur = true;
       let nombreLots = 0;
       const correspondances = [];
-      const besoin = (page + 1) * TAILLE_PAGE + 1;
+      const formateurJour = new Intl.DateTimeFormat("sv-SE", {
+        timeZone: "Europe/Paris",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
 
       while (
         actif &&
         encoreSurServeur &&
-        correspondances.length < besoin &&
         nombreLots < MAX_LOTS
       ) {
         const { data, error } = await supabase.rpc("admin_lister_notifications", {
@@ -108,6 +121,17 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
             }
           }
 
+          // Comparaison au jour civil français : bornes « Du » et « Au » comprises.
+          const dateNotification = formateurJour.format(
+            new Date(notification.created_at)
+          );
+          if (
+            (dateDebut && dateNotification < dateDebut) ||
+            (dateFin && dateNotification > dateFin)
+          ) {
+            continue;
+          }
+
           correspondances.push(notification);
         }
 
@@ -116,12 +140,7 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
 
       if (!actif) return;
 
-      setNotifications(
-        correspondances.slice(page * TAILLE_PAGE, (page + 1) * TAILLE_PAGE)
-      );
-      setEncoreDisponible(
-        correspondances.length > (page + 1) * TAILLE_PAGE || encoreSurServeur
-      );
+      setNotifications(correspondances);
       setLimiteAtteinte(nombreLots >= MAX_LOTS && encoreSurServeur);
       setChargement(false);
     }
@@ -130,11 +149,11 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
     return () => {
       actif = false;
     };
-  }, [supabase, ouvert, joueurId, categorie, page, rechercheActive, actualisation, joueurs]);
+  }, [supabase, ouvert, joueurId, categorie, dateDebut, dateFin, rechercheActive, actualisation, joueurs]);
 
   function rechercher(e) {
     e.preventDefault();
-    setPage(0);
+    
     setRechercheActive(recherche.trim());
     setActualisation((valeur) => valeur + 1);
   }
@@ -189,7 +208,7 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
                 value={joueurId}
                 onChange={(e) => {
                   setJoueurId(e.target.value);
-                  setPage(0);
+                  
                 }}
                 style={{ ...styleChamp, marginTop: "8px" }}
               >
@@ -209,7 +228,7 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
                 value={categorie}
                 onChange={(e) => {
                   setCategorie(e.target.value);
-                  setPage(0);
+                  
                 }}
                 style={{ ...styleChamp, marginTop: "8px" }}
               >
@@ -218,6 +237,28 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
                 <option value="entreprises">🏢 Entreprises</option>
                 <option value="metiers">💼 Métiers</option>
               </select>
+            </label>
+
+            <label style={{ textAlign: "left", color: "#e5bd68", fontSize: "13px" }}>
+              DU
+              <input
+                type="date"
+                aria-label="Notifications à partir du"
+                value={dateDebut}
+                onChange={(e) => setDateDebut(e.target.value)}
+                style={{ ...styleChamp, marginTop: "8px", colorScheme: "dark" }}
+              />
+            </label>
+
+            <label style={{ textAlign: "left", color: "#e5bd68", fontSize: "13px" }}>
+              AU
+              <input
+                type="date"
+                aria-label="Notifications jusqu'au"
+                value={dateFin}
+                onChange={(e) => setDateFin(e.target.value)}
+                style={{ ...styleChamp, marginTop: "8px", colorScheme: "dark" }}
+              />
             </label>
           </div>
 
@@ -240,6 +281,14 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
 
           <div
             aria-label="Résultats de l'historique des notifications"
+            onScroll={(event) => {
+              const element = event.currentTarget;
+              if (element.scrollTop + element.clientHeight >= element.scrollHeight - 100) {
+                setAffichageLimite((limite) =>
+                  Math.min(limite + TAILLE_AFFICHAGE, notifications.length)
+                );
+              }
+            }}
             style={{
               marginTop: "16px",
               maxHeight: "440px",
@@ -256,7 +305,7 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
             ) : !erreur && notifications.length === 0 ? (
               <p>Aucune notification trouvée pour ces filtres.</p>
             ) : (
-              notifications.map((notification) => (
+              notifications.slice(0, affichageLimite).map((notification) => (
                 <div
                   key={notification.notification_id}
                   style={{
@@ -285,28 +334,6 @@ export default function NotificationsAdmin({ supabase, joueurs = [] }) {
               ))
             )}
           </div>
-
-          {!erreur && !chargement && (
-            <div style={{ display: "flex", gap: "10px", alignItems: "center", justifyContent: "center", flexWrap: "wrap", marginTop: "15px" }}>
-              <button
-                type="button"
-                disabled={page === 0}
-                onClick={() => setPage((valeur) => Math.max(0, valeur - 1))}
-                style={{ background: "#333", color: "white" }}
-              >
-                Précédent
-              </button>
-              <span style={{ color: "#e5bd68" }}>Page {page + 1}</span>
-              <button
-                type="button"
-                disabled={!encoreDisponible}
-                onClick={() => setPage((valeur) => valeur + 1)}
-                style={{ background: "#333", color: "white" }}
-              >
-                Suivant
-              </button>
-            </div>
-          )}
 
           {limiteAtteinte && !chargement && (
             <p style={{ color: "#e5bd68", fontSize: "12px" }}>
