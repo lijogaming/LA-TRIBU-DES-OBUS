@@ -465,7 +465,7 @@ if (identifiants.length === 0) {
             <strong>Capacité :</strong> 5 employés maximum
           </p>
           <p>
-            <strong>Rentabilité de base :</strong> tirage aléatoire parmi +25, +50, +75,
+            <strong>Rentabilité de base :</strong> tirage aléatoire parmi +50, +75,
             +100, +125, +150, +175 ou +200 Obus par live. Cette valeur reste fixe.
             Le patron doit être présent au live pour recevoir ce bonus, même sans employé.
           </p>
