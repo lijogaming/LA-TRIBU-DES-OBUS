@@ -771,7 +771,7 @@ if (identifiants.length === 0) {
             integre
           />
 
-          <hr style={{ border: 0, borderTop: "1px solid #6b2929", margin: "30px 0 22px" }} />
+          <hr style={{ border: 0, borderTop: "1px solid #444", margin: "30px 0 22px" }} />
           <button
             type="button"
             disabled={enCours}
