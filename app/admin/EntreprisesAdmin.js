@@ -244,7 +244,7 @@ export default function EntreprisesAdmin({ supabase }) {
                 }}
               >
                 <span style={{ overflowWrap: "anywhere" }}>
-                  <strong>{e.nom}</strong>
+                  {e.nom}
                   <span style={{ display: "block", color: "#aaa", fontSize: "13px" }}>
                     {e.patron_pseudo}
                   </span>
@@ -273,8 +273,74 @@ export default function EntreprisesAdmin({ supabase }) {
           )}
 
           {entreprise && (
-            <div style={{ marginTop: "22px", textAlign: "left" }}>
-              <h2 style={{ overflowWrap: "anywhere" }}>🏢 {entreprise.nom}</h2>
+            <div
+              role="presentation"
+              onClick={() => setEntrepriseId("")}
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 9999,
+                padding: "20px",
+                background: "rgba(0, 0, 0, 0.88)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflowY: "auto",
+              }}
+            >
+              <div
+                className="card"
+                role="dialog"
+                aria-modal="true"
+                aria-label={"Administration de " + entreprise.nom}
+                onClick={(event) => event.stopPropagation()}
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  maxWidth: "620px",
+                  maxHeight: "90vh",
+                  overflowY: "auto",
+                  padding: "72px 30px 30px",
+                  border: "3px solid rgba(233, 189, 88, 0.65)",
+                  background: "#171717",
+                  textAlign: "left",
+                  boxSizing: "border-box",
+                }}
+              >
+                <button
+                  type="button"
+                  aria-label="Retour à la recherche des entreprises"
+                  title="Retour"
+                  onClick={() => setEntrepriseId("")}
+                  style={{
+                    position: "absolute",
+                    top: "15px",
+                    left: "15px",
+                    width: "42px",
+                    height: "42px",
+                    margin: 0,
+                    padding: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M19 12H5 M11 6L5 12L11 18"
+                      stroke="currentColor" strokeWidth="3.5"
+                      strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+                <p className="label">PROFIL DE L'ENTREPRISE</p>
+                <h2 style={{ overflowWrap: "anywhere" }}>🏢 {entreprise.nom}</h2>
+                {message && (
+                  <p role="status" style={{
+                    color: erreur ? "#ff9999" : "#b8e9b8",
+                    overflowWrap: "anywhere",
+                  }}>
+                    {message}
+                  </p>
+                )}
               <p><strong>Patron :</strong> {entreprise.patron_pseudo}</p>
               <p><strong>Catégorie :</strong> {entreprise.categorie}</p>
               <p><strong>Rentabilité de base :</strong> +{entreprise.bonus_base_live} Obus / live</p>
@@ -341,13 +407,14 @@ export default function EntreprisesAdmin({ supabase }) {
                 disabled={enCours} style={rougeStyle}>
                 🗑️ SUPPRIMER L'ENTREPRISE
               </button>
+              </div>
             </div>
           )}
         </div>
       )}
 
       {confirmation && (
-        <div role="presentation" style={{
+        <div role="presentation" onClick={(event) => event.stopPropagation()} style={{
           position: "fixed", inset: 0, zIndex: 100000,
           display: "flex", justifyContent: "center", alignItems: "center",
           padding: "16px", background: "rgba(0,0,0,0.86)",
